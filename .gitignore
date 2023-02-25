@@ -1,5 +1,5 @@
-obj/
-bin/
-.vs/
-.vscode/
-.idea/
+Dev_Backend/obj/
+Dev_Backend/bin/
+Dev_Backend/.vs/
+Dev_Backend/.vscode/
+Dev_Backend/.idea/
