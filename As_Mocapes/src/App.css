@@ -1,0 +1,16 @@
+:root {
+  --padding-length: 12px;
+  --fix-antd-spin-top-padding: 8px;
+}
+
+.half-padding {
+  padding: calc(var(--padding-length) / 2);
+}
+
+.antd-top-padding {
+  padding-top: var(--fix-antd-spin-top-padding);
+}
+
+.agrupar-horizontalmente {
+  display: flex;
+}

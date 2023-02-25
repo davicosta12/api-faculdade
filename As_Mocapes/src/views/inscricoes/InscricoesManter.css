@@ -1,0 +1,5 @@
+.inscricoes-manter-selecionar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

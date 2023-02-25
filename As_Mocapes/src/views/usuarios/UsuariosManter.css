@@ -1,0 +1,5 @@
+.usuarios-manter-switch-senha {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
