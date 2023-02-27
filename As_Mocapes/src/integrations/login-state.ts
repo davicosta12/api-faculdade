@@ -1,6 +1,6 @@
 const LoginState = {
-    CpfNaoInformado: false,
-    CpfESenhaNaoInformados: false,
+    CpfNaoInformado: true,
+    SenhaNaoInformada: true,
     AvancarEstaCarregando: false,
 };
 

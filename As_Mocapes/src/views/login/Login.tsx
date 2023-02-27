@@ -11,16 +11,16 @@ function Login() {
       <Card title="Entrar" className="login-card" >
         <div className="half-padding">
           <div className="half-padding">
-            <Input placeholder="CPF" status={(LoginState.CpfESenhaNaoInformados || LoginState.CpfNaoInformado) ? "error" : ""} />
+            <Input placeholder="CPF" status={LoginState.CpfNaoInformado ? "error" : ""} />
           </div>
           <div className="half-padding">
-            <Input.Password placeholder="Senha" status={LoginState.CpfESenhaNaoInformados ? "error" : ""} />
+            <Input.Password placeholder="Senha" status={LoginState.SenhaNaoInformada ? "error" : ""} />
           </div>
           {LoginState.CpfNaoInformado && <div className="half-padding">
             <Typography.Text type="danger">O CPF é obrigatório</Typography.Text>
           </div>}
-          {LoginState.CpfESenhaNaoInformados && <div className="half-padding">
-            <Typography.Text type="danger">O CPF e a senha são obrigatórios</Typography.Text>
+          {LoginState.SenhaNaoInformada && <div className="half-padding">
+            <Typography.Text type="danger">A senha é obrigatória</Typography.Text>
           </div>}
           <div className="half-padding login-avancar">
             {LoginState.AvancarEstaCarregando ? <Spin /> : <Button type="primary" shape="round" icon={<CheckOutlined/>}>Avançar</Button>}
