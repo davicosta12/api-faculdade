@@ -94,8 +94,7 @@ function InscricoesIndex() {
     },
   ];
     
-  if (windowWidth <= Constantes.WidthMaximoMobile)
-    columns = columns.filter(x => x.key !== LitColunaInscricaoMaker.RAAluno.nomePropriedade && x.key !== LitColunaInscricaoMaker.DataInicio.nomePropriedade);
+  columns = columns.filter(x => x.title == '#' || possiveisFiltros.some(y => y == x.title ?? ''));
     
   return (
     <NavigationWrapper>

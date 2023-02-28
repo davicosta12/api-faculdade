@@ -3,7 +3,7 @@ import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
 import type { ColumnsType } from 'antd/es/table';
@@ -23,11 +23,14 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   // Filtros avançados
   let possiveisFiltros: string[] = []
   if (windowWidth <= Constantes.WidthMaximoMobile)
-    possiveisFiltros = [LitColunaUsuarioMaker.Nome.descricao, LitColunaUsuarioMaker.RA.descricao, LitColunaUsuarioMaker.EAtivo.descricao];
+    possiveisFiltros = [LitColunaUsuarioMaker.Nome.descricao, LitColunaUsuarioMaker.RA.descricao];
   else
     possiveisFiltros = LitColunaUsuarioMaker.Todos.map(x => x.descricao);
-  if (props.siglaPerfil !== 'A')
+  if (props.siglaPerfil !== 'A') {
     possiveisFiltros = possiveisFiltros.filter(x => x !== LitColunaUsuarioMaker.RA.descricao);
+    if (windowWidth <= Constantes.WidthMaximoMobile)
+      possiveisFiltros.push(LitColunaUsuarioMaker.EAtivo.descricao);
+  }
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
@@ -96,17 +99,8 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       ),
     },
   ];
-    
-  if (props.siglaPerfil === 'A') {
-    
-    if (windowWidth <= Constantes.WidthMaximoMobile)
-      columns = columns.filter(x => x.key !== LitColunaUsuarioMaker.Sexo.nomePropriedade && x.key !== LitColunaUsuarioMaker.NomeMae.nomePropriedade);
-  } else {
-    
-    columns = columns.filter(x => x.key !== LitColunaUsuarioMaker.RA.nomePropriedade);
-    if (windowWidth <= Constantes.WidthMaximoMobile)
-      columns = columns.filter(x => x.key !== LitColunaUsuarioMaker.Sexo.nomePropriedade);
-  }
+ 
+  columns = columns.filter(x => x.title == '#' || possiveisFiltros.some(y => y == x.title ?? ''));
     
   return (
     <NavigationWrapper>
