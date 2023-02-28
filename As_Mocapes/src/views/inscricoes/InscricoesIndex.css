@@ -1,0 +1,14 @@
+.inscricoes-index-filtro-avancado {
+  display: flex;
+  align-items: center;
+}
+.inscricoes-index-botoes-modal {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.inscricoes-index-opcoes-data {
+  display: flex;
+  flex-direction: column;
+}

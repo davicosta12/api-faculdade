@@ -1,0 +1,10 @@
+.cursos-index-filtro-avancado {
+  display: flex;
+  align-items: center;
+}
+
+.cursos-index-botoes-modal {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

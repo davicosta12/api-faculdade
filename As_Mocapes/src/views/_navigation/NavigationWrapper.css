@@ -1,0 +1,71 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.navigation-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  
+}
+
+.navigation-container-full-height {
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+.main-hidden {
+  visibility: hidden;
+  max-height: 0;
+  overflow-y: hidden;
+}
+
+.nav-items-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+
+.navigation-container-desktop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navigation-logo {
+  background-image: url('../../assets/sigamm-logo.png');
+  width: 55px;
+  height: 55px;
+  background-size: contain;
+}
+
+.navigation-fixed-logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.navigation-aba-usuario {
+  display: flex;
+  flex-direciton: row;
+  align-items: center;
+}
+
+@media(min-width: 992px) {
+  .app-container {
+    flex-direction: row;
+  }
+
+  .navigation-logo {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .navigation-aba-usuario {
+    align-self: flex-start;
+    padding-left: 28px;
+  }
+}
