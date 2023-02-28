@@ -82,7 +82,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     {
       title: LitColunaUsuarioMaker.EAtivo.descricao,
       dataIndex: LitColunaUsuarioMaker.EAtivo.nomePropriedade,
-      key: LitColunaUsuarioMaker.Sexo.nomePropriedade,
+      key: LitColunaUsuarioMaker.EAtivo.nomePropriedade,
       render: (eAtivo: boolean) => <Switch disabled={true} defaultChecked={eAtivo}></Switch>
     },
     {
