@@ -25,6 +25,7 @@ function CursosIndex() {
       : selectedFiltros.filter((t) => t !== tag);
     setSelectedFiltros(nextSelectedTags);
   };
+  const [tipoLimiteSemestresEscolhido, setTipoLimiteSemestresEscolhido] = useState('limite-semestres-exato');
     
   // Ordenaçao
   let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
@@ -98,7 +99,33 @@ function CursosIndex() {
                   <Input placeholder="Nome" />
                 </div>}
                 {selectedFiltros.includes(LitColunaCursoMaker.QtdLimiteSemestres.descricao) && <div className="half-padding">
-                  <InputNumber placeholder="Limite de Semestres" />
+                  <div className="cursos-index-filtro-avancado">
+                    <div className="half-padding">
+                      <Typography.Text>Limite de Semestres</Typography.Text>
+                    </div>
+                    <div className='half-padding'>
+                      <Select
+                        defaultValue=""
+                        style={{ width: 160 }}
+                        options={[
+                          { value: 'limite-semestres-exato', label: 'Exato' },
+                          { value: 'limite-semestres-intervalo', label: 'Intervalo' },
+                        ]}
+                        onChange={(value: string) => setTipoLimiteSemestresEscolhido(value)}
+                        value={tipoLimiteSemestresEscolhido}
+                      />
+                    </div>
+                  </div>
+                  <div className="cursos-index-filtro-avancado">
+                    <div className="half-padding">
+                      {tipoLimiteSemestresEscolhido == 'limite-semestres-exato' ?
+                        <InputNumber placeholder="" /> :
+                        <InputNumber placeholder="De" />}
+                    </div>
+                    {tipoLimiteSemestresEscolhido != 'limite-semestres-exato' && <div className='half-padding'>
+                      <InputNumber placeholder="Até" />
+                    </div>}
+                  </div>
                 </div>}
               </div>
             </Collapse.Panel>
