@@ -5,3 +5,29 @@ Dev_Backend/.vscode/
 Dev_Backend/.idea/
 
 As_Mocapes/node_modules/
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+Dev_Frontend/node_modules
+Dev_Frontend/.pnp
+Dev_Frontend/.pnp.js
+
+# testing
+Dev_Frontend/coverage
+
+# production
+Dev_Frontend/build
+
+# misc
+Dev_Frontend/.DS_Store
+Dev_Frontend/.env.local
+Dev_Frontend/.env.development.local
+Dev_Frontend/.env.test.local
+Dev_Frontend/.env.production.local
+
+Dev_Frontend/npm-debug.log*
+Dev_Frontend/yarn-debug.log*
+Dev_Frontend/yarn-error.log*
+
+Dev_Frontend/.vscode
