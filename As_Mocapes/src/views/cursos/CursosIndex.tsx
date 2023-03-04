@@ -216,6 +216,11 @@ function CursosIndex() {
             <div className="half-padding">
               <Typography.Title level={5}>Não é possível excluir um curso enquanto ele tiver inscrições.</Typography.Title>
             </div>
+            <div className="usuarios-index-botoes-modal">
+              <div className="half-padding" >
+                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              </div>
+            </div>
           </>}
         </div>
       </Modal>

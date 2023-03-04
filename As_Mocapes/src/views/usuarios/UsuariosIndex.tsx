@@ -249,6 +249,11 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
             <div className="half-padding">
               <Typography.Title level={5}>Não é possível excluir um aluno enquanto ele tiver inscrições.</Typography.Title>
             </div>
+            <div className="usuarios-index-botoes-modal">
+              <div className="half-padding" >
+                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              </div>
+            </div>
           </>}
         </div>
       </Modal>
