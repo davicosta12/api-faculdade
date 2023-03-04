@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './InscricoesIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, DatePicker, Radio } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, DatePicker, Radio, Pagination, Card, Col, Row } from 'antd';
 import { ArrowLeftOutlined, CheckOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
@@ -17,10 +17,7 @@ function InscricoesIndex() {
   const { windowWidth } = useWindowDimensions();
   // Filtros avançados
   let possiveisFiltros: string[] = []
-  if (windowWidth <= Constantes.WidthMaximoMobile)
-    possiveisFiltros = [LitColunaInscricaoMaker.NomeAluno.descricao, LitColunaInscricaoMaker.NomeCurso.descricao];
-  else
-    possiveisFiltros = LitColunaInscricaoMaker.Todos.map(x => x.descricao);
+  possiveisFiltros = LitColunaInscricaoMaker.Todos.map(x => x.descricao);
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
@@ -192,7 +189,40 @@ function InscricoesIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <Table dataSource={InscricoesIndexState.inscricoesApresentadas} columns={columns} />
+        
+        
+        {windowWidth <= Constantes.WidthMaximoMobile ?
+          <Row>
+            {InscricoesIndexState.inscricoesApresentadas.map(xInscricao => <Col span={12} className="half-padding">
+              <Card title={<div className="inscricoes-index-botoes-modal">
+                  <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                    <Button icon={<MoreOutlined />}></Button>
+                  </Dropdown>
+                </div>}
+                bodyStyle={{ padding: "6px" }}
+                headStyle={{ paddingRight: "12px" }}>
+                
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome do Aluno</strong>: {xInscricao.nomeAluno}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>RA do Aluno</strong>: {xInscricao.raAluno}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome do Curso</strong>: {xInscricao.nomeCurso}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Data de Início</strong>: {('' + xInscricao.dataInicio.getDate()).padStart(2, '0') + '/' + (xInscricao.dataInicio.getMonth() + 1 + '').padStart(2, '0') + '/' + xInscricao.dataInicio.getFullYear()}</span>
+                </div>
+              </Card>
+              
+            </Col>)}
+          </Row> :
+          <Table dataSource={InscricoesIndexState.inscricoesApresentadas} columns={columns} />}
+        
+        {windowWidth <= Constantes.WidthMaximoMobile && <div className='inscricoes-index-botoes-modal'>
+          <Pagination total={InscricoesIndexState.inscricoesApresentadas.length} defaultCurrent={1} />
+        </div>}
         
       </div>
       <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
