@@ -1,5 +1,7 @@
-using api_faculdade.Models.Department;
-using api_faculdade.Models.Departments;
+
+
+using Dev_Backend.Models.Department;
+using Dev_Backend.Models.Departments;
 
 namespace my_api.Data.Repositories
 {

@@ -1,5 +1,5 @@
-using api_faculdade.Models.Department;
-using api_faculdade.Models.Departments;
+using Dev_Backend.Models.Department;
+using Dev_Backend.Models.Departments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using my_api.Data;

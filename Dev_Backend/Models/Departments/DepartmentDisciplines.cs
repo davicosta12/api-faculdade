@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace api_faculdade.Models.Departments
+namespace Dev_Backend.Models.Departments
 {
     public class DepartmentDisciplines
     {
