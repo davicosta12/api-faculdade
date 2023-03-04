@@ -14,3 +14,7 @@
 .agrupar-horizontalmente {
   display: flex;
 }
+
+.card-text-size {
+  font-size: 0.8rem;
+}

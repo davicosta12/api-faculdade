@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import { LitColunaCursoMaker } from '../../model/literal/lit-coluna-curso';
 import { CursosIndexState } from '../../integrations/cursos-index-state';
 import { IResultadoCurso } from '../../model/curso-resultado';
+import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { Constantes } from '../../model/constantes';
 
 
 function CursosIndex() {
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
+  
+  const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
   const possiveisFiltros = LitColunaCursoMaker.Todos.map(x => x.descricao);
@@ -157,8 +161,34 @@ function CursosIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <Table dataSource={CursosIndexState.cursosApresentados} columns={columns} />
         
+        {windowWidth <= Constantes.WidthMaximoMobile ?
+          <Row>
+            {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
+              <Card title={<div className="cursos-index-botoes-modal">
+                  <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                    <Button icon={<MoreOutlined />}></Button>
+                  </Dropdown>
+                </div>}
+                bodyStyle={{ padding: "6px" }}
+                headStyle={{ paddingRight: "12px" }}>
+                
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome</strong>: {xCurso.nome}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.qtdLimiteSemestres}</span>
+                </div>
+                
+              </Card>
+              
+            </Col>)}
+          </Row> :
+          <Table dataSource={CursosIndexState.cursosApresentados} columns={columns} />}
+        
+        {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
+          <Pagination total={CursosIndexState.cursosApresentados.length} defaultCurrent={1} />
+        </div>}
       </div>
       
       {/* Confirmar a exclusão */}
