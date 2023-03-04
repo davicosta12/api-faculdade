@@ -15,7 +15,9 @@ const CursosIndexState = {
         createMockedCurso('Análise de Sistemas', 12),
         createMockedCurso('Biologia', 16),
         createMockedCurso('Engenharia', 14),
-    ]
+    ],
+    estaCarregandoSePodeExcluir: false,
+    podeExcluir: false
 };
 
 export { CursosIndexState }

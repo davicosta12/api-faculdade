@@ -3,7 +3,7 @@ import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Card, Col, Row } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Card, Col, Row, Spin } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
 import type { ColumnsType } from 'antd/es/table';
@@ -227,17 +227,29 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       </div>
       <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
         <div className="half-padding">
-          <div className="half-padding">
-            <Typography.Title level={5}>Deseja excluir o {litPerfil?.tituloH3ManterUm}? A ação não pode ser desfeita.</Typography.Title>
-          </div>
-          <div className="usuarios-index-botoes-modal">
+          {UsuariosIndexState.estaCarregandoSePodeExcluir && <>
             <div className="half-padding" >
-              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              <Spin /> 
             </div>
-            <div className="half-padding" >
-              <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
+          </>}
+          {(!UsuariosIndexState.estaCarregandoSePodeExcluir && UsuariosIndexState.podeExcluir) && <>
+            <div className="half-padding">
+              <Typography.Title level={5}>Deseja excluir o {litPerfil?.tituloH3ManterUm}? A ação não pode ser desfeita.</Typography.Title>
             </div>
-          </div>
+            <div className="usuarios-index-botoes-modal">
+              <div className="half-padding" >
+                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              </div>
+              <div className="half-padding" >
+                <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
+              </div>
+            </div>
+          </>}
+          {(!UsuariosIndexState.estaCarregandoSePodeExcluir && !UsuariosIndexState.podeExcluir) && <>
+            <div className="half-padding">
+              <Typography.Title level={5}>Não é possível excluir um aluno enquanto ele tiver inscrições.</Typography.Title>
+            </div>
+          </>}
         </div>
       </Modal>
     </NavigationWrapper>

@@ -31,7 +31,9 @@ const UsuariosIndexState = {
         createMockedUsuario('Bill Gates', '00000515', 'M', 'Mae 07', false),
         // createMockedUsuario('Henrique', '', 'M', '', true),
         // createMockedUsuario('Ednaldo Pereira', '', 'M', 'Mae Mock', true),
-    ]
+    ],
+    estaCarregandoSePodeExcluir: false,
+    podeExcluir: false
 };
 
 export { UsuariosIndexState }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row, Spin } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
@@ -194,6 +194,12 @@ function CursosIndex() {
       {/* Confirmar a exclusão */}
       <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
         <div className="half-padding">
+          {CursosIndexState.estaCarregandoSePodeExcluir && <>
+            <div className="half-padding" >
+              <Spin /> 
+            </div>
+          </>}
+          {(!CursosIndexState.estaCarregandoSePodeExcluir && CursosIndexState.podeExcluir) && <>
           <div className="half-padding">
             <Typography.Title level={5}>Deseja excluir o Curso? A ação não pode ser desfeita.</Typography.Title>
           </div>
@@ -205,6 +211,12 @@ function CursosIndex() {
               <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
             </div>
           </div>
+          </>}
+          {(!CursosIndexState.estaCarregandoSePodeExcluir && !CursosIndexState.podeExcluir) && <>
+            <div className="half-padding">
+              <Typography.Title level={5}>Não é possível excluir um curso enquanto ele tiver inscrições.</Typography.Title>
+            </div>
+          </>}
         </div>
       </Modal>
     </NavigationWrapper>
