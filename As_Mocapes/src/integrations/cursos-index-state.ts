@@ -17,7 +17,7 @@ const CursosIndexState = {
         createMockedCurso('Engenharia', 14),
     ],
     estaCarregandoSePodeExcluir: false,
-    podeExcluir: false
+    podeExcluir: true
 };
 
 export { CursosIndexState }
