@@ -15,16 +15,29 @@ namespace Dev_Backend.Data.Repositories
 
         public async Task<AuthenticationModel?> Authenticate(SignInUser userLogin)
         {
-            string sql = @"SELECT id, nome, e_mail, icone, isAdmin, nro_win, nro_lose FROM Usuario
-                           WHERE nome = @_CPF and senha = @_password";
+            string sqlHash = @"SELECT SHA2(@S_Senha, 512)";
+            string sql = @"SELECT I_Cod_Usuario, 
+                           C_Perfil, 
+                           S_Nome, 
+                           S_CPF, 
+                           S_Senha,
+                           B_E_Ativo, 
+                           B_Tem_Senha_Temporaria 
+                           FROM Usuario
+                           WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash;";
 
             userLogin.S_CPF = userLogin.S_CPF.Trim();
             userLogin.S_Senha = userLogin.S_Senha.Trim();
 
+            var passwordHash = (await QueryAsync<string>(sqlHash, new
+            {
+                @S_Senha = userLogin.S_Senha
+            })).FirstOrDefault();
+
             var userFound = await QueryFirstOrDefaultAsync<User>(sql, new
             {
-                @_CPF = userLogin.S_CPF,
-                @_password = userLogin.S_Senha
+                @CPF = userLogin.S_CPF,
+                @Senha_Hash = passwordHash
             });
 
             if (userFound != null)
