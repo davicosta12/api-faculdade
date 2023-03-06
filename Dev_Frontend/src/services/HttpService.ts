@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-require('dotenv').config();
 
 export default class HttpService {
 

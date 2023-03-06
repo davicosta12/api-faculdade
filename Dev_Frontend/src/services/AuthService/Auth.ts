@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import HttpService from "../HttpService";
 import AuthRequestDto from "./dto/AuthRestDto";
 import AuthResponseDto from "./dto/AuthResponseDto";
+import SignUpUserDto from "./dto/SignUpUserDto";
 
 export const isAuthenticated = () => localStorage.getItem(process.env.REACT_APP_TOKEN_KEY as string) !== null;
 export const userExist = () => localStorage.getItem(process.env.REACT_APP_ACTIVE_USER as string) !== null;
@@ -9,6 +10,7 @@ export const logout = () => {
   localStorage.removeItem(process.env.REACT_APP_TOKEN_KEY as string);
   localStorage.removeItem(process.env.REACT_APP_ACTIVE_USER as string);
 };
+export const saveActiveUser = (activeUser: string) => localStorage.setItem(process.env.REACT_APP_ACTIVE_USER as string, activeUser);
 
 export default class AuthService extends HttpService {
 
@@ -23,12 +25,12 @@ export default class AuthService extends HttpService {
     })
   }
 
-  // registerUser(payload: RegisterUserDto): Promise<AuthResponseDto> {
-  //   return new Promise((resolve, reject) => {
-  //     this.getApi().post(`/Authenticate/cadastrar`, payload)
-  //       .then(res => resolve(res.data))
-  //       .catch((err: AxiosResponse<any>) => reject(err))
-  //   })
-  // }
+  registerUser(userRegister: SignUpUserDto): Promise<AuthResponseDto> {
+    return new Promise((resolve, reject) => {
+      this.getApi().post(`/Authenticate/cadastrar`, userRegister)
+        .then(res => resolve(res.data))
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
 
 }
