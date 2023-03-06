@@ -3,7 +3,7 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using static Dapper.SqlMapper;
 
-namespace my_api.Data.Repositories
+namespace Dev_Backend.Data.Repositories
 {
   public class RepositoryBase<TDbContext> where TDbContext : DbContext
   {

@@ -1,4 +1,4 @@
-﻿using Dev_Backend.Models.Users;
+﻿using Dev_Backend.Data.Models.Users;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

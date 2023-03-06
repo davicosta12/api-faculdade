@@ -1,4 +1,4 @@
-namespace my_api.Models
+namespace Dev_Backend.Data.Models
 {
   public class ResponseMessage
   {

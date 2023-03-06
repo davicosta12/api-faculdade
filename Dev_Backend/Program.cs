@@ -1,9 +1,9 @@
 using System.Text;
+using Dev_Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using my_api.Data;
 using static Dev_Backend.Helpers.AuthenticationHelper;
 
 var builder = WebApplication.CreateBuilder(args);

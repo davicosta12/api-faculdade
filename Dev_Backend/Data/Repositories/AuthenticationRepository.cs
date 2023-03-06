@@ -1,8 +1,6 @@
 ﻿using Dev_Backend.Helpers;
-using Dev_Backend.Models.Authentication;
-using Dev_Backend.Models.Users;
-using my_api.Data;
-using my_api.Data.Repositories;
+using Dev_Backend.Data.Models.Authentication;
+using Dev_Backend.Data.Models.Users;
 
 namespace Dev_Backend.Data.Repositories
 {
@@ -56,29 +54,65 @@ namespace Dev_Backend.Data.Repositories
             return null;
         }
 
-        // public async Task<CadastrarUsuario> CadastrarUsuario(CadastrarUsuario usuarioCadastro)
-        // {
-        //     string sql = @"INSERT INTO Usuario ( nome, senha, e_mail, isAdmin ) VALUES ( @_nome, @_senha, @_email, @_isAdmin );";
+        public async Task<SignUpUser> UserRegister(SignUpUser userRegister)
+        {
+            string sqlHash = @"SELECT SHA2(@S_Senha, 512)";
+            string sql = @"INSERT INTO Usuario (
+                           C_Perfil,    
+                           S_Nome, 
+                           S_CPF, 
+                           S_RA, 
+                           C_Sexo,
+                           S_Nome_Mae, 
+                           B_E_Ativo, 
+                           S_Email, 
+                           S_Senha, 
+                           B_Tem_Senha_Temporaria
+                           ) VALUES (
+                            @C_Perfil, 
+                            @S_Nome, 
+                            @S_CPF, 
+                            @S_RA, 
+                            @C_Sexo, 
+                            @S_Nome_Mae, 
+                            @B_E_Ativo, 
+                            @S_Email, 
+                            @Senha_Hash, 
+                            @B_Tem_Senha_Temporaria);";
 
-        //     usuarioCadastro.nome = usuarioCadastro.nome.Trim();
-        //     usuarioCadastro.senha = usuarioCadastro.senha.Trim();
-        //     usuarioCadastro.e_mail = usuarioCadastro.e_mail.Trim();
+            var passwordHash = (await QueryAsync<string>(sqlHash, new
+            {
+                @S_Senha = userRegister.S_Senha.Trim()
+            })).FirstOrDefault();
 
-        //     await ExecuteAsync(sql, new
-        //     {
-        //         @_nome = usuarioCadastro.nome,
-        //         @_senha = usuarioCadastro.senha,
-        //         @_email = usuarioCadastro.e_mail,
-        //         @_isAdmin = false
-        //     });
+            await ExecuteAsync(sql, new
+            {
+                @C_Perfil = userRegister.C_Perfil.Trim(),
+                @S_Nome = userRegister.S_Nome.Trim(),
+                @S_CPF = userRegister.S_CPF.Trim(),
+                @S_RA = userRegister.S_RA.Trim(),
+                @C_Sexo = userRegister.C_Sexo.Trim(),
+                @S_Nome_Mae = userRegister.S_Nome_Mae.Trim(),
+                @B_E_Ativo = userRegister.B_E_Ativo,
+                @S_Email = userRegister.S_Email.Trim(),
+                @Senha_Hash = passwordHash,
+                @B_Tem_Senha_Temporaria = userRegister.B_Tem_Senha_Temporaria
+            });
 
-        //     var usuarioCriado = new CadastrarUsuario()
-        //     {
-        //         nome = usuarioCadastro.nome,
-        //         e_mail = usuarioCadastro.e_mail
-        //     };
+            var createUser = new SignUpUser()
+            {
+                C_Perfil = userRegister.C_Perfil.Trim(),
+                S_Nome = userRegister.S_Nome.Trim(),
+                S_CPF = userRegister.S_CPF.Trim(),
+                S_RA = userRegister.S_RA.Trim(),
+                C_Sexo = userRegister.C_Sexo.Trim(),
+                S_Nome_Mae = userRegister.S_Nome_Mae.Trim(),
+                B_E_Ativo = userRegister.B_E_Ativo,
+                S_Email = userRegister.S_Email.Trim(),
+                B_Tem_Senha_Temporaria = userRegister.B_Tem_Senha_Temporaria
+            };
 
-        //     return usuarioCriado;
-        // }
+            return createUser;
+        }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Dev_Backend.Data.Repositories;
-using Dev_Backend.Models.Authentication;
+﻿using Dev_Backend.Data;
+using Dev_Backend.Data.Models;
+using Dev_Backend.Data.Models.Authentication;
+using Dev_Backend.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using my_api.Data;
-using my_api.Models;
 
 namespace Dev_Backend.Controllers
 {
@@ -26,8 +26,8 @@ namespace Dev_Backend.Controllers
             var res = new ResponseMessage()
             {
                 isValid = false,
-                message = $"{userLogin.S_CPF} não foi encontrado!",
-                errorMessage = $"{userLogin.S_CPF} não foi encontrado!!"
+                message = $"'{userLogin.S_CPF}' não foi encontrado!",
+                errorMessage = $"'{userLogin.S_CPF}' não foi encontrado!!"
             };
 
             try
@@ -42,6 +42,47 @@ namespace Dev_Backend.Controllers
                 }
 
                 return Ok(authenticateModel);
+            }
+            catch (Exception e)
+            {
+                var retorno = new ResponseMessage();
+
+                retorno.isValid = false;
+                retorno.errorMessage = $"{e.Message}";
+                retorno.message = $"{e.Message}";
+                retorno.stackTrace = e.StackTrace;
+
+                return BadRequest(retorno);
+            }
+        }
+
+        [HttpPost]
+        [Route("cadastrar")]
+        [AllowAnonymous]
+        public async Task<ActionResult<SignUpUser>> UserRegister([FromBody] SignUpUser userRegister)
+        {
+            var res = new ResponseMessage()
+            {
+                isValid = false,
+                message = $"Já existe uma conta com esse nome '{userRegister.S_Nome}', por favor escolha outro nome.",
+                errorMessage = $"Já existe uma conta com esse nome '{userRegister.S_Nome}', por favor escolha outro nome."
+            };
+
+            try
+            {
+                var authenticationRepository = new AuthenticationRepository(_dbContext);
+                var userRepository = new UserRepository(_dbContext);
+
+                var userFound = await userRepository.GetUserByCPF(userRegister.S_CPF);
+
+                if (userFound != null)
+                {
+                    return BadRequest(res);
+                }
+
+                var createUser = await authenticationRepository.UserRegister(userRegister);
+
+                return Ok(createUser);
             }
             catch (Exception e)
             {

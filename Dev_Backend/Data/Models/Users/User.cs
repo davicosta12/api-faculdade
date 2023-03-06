@@ -1,4 +1,4 @@
-namespace Dev_Backend.Models.Users
+namespace Dev_Backend.Data.Models.Users
 {
     public class User
     {
