@@ -64,8 +64,8 @@ namespace Dev_Backend.Controllers
             var res = new ResponseMessage()
             {
                 isValid = false,
-                message = $"Já existe uma conta com esse nome '{userRegister.S_Nome}', por favor escolha outro nome.",
-                errorMessage = $"Já existe uma conta com esse nome '{userRegister.S_Nome}', por favor escolha outro nome."
+                message = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.",
+                errorMessage = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF."
             };
 
             try

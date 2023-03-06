@@ -23,11 +23,11 @@ namespace Dev_Backend.Data.Repositories
                            S_Senha, 
                            B_Tem_Senha_Temporaria
                            FROM Usuario
-                           WHERE S_CPF = @CPF;";
+                           WHERE S_CPF = @S_CPF;";
 
             var userFound = await QueryFirstOrDefaultAsync<User>(sql, new
             {
-                @_nome = cpf.Trim()
+                @S_CPF = cpf.Trim()
             });
 
             return userFound;
