@@ -1,7 +1,7 @@
 using System.Data;
 using MySql.Data.MySqlClient;
 
-namespace my_api.Data
+namespace Dev_Backend.Data
 {
     public class DbContext
     {

@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row, Spin } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import { LitColunaCursoMaker } from '../../model/literal/lit-coluna-curso';
 import { CursosIndexState } from '../../integrations/cursos-index-state';
 import { IResultadoCurso } from '../../model/curso-resultado';
+import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { Constantes } from '../../model/constantes';
 
 
 function CursosIndex() {
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
+  
+  const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
   const possiveisFiltros = LitColunaCursoMaker.Todos.map(x => x.descricao);
@@ -157,13 +161,45 @@ function CursosIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <Table dataSource={CursosIndexState.cursosApresentados} columns={columns} />
         
+        {windowWidth <= Constantes.WidthMaximoMobile ?
+          <Row>
+            {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
+              <Card title={<div className="cursos-index-botoes-modal">
+                  <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                    <Button icon={<MoreOutlined />}></Button>
+                  </Dropdown>
+                </div>}
+                bodyStyle={{ padding: "6px" }}
+                headStyle={{ paddingRight: "12px" }}>
+                
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome</strong>: {xCurso.nome}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.qtdLimiteSemestres}</span>
+                </div>
+                
+              </Card>
+              
+            </Col>)}
+          </Row> :
+          <Table dataSource={CursosIndexState.cursosApresentados} columns={columns} />}
+        
+        {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
+          <Pagination total={CursosIndexState.cursosApresentados.length} defaultCurrent={1} />
+        </div>}
       </div>
       
       {/* Confirmar a exclusão */}
       <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
         <div className="half-padding">
+          {CursosIndexState.estaCarregandoSePodeExcluir && <>
+            <div className="half-padding" >
+              <Spin /> 
+            </div>
+          </>}
+          {(!CursosIndexState.estaCarregandoSePodeExcluir && CursosIndexState.podeExcluir) && <>
           <div className="half-padding">
             <Typography.Title level={5}>Deseja excluir o Curso? A ação não pode ser desfeita.</Typography.Title>
           </div>
@@ -175,6 +211,17 @@ function CursosIndex() {
               <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
             </div>
           </div>
+          </>}
+          {(!CursosIndexState.estaCarregandoSePodeExcluir && !CursosIndexState.podeExcluir) && <>
+            <div className="half-padding">
+              <Typography.Title level={5}>Não é possível excluir um curso enquanto ele tiver inscrições.</Typography.Title>
+            </div>
+            <div className="usuarios-index-botoes-modal">
+              <div className="half-padding" >
+                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              </div>
+            </div>
+          </>}
         </div>
       </Modal>
     </NavigationWrapper>

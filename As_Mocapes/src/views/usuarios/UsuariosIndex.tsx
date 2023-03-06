@@ -3,7 +3,7 @@ import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Card, Col, Row, Spin } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
 import type { ColumnsType } from 'antd/es/table';
@@ -22,14 +22,9 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     
   // Filtros avançados
   let possiveisFiltros: string[] = []
-  if (windowWidth <= Constantes.WidthMaximoMobile)
-    possiveisFiltros = [LitColunaUsuarioMaker.Nome.descricao, LitColunaUsuarioMaker.RA.descricao];
-  else
-    possiveisFiltros = LitColunaUsuarioMaker.Todos.map(x => x.descricao);
+  possiveisFiltros = LitColunaUsuarioMaker.Todos.map(x => x.descricao);
   if (props.siglaPerfil !== 'A') {
     possiveisFiltros = possiveisFiltros.filter(x => x !== LitColunaUsuarioMaker.RA.descricao);
-    if (windowWidth <= Constantes.WidthMaximoMobile)
-      possiveisFiltros.push(LitColunaUsuarioMaker.EAtivo.descricao);
   }
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const handleChangeActivePanels = (activePanels: string | string[]) => {
@@ -191,22 +186,75 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <Table dataSource={UsuariosIndexState.usuariosApresentados} columns={columns} />
+                
+        {windowWidth <= Constantes.WidthMaximoMobile ?
+          <Row>
+            {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding">
+              <Card title={<div className="usuarios-index-botoes-modal">
+                  <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                    <Button icon={<MoreOutlined />}></Button>
+                  </Dropdown>
+                </div>}
+                bodyStyle={{ padding: "6px" }}
+                headStyle={{ paddingRight: "12px" }}>
+                
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome</strong>: {xUsuario.nome}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>RA</strong>: {xUsuario.ra}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Sexo</strong>: {xUsuario.sexo == 'M' ? 'Masculino' : 'Feminino'}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome da mãe</strong>: {xUsuario.nomeMae}</span>
+                </div>
+                <div className='half-padding usuarios-index-filtro-avancado'>
+                  <span className='card-text-size'><strong>Ativo</strong>: <Switch disabled={true} defaultChecked={xUsuario.eAtivo}></Switch></span>
+                </div>
+                
+              </Card>
+              
+            </Col>)}
+          </Row> :
+          <Table dataSource={UsuariosIndexState.usuariosApresentados} columns={columns} />}
+        
+        {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
+          <Pagination total={UsuariosIndexState.usuariosApresentados.length} defaultCurrent={1} />
+        </div>}
         
       </div>
       <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
         <div className="half-padding">
-          <div className="half-padding">
-            <Typography.Title level={5}>Deseja excluir o {litPerfil?.tituloH3ManterUm}? A ação não pode ser desfeita.</Typography.Title>
-          </div>
-          <div className="usuarios-index-botoes-modal">
+          {UsuariosIndexState.estaCarregandoSePodeExcluir && <>
             <div className="half-padding" >
-              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              <Spin /> 
             </div>
-            <div className="half-padding" >
-              <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
+          </>}
+          {(!UsuariosIndexState.estaCarregandoSePodeExcluir && UsuariosIndexState.podeExcluir) && <>
+            <div className="half-padding">
+              <Typography.Title level={5}>Deseja excluir o {litPerfil?.tituloH3ManterUm}? A ação não pode ser desfeita.</Typography.Title>
             </div>
-          </div>
+            <div className="usuarios-index-botoes-modal">
+              <div className="half-padding" >
+                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              </div>
+              <div className="half-padding" >
+                <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
+              </div>
+            </div>
+          </>}
+          {(!UsuariosIndexState.estaCarregandoSePodeExcluir && !UsuariosIndexState.podeExcluir) && <>
+            <div className="half-padding">
+              <Typography.Title level={5}>Não é possível excluir um aluno enquanto ele tiver inscrições.</Typography.Title>
+            </div>
+            <div className="usuarios-index-botoes-modal">
+              <div className="half-padding" >
+                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              </div>
+            </div>
+          </>}
         </div>
       </Modal>
     </NavigationWrapper>

@@ -1,10 +1,8 @@
-using api_faculdade.Models.Department;
-using api_faculdade.Models.Departments;
-using Microsoft.AspNetCore.Authorization;
+using Dev_Backend.Data;
+using Dev_Backend.Data.Models;
+using Dev_Backend.Data.Models.Departments;
+using Dev_Backend.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using my_api.Data;
-using my_api.Data.Repositories;
-using my_api.Models;
 
 namespace my_api.Controllers
 {
@@ -66,31 +64,6 @@ namespace my_api.Controllers
                 }
 
                 return Ok(departmentFound);
-            }
-            catch (Exception e)
-            {
-                var response = new ResponseMessage();
-
-                response.isValid = false;
-                response.errorMessage = $"{e.Message}";
-                response.message = $"{e.Message}";
-                response.stackTrace = e.StackTrace;
-
-                return BadRequest(response);
-            }
-        }
-
-        [HttpGet]
-        [Route("Disciplines", Name = "GetDepartmentDisciplines")]
-        public async Task<ActionResult<List<DepartmentDisciplines>>> GetDepartmentDisciplines([FromQuery] int? codDiscipline)
-        {
-            try
-            {
-                var departmentRepository = new DepartmentRepository(_dbContext);
-
-                var departmentsFound = await departmentRepository.GetDepartmentDisciplines(codDiscipline);
-
-                return Ok(departmentsFound);
             }
             catch (Exception e)
             {

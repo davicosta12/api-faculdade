@@ -1,7 +1,6 @@
-using api_faculdade.Models.Department;
-using api_faculdade.Models.Departments;
+using Dev_Backend.Data.Models.Departments;
 
-namespace my_api.Data.Repositories
+namespace Dev_Backend.Data.Repositories
 {
     public class DepartmentRepository : RepositoryBase<DbContext>
     {
@@ -29,27 +28,6 @@ namespace my_api.Data.Repositories
             });
 
             return departmentFound;
-        }
-
-        public async Task<List<DepartmentDisciplines>> GetDepartmentDisciplines(int? codDepartamento)
-        {
-            string where = "";
-
-            if (codDepartamento != null)
-            {
-                where = "WHERE Di.Cod_Departamento = @_CodDepartamento";
-            }
-
-            string sql = $@"SELECT De.Nome_departamento, Di.Nome_Disciplina FROM Disciplina Di
-                           INNER JOIN Departamento De ON Di.Cod_Departamento = De.Cod_Departamento
-                           {where}";
-
-            var departmentsFound = await QueryAsync<DepartmentDisciplines>(sql, new
-            {
-                @_CodDepartamento = codDepartamento
-            });
-
-            return departmentsFound.ToList();
         }
 
         public async Task<Department> CreateDepartment(PostDepartment department)
