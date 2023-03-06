@@ -1,12 +1,6 @@
 export default class AuthRequestDto {
   constructor(
-    public nome: string,
-    public senha: string,
+    public S_CPF: string,
+    public S_Senha: string,
   ) { }
-}
-
-export interface RegisterUserDto {
-  nome: string,
-  senha: string,
-  e_mail: string
 }

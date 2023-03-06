@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import HttpService from "../HttpService";
-import AuthRequestDto, { RegisterUserDto } from "./dto/AuthRestDto";
+import AuthRequestDto from "./dto/AuthRestDto";
 import AuthResponseDto from "./dto/AuthResponseDto";
 
 export const isAuthenticated = () => localStorage.getItem(process.env.REACT_APP_TOKEN_KEY as string) !== null;
@@ -12,9 +12,9 @@ export const logout = () => {
 
 export default class AuthService extends HttpService {
 
-  getAuthToken(name: string, password: string): Promise<AuthResponseDto> {
+  getAuthToken(userLogin: AuthRequestDto): Promise<AuthResponseDto> {
     return new Promise((resolve, reject) => {
-      this.getApi().post(`/Authenticate/login`, new AuthRequestDto(name, password))
+      this.getApi().post(`/Authenticate/login`, new AuthRequestDto(userLogin.S_CPF, userLogin.S_Senha))
         .then(res => {
           this.saveToken(res.data.token);
           resolve(res.data);
