@@ -26,8 +26,8 @@ namespace Dev_Backend.Controllers
             var res = new ResponseMessage()
             {
                 isValid = false,
-                message = $"'{userLogin.S_CPF}' não foi encontrado!",
-                errorMessage = $"'{userLogin.S_CPF}' não foi encontrado!!"
+                message = $"{userLogin.S_CPF} não foi encontrado!",
+                errorMessage = $"{userLogin.S_CPF} não foi encontrado!"
             };
 
             try

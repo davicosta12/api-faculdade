@@ -1,10 +1,9 @@
-import { createContext, Dispatch, FunctionComponent, useReducer } from 'react';
+import { FunctionComponent } from 'react';
 import NavigationRoutes from './routes';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { ActionReducer, paramsReducer } from './reducers/paramsReducer';
-import { StateProvider } from './reducers/states/states';
+import { AppProvider } from './contexts/context';
 
 interface Props {
 }
@@ -12,10 +11,10 @@ interface Props {
 const App: FunctionComponent<Props> = (props) => {
 
   return (
-    <StateProvider>
+    <AppProvider>
       <NavigationRoutes />
       <ToastContainer />
-    </StateProvider>
+    </AppProvider>
   );
 }
 

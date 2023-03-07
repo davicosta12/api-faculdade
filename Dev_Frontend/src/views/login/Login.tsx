@@ -4,11 +4,11 @@ import './Login.css';
 import { Card, Input, Button, Typography, Spin } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import LoginState from '../../integrations/login-state';
-import AuthService, { saveActiveUser } from '../../services/AuthService/Auth';
+import AuthService from '../../services/AuthService/Auth';
 import AuthRequestDto from '../../services/AuthService/dto/AuthRestDto';
 import { toastError, toastOptions } from '../../misc/utils/utils';
-import { ActionTypes } from '../../reducers/paramsReducer';
-import { useStateValue } from '../../reducers/states/states';
+import { AppContext } from '../../contexts/context';
+import { Types } from '../../reducers/params/types';
 
 interface Props {
 
@@ -20,7 +20,7 @@ const Login: FunctionComponent<Props> = (props) => {
   const [userPassword, setUserPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [context, dispatch] = useStateValue<any>();
+  const { state, dispatch } = useContext(AppContext);
 
   const authService = new AuthService();
 
@@ -31,9 +31,11 @@ const Login: FunctionComponent<Props> = (props) => {
       const activeUser = JSON.stringify(authResponse.user);
       // saveActiveUser(activeUser);
       dispatch({
-        type: ActionTypes.SET_ACTIVE_USER,
+        type: Types.SET_ACTIVE_USER,
         payload: { ...authResponse.user }
       });
+
+      console.log(state.params.activeUser)
     }
     catch (err: any) {
       toast.error(toastError(err), toastOptions(toast));
