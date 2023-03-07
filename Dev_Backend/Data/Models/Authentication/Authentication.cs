@@ -32,4 +32,12 @@ namespace Dev_Backend.Data.Models.Authentication
         public string S_Senha { get; set; }
         public bool B_Tem_Senha_Temporaria { get; set; }
     }
+
+    public class UserNewPassword
+    {
+        [Required]
+        public string password { get; set; }
+        [Required]
+        public string newPassword { get; set; }
+    }
 }

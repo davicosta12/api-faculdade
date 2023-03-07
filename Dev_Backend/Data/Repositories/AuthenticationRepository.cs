@@ -14,15 +14,19 @@ namespace Dev_Backend.Data.Repositories
         public async Task<AuthenticationModel?> Authenticate(SignInUser userLogin)
         {
             string sqlHash = @"SELECT SHA2(@S_Senha, 512)";
-            string sql = @"SELECT I_Cod_Usuario, 
-                           C_Perfil, 
-                           S_Nome, 
-                           S_CPF, 
-                           S_Senha,
-                           B_E_Ativo, 
-                           B_Tem_Senha_Temporaria 
-                           FROM Usuario
-                           WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash;";
+            string sql = @" SELECT I_Cod_Usuario,
+                            C_Perfil,    
+                            S_Nome, 
+                            S_CPF, 
+                            S_RA, 
+                            C_Sexo,
+                            S_Nome_Mae, 
+                            B_E_Ativo, 
+                            S_Email, 
+                            S_Senha, 
+                            B_Tem_Senha_Temporaria
+                            FROM Usuario
+                            WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash;";
 
             userLogin.S_CPF = userLogin.S_CPF.Trim();
             userLogin.S_Senha = userLogin.S_Senha.Trim();
@@ -113,6 +117,49 @@ namespace Dev_Backend.Data.Repositories
             };
 
             return createUser;
+        }
+
+        public async Task<User> UserNewPassword(int I_Cod_Usuario, UserNewPassword userNewPassword)
+        {
+            string sqlMultiple = @" SELECT SHA2(@S_Senha, 512);
+
+                                SELECT I_Cod_Usuario,
+                                C_Perfil,    
+                                S_Nome, 
+                                S_CPF, 
+                                S_RA, 
+                                C_Sexo,
+                                S_Nome_Mae, 
+                                B_E_Ativo, 
+                                S_Email, 
+                                B_Tem_Senha_Temporaria
+                                FROM Usuario
+                                WHERE I_Cod_Usuario = @I_Cod_Usuario;";
+
+            string sql = @" UPDATE Usuario SET
+                            B_Tem_Senha_Temporaria = @B_Tem_Senha_Temporaria,
+                            S_Senha = @Senha_Hash
+                            WHERE I_Cod_Usuario = @I_Cod_Usuario;";
+
+            var result = await QueryMultipleAsync(sqlMultiple, new
+            {
+                @I_Cod_Usuario = I_Cod_Usuario,
+                @S_Senha = userNewPassword.newPassword.Trim()
+            });
+
+            var passwordHash = result.ReadFirstOrDefault<string>();
+            var userFound = result.ReadFirstOrDefault<User>();
+
+            await ExecuteAsync(sql, new
+            {
+                @I_Cod_Usuario = I_Cod_Usuario,
+                @Senha_Hash = passwordHash,
+                @B_Tem_Senha_Temporaria = 0
+            });
+
+            userFound.S_Senha = passwordHash;
+
+            return userFound;
         }
     }
 }
