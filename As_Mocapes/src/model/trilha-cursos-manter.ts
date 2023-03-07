@@ -1,0 +1,1 @@
+export type TrilhaCursosManter = 'Cursos' | 'Cursos_Inscricoes' | 'Cursos_Inscricoes_Inserir' | 'Cursos_Inscricoes_Alterar';
