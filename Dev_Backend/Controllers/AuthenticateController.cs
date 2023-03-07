@@ -4,6 +4,7 @@ using Dev_Backend.Data.Models.Authentication;
 using Dev_Backend.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Dev_Backend.Controllers
 {
@@ -99,6 +100,11 @@ namespace Dev_Backend.Controllers
 
         [HttpPut]
         [Route("novaSenha/{id}")]
+        [SwaggerOperation(
+            Summary = "Criar uma nova senha para o usuário",
+            Description =
+            @"ID: Id do usuário; 
+              Body: password -> senha; newPassword -> senha de confirmação")]
         [AllowAnonymous]
         public async Task<ActionResult<ResponseMessage>> UserNewPassword(int id, [FromBody] UserNewPassword userNewPassword)
         {

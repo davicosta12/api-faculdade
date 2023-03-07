@@ -64,6 +64,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 
     c.DocInclusionPredicate((name, api) => true);
+    c.EnableAnnotations();
 });
 
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
