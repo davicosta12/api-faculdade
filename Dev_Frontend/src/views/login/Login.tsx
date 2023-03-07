@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from 'react';
+import { FunctionComponent, useContext, useReducer, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import './Login.css';
 import { Card, Input, Button, Typography, Spin } from 'antd';
@@ -9,6 +9,7 @@ import AuthRequestDto from '../../services/AuthService/dto/AuthRestDto';
 import { toastError, toastOptions } from '../../misc/utils/utils';
 import { AppContext } from '../../contexts/context';
 import { Types } from '../../reducers/params/types';
+import MaskedInput from 'antd-mask-input';
 
 interface Props {
 
@@ -50,12 +51,12 @@ const Login: FunctionComponent<Props> = (props) => {
       <Card title="Entrar" className="login-card" >
         <div className="half-padding">
           <div className="half-padding">
-            <Input
+            <MaskedInput
+              title='dwadwad'
+              mask="000.000.000-00"
               value={userCPF}
-              placeholder="CPF"
-              maxLength={11}
               status={!userCPF ? "error" : ""}
-              onChange={(ev: any) => setUserCPF(ev.target.value)}
+              onChange={(ev: any) => setUserCPF(ev.unmaskedValue)}
             />
           </div>
           <div className="half-padding">
