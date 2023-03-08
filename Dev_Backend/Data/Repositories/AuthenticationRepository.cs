@@ -119,7 +119,7 @@ namespace Dev_Backend.Data.Repositories
             return createUser;
         }
 
-        public async Task<User> UserNewPassword(int I_Cod_Usuario, UserNewPassword userNewPassword)
+        public async Task<User> UserConfrimPassword(int I_Cod_Usuario, UserConfirmPassword userConfirmPassword)
         {
             string sqlMultiple = @" SELECT SHA2(@S_Senha, 512);
 
@@ -144,7 +144,7 @@ namespace Dev_Backend.Data.Repositories
             var result = await QueryMultipleAsync(sqlMultiple, new
             {
                 @I_Cod_Usuario = I_Cod_Usuario,
-                @S_Senha = userNewPassword.newPassword.Trim()
+                @S_Senha = userConfirmPassword.confirmPassword.Trim()
             });
 
             var passwordHash = result.ReadFirstOrDefault<string>();
