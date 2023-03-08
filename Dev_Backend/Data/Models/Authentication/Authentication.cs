@@ -33,11 +33,11 @@ namespace Dev_Backend.Data.Models.Authentication
         public bool B_Tem_Senha_Temporaria { get; set; }
     }
 
-    public class UserNewPassword
+    public class UserConfirmPassword
     {
         [Required]
         public string password { get; set; }
         [Required]
-        public string newPassword { get; set; }
+        public string confirmPassword { get; set; }
     }
 }

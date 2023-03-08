@@ -1,5 +1,5 @@
 const NovaSenhaState = {
-    SenhaNaoInformada: false,
+    SenhaNaoInformada: true,
     AvancarEstaCarregando: false,
 };
 

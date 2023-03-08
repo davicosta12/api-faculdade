@@ -1,4 +1,6 @@
+import GetUserDto from "../../UserService/dto/GetUserDto";
+
 export default interface AuthResponseDto {
-    user: any
+    user: GetUserDto,
     token: string,
 }

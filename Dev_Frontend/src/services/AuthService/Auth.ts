@@ -3,6 +3,8 @@ import HttpService from "../HttpService";
 import AuthRequestDto from "./dto/AuthRestDto";
 import AuthResponseDto from "./dto/AuthResponseDto";
 import SignUpUserDto from "./dto/SignUpUserDto";
+import UserConfirmPasswordDto from "./dto/UserConfirmPasswordDto";
+import { GenericResponseDto } from "../GenericDto/GenericResponseDto";
 
 export const isAuthenticated = () => localStorage.getItem(process.env.REACT_APP_TOKEN_KEY as string) !== null;
 export const userExist = () => localStorage.getItem(process.env.REACT_APP_ACTIVE_USER as string) !== null;
@@ -25,9 +27,17 @@ export default class AuthService extends HttpService {
     })
   }
 
-  registerUser(userRegister: SignUpUserDto): Promise<AuthResponseDto> {
+  registerUser(userRegister: SignUpUserDto): Promise<GenericResponseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().post(`/Authenticate/cadastrar`, userRegister)
+        .then(res => resolve(res.data))
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
+
+  changePassword(userId: number, userConfirmPassword: UserConfirmPasswordDto): Promise<GenericResponseDto> {
+    return new Promise((resolve, reject) => {
+      this.getApi().put(`/Authenticate/${userId}/novaSenha`, userConfirmPassword)
         .then(res => resolve(res.data))
         .catch((err: AxiosResponse<any>) => reject(err))
     })

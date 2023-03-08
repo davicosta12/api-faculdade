@@ -60,13 +60,13 @@ namespace Dev_Backend.Controllers
         [HttpPost]
         [Route("cadastrar")]
         [AllowAnonymous]
-        public async Task<ActionResult<SignUpUser>> UserRegister([FromBody] SignUpUser userRegister)
+        public async Task<ActionResult<ResponseMessage>> UserRegister([FromBody] SignUpUser userRegister)
         {
             var res = new ResponseMessage()
             {
-                isValid = false,
-                message = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.",
-                errorMessage = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF."
+                isValid = true,
+                message = $"Usuário '{userRegister.S_CPF}' criado com sucesso.",
+                requestBody = userRegister
             };
 
             try
@@ -78,12 +78,16 @@ namespace Dev_Backend.Controllers
 
                 if (userFound == null)
                 {
+                    res.isValid = false;
+                    res.message = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.";
+                    res.errorMessage = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.";
                     return BadRequest(res);
                 }
 
                 var createUser = await authenticationRepository.UserRegister(userRegister);
+                res.responseBody = createUser;
 
-                return Ok(createUser);
+                return Ok(res);
             }
             catch (Exception e)
             {
@@ -99,40 +103,38 @@ namespace Dev_Backend.Controllers
         }
 
         [HttpPut]
-        [Route("novaSenha/{id}")]
+        [Route("{userId}/novaSenha")]
         [SwaggerOperation(
             Summary = "Criar uma nova senha para o usuário",
             Description =
-            @"ID: Id do usuário; 
-              Body: password -> senha; newPassword -> senha de confirmação")]
+            @"Body: password -> senha; newPassword -> senha de confirmação")]
         [AllowAnonymous]
-        public async Task<ActionResult<ResponseMessage>> UserNewPassword(int id, [FromBody] UserNewPassword userNewPassword)
+        public async Task<ActionResult<ResponseMessage>> UserConfirmPassword(int userId, [FromBody] UserConfirmPassword userConfirmPassword)
         {
             var res = new ResponseMessage()
             {
                 isValid = true,
                 message = $"A senha foi alterada com sucesso.",
-                errorMessage = $"A senha foi alterada com sucesso",
-                requestBody = userNewPassword
+                requestBody = userConfirmPassword
             };
 
-            if (userNewPassword.password == null || userNewPassword.newPassword == null)
+            if (userConfirmPassword.password == null || userConfirmPassword.confirmPassword == null)
             {
                 res.isValid = false;
-                res.message = $"A senha e a nova senha são obrigatória.";
-                res.errorMessage = $"A senha e a nova senha são obrigatória.";
+                res.message = $"A nova senha é um campo obrigatório.";
+                res.errorMessage = $"A nova senha é um campo obrigatório.";
                 return BadRequest(res);
             }
 
-            if (String.Equals(userNewPassword.password, userNewPassword.newPassword) == false)
+            if (String.Equals(userConfirmPassword.password, userConfirmPassword.confirmPassword) == false)
             {
                 res.isValid = false;
-                res.message = $"A senha não é igual a nova senha.";
-                res.errorMessage = $"A senha não é igual a nova senha.";
+                res.message = $"As senhas não conferem.";
+                res.errorMessage = $"As senhas não conferem.";
                 return BadRequest(res);
             }
 
-            if (userNewPassword.password.Length < 8 || userNewPassword.newPassword.Length < 8)
+            if (userConfirmPassword.password.Length < 8 || userConfirmPassword.confirmPassword.Length < 8)
             {
                 res.isValid = false;
                 res.message = $"A senha deve conter no mínimo 8 caracteres";
@@ -145,7 +147,7 @@ namespace Dev_Backend.Controllers
                 var authenticationRepository = new AuthenticationRepository(_dbContext);
                 var userRepository = new UserRepository(_dbContext);
 
-                var userFound = await userRepository.GetUserById(id);
+                var userFound = await userRepository.GetUserById(userId);
 
                 if (userFound == null)
                 {
@@ -155,7 +157,7 @@ namespace Dev_Backend.Controllers
                     return BadRequest(res);
                 }
 
-                var updateUser = await authenticationRepository.UserNewPassword(id, userNewPassword);
+                var updateUser = await authenticationRepository.UserConfrimPassword(userId, userConfirmPassword);
                 res.responseBody = updateUser;
 
                 return Ok(res);
