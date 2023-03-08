@@ -1,6 +1,6 @@
 using Dev_Backend.Data;
 using Dev_Backend.Data.Models;
-using Dev_Backend.Data.Models.Departments;
+using Dev_Backend.Data.Models.Courses;
 using Dev_Backend.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,26 +8,26 @@ namespace my_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(GroupName = "Departments")]
-    public class DepartmentController : ControllerBase
+    [ApiExplorerSettings(GroupName = "Courses")]
+    public class CourseController : ControllerBase
     {
         private readonly DbContext _dbContext;
 
-        public DepartmentController(DbContext dbContext)
+        public CourseController(DbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Department>>> GetDepartments()
+        public async Task<ActionResult<List<Course>>> GetCourses([FromQuery] int currentPageNumber = 0, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var departmentRepository = new DepartmentRepository(_dbContext);
+                var courseRepository = new CourseRepository(_dbContext);
 
-                var departments = await departmentRepository.GetDepartments();
+                var courses = await courseRepository.GetCourses(currentPageNumber, pageSize);
 
-                return Ok(departments);
+                return Ok(courses);
             }
             catch (Exception e)
             {
@@ -43,27 +43,27 @@ namespace my_api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Department>> GetDepartment(int id)
+        public async Task<ActionResult<Course>> GetCourse(int id)
         {
             var res = new ResponseMessage()
             {
                 isValid = false,
-                message = $"Id - ({id}) do departmento não foi encontrado!",
-                errorMessage = $"Id - ({id}) do departmento não foi encontrado!"
+                message = $"Id - ({id}) do curso não foi encontrado!",
+                errorMessage = $"Id - ({id}) do curso não foi encontrado!"
             };
 
             try
             {
-                var departmentRepository = new DepartmentRepository(_dbContext);
+                var courseRepository = new CourseRepository(_dbContext);
 
-                var departmentFound = await departmentRepository.GetDepartment(id);
+                var courseFound = await courseRepository.GetCourse(id);
 
-                if (departmentFound == null)
+                if (courseFound == null)
                 {
                     return NotFound(res);
                 }
 
-                return Ok(departmentFound);
+                return Ok(courseFound);
             }
             catch (Exception e)
             {
@@ -79,15 +79,23 @@ namespace my_api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Department>> CreateDepartment([FromBody] PostDepartment department)
+        public async Task<ActionResult<ResponseMessage>> CreateCourse([FromBody] PostCourse course)
         {
+            var res = new ResponseMessage()
+            {
+                isValid = true,
+                message = $"Curso - {course.S_Nome} adicionado com sucesso",
+                requestBody = course
+            };
+
             try
             {
-                var departmentRepository = new DepartmentRepository(_dbContext);
+                var courseRepository = new CourseRepository(_dbContext);
 
-                var departmentCreated = await departmentRepository.CreateDepartment(department);
+                var courseCreated = await courseRepository.CreateCourse(course);
+                res.responseBody = courseCreated;
 
-                return Ok(departmentCreated);
+                return Ok(res);
             }
             catch (Exception e)
             {
@@ -103,30 +111,33 @@ namespace my_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Department>> UpdateDepartment(int id, [FromBody] PostDepartment department)
+        public async Task<ActionResult<ResponseMessage>> UpdateCourse(int id, [FromBody] PostCourse course)
         {
             var res = new ResponseMessage()
             {
-                isValid = false,
-                message = $"Id - ({id}) do departmento não foi encontrado!",
-                errorMessage = $"Id - ({id}) do departmento não foi encontrado!",
-                requestBody = department
+                isValid = true,
+                message = $"Curso - {course.S_Nome} alterado com sucesso",
+                requestBody = course
             };
 
             try
             {
-                var departmentRepository = new DepartmentRepository(_dbContext);
+                var courseRepository = new CourseRepository(_dbContext);
 
-                var departmentFound = await departmentRepository.GetDepartment(id);
+                var courseFound = await courseRepository.GetCourse(id);
 
-                if (departmentFound == null)
+                if (courseFound == null)
                 {
+                    res.isValid = false;
+                    res.message = $"Id - ({id}) do curso não foi encontrado!";
+                    res.errorMessage = $"Id - ({id}) do curso não foi encontrado!";
                     return NotFound(res);
                 }
 
-                var departmentUpdated = await departmentRepository.UpdateDepartment(id, department);
+                var courseUpdated = await courseRepository.UpdateCourse(id, course);
+                res.responseBody = courseUpdated;
 
-                return Ok(departmentUpdated);
+                return Ok(res);
             }
             catch (Exception e)
             {
@@ -143,31 +154,29 @@ namespace my_api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteDepartment(int id)
+        public async Task<ActionResult<ResponseMessage>> DeleteCourse(int id)
         {
             var res = new ResponseMessage()
             {
-                isValid = false,
-                message = $"Id - ({id}) do departmento não foi encontrado!",
-                errorMessage = $"Id - ({id}) do departmento não foi encontrado!",
+                isValid = true,
+                message = $"Curso removido com sucesso",
             };
 
             try
             {
-                var departmentRepository = new DepartmentRepository(_dbContext);
+                var courseRepository = new CourseRepository(_dbContext);
 
-                var departmentFound = await departmentRepository.GetDepartment(id);
+                var courseFound = await courseRepository.GetCourse(id);
 
-                if (departmentFound == null)
+                if (courseFound == null)
                 {
+                    res.isValid = false;
+                    res.message = $"Id - ({id}) do curso não foi encontrado!";
+                    res.errorMessage = $"Id - ({id}) do curso não foi encontrado!";
                     return NotFound(res);
                 }
 
-                await departmentRepository.DeleteDepartment(id);
-
-                res.isValid = true;
-                res.message = $"Departmento - ({id}) removido com sucesso";
-                res.errorMessage = null;
+                await courseRepository.DeleteCourse(id);
 
                 return Ok(res);
             }
