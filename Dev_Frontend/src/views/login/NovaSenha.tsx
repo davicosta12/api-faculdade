@@ -63,11 +63,11 @@ function NovaSenha() {
           </div>
           {(isEmptyFiled) &&
             <div className="half-padding">
-              <Typography.Text type="danger">A senha é obrigatória</Typography.Text>
+              <Typography.Text type="danger">As senhas são obrigatórias</Typography.Text>
             </div>}
           {(isIncorrectLenghtCharacters) &&
             <div className="half-padding">
-              <Typography.Text type="danger">A senha deve conter no mínimo 8 caracteres</Typography.Text>
+              <Typography.Text type="danger">As senhas devem conter no mínimo 8 caracteres</Typography.Text>
             </div>}
           {(passwordsNotMatch) &&
             <div className="half-padding">
