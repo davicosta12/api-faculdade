@@ -1,6 +1,7 @@
 using Dev_Backend.Data;
 using Dev_Backend.Data.Models;
 using Dev_Backend.Data.Models.Courses;
+using Dev_Backend.Data.Models.GenericPagings;
 using Dev_Backend.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ namespace my_api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Course>>> GetCourses([FromQuery] int currentPageNumber = 0, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<GenericPaging<Course>>> GetCourses([FromQuery] int currentPageNumber = 0, [FromQuery] int pageSize = 10)
         {
             try
             {
