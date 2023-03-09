@@ -20,13 +20,30 @@ namespace my_api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<GenericPaging<Course>>> GetCourses([FromQuery] int currentPageNumber = 0, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<GenericPaging<Course>>> GetCourses(
+            [FromQuery] string? courseName = null,
+            [FromQuery] int? semesterLimitQtdeExact = null,
+            [FromQuery] int? semesterLimitQtdeDe = null,
+            [FromQuery] int? semesterLimitQtdeAte = null,
+            [FromQuery] bool? isDescCourseName = null,
+            [FromQuery] bool? isDescSemesterLimitQtde = null,
+            [FromQuery] int currentPageNumber = 0,
+            [FromQuery] int pageSize = 10)
         {
             try
             {
                 var courseRepository = new CourseRepository(_dbContext);
 
-                var courses = await courseRepository.GetCourses(currentPageNumber, pageSize);
+                var courses = await courseRepository.GetCourses(
+                    courseName,
+                    semesterLimitQtdeExact,
+                    semesterLimitQtdeDe,
+                    semesterLimitQtdeAte,
+                    isDescCourseName,
+                    isDescSemesterLimitQtde,
+                    currentPageNumber,
+                    pageSize
+                    );
 
                 return Ok(courses);
             }

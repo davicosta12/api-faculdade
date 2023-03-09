@@ -10,8 +10,34 @@ namespace Dev_Backend.Data.Repositories
 
         }
 
-        public async Task<GenericPaging<Course>> GetCourses(int currentPageNumber = 0, int pageSize = 0)
+        public async Task<GenericPaging<Course>> GetCourses(
+            string? courseName = null,
+            int? semesterLimitQtdeExact = null,
+            int? semesterLimitQtdeDe = null,
+            int? semesterLimitQtdeAte = null,
+            bool? isDescCourseName = null,
+            bool? isDescSemesterLimitQtde = null,
+            int currentPageNumber = 0,
+            int pageSize = 10)
         {
+            string where = "WHERE 1=1";
+            string orderBy = "ORDER BY c.I_Cod_Curso ASC";
+            string sqlSemesterLimitQtdeDe = semesterLimitQtdeDe != null ? " AND c.I_Qtd_Limite_Semestres >= @I_Qtd_Limite_SemestresDe" : "";
+            string sqlSemesterLimitQtdeAte = semesterLimitQtdeAte != null ? " AND c.I_Qtd_Limite_Semestres <= @I_Qtd_Limite_SemestresAte" : "";
+
+            if (String.IsNullOrEmpty(courseName) == false)
+                where += $" AND c.S_Nome=@S_Nome";
+
+            if (semesterLimitQtdeExact != null)
+                where += $" AND c.I_Qtd_Limite_Semestres=@I_Qtd_Limite_Semestres";
+
+            where += $"{sqlSemesterLimitQtdeDe}{sqlSemesterLimitQtdeAte}";
+
+            if (isDescCourseName != null)
+                orderBy = isDescCourseName == false ? "ORDER BY c.S_Nome ASC" : "ORDER BY c.S_Nome DESC";
+            else if (isDescSemesterLimitQtde != null)
+                orderBy = isDescSemesterLimitQtde == false ? "ORDER BY c.I_Qtd_Limite_Semestres ASC" : "ORDER BY c.I_Qtd_Limite_Semestres DESC";
+
             int maxPageSize = 50;
 
             pageSize = pageSize < maxPageSize ? pageSize : maxPageSize;
@@ -19,13 +45,19 @@ namespace Dev_Backend.Data.Repositories
             int skip = currentPageNumber * pageSize;
             int take = pageSize;
 
-            string sql = @" SELECT COUNT(*) FROM Curso;
+            string sql = @$"SELECT COUNT(*) FROM Curso;
+
                             SELECT * FROM Curso c 
-                            ORDER BY I_Cod_Curso ASC  
+                            {where}
+                            {orderBy} 
                             LIMIT @_skip, @_take";
 
             var reader = await QueryMultipleAsync(sql, new
             {
+                @S_Nome = courseName,
+                @I_Qtd_Limite_Semestres = semesterLimitQtdeExact,
+                @I_Qtd_Limite_SemestresDe = semesterLimitQtdeDe,
+                @I_Qtd_Limite_SemestresAte = semesterLimitQtdeAte,
                 @_skip = skip,
                 @_take = take
             });
