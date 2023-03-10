@@ -9,7 +9,7 @@ namespace my_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(GroupName = "Courses")]
+    [ApiExplorerSettings(GroupName = "Course")]
     public class CourseController : ControllerBase
     {
         private readonly DbContext _dbContext;
@@ -19,28 +19,56 @@ namespace my_api.Controllers
             _dbContext = dbContext;
         }
 
+        /// <remarks>
+        /// semesterLimitQtdeType: exact para filtrar o semestre exato ou interval para filtrar um intervalo de semestres.
+        ///
+        /// semesterLimitQtdeDe: caso o semesterLimitQtdeType for exact, passar o valor somente nesse campo
+        ///
+        /// caso o semesterLimitQtdeType for interval, passar o valor de intervalo nos campos semesterLimitQtdeDe e semesterLimitQtdeAte.
+        ///
+        /// fieldOrderLabel: digitar o nome do campo que queremos ordenar.
+        ///
+        /// isDesc: se deixarmos como true o campo, o fieldOrderLabel será ordem decrescente caso contrário crescente.
+        /// </remarks>
+        /// <param name="semesterLimitQtdeType">digite exact ou interval</param>
+        /// <param name="fieldOrderLabel">nome do campo</param>
+        /// <returns>A string status</returns>
+
         [HttpGet]
         public async Task<ActionResult<GenericPaging<Course>>> GetCourses(
             [FromQuery] string? courseName = null,
-            [FromQuery] int? semesterLimitQtdeExact = null,
+            [FromQuery] string? semesterLimitQtdeType = null,
             [FromQuery] int? semesterLimitQtdeDe = null,
             [FromQuery] int? semesterLimitQtdeAte = null,
-            [FromQuery] bool? isDescCourseName = null,
-            [FromQuery] bool? isDescSemesterLimitQtde = null,
+            [FromQuery] string? fieldOrderLabel = null,
+            [FromQuery] bool? isDesc = null,
             [FromQuery] int currentPageNumber = 0,
             [FromQuery] int pageSize = 10)
         {
+
             try
             {
+                if (String.IsNullOrEmpty(semesterLimitQtdeType) == false)
+                {
+                    if ((new List<string> { "exact", "interval" }).Any(type => type == semesterLimitQtdeType.Trim().ToLower()) == false)
+                    {
+                        var response = new ResponseMessage();
+                        response.isValid = false;
+                        response.errorMessage = $"semesterLimitQtdeType aceita somente dois nomes exact ou interval.";
+                        response.message = $"semesterLimitQtdeType aceita somente dois nomes exact ou interval.";
+                        return BadRequest(response);
+                    }
+                }
+
                 var courseRepository = new CourseRepository(_dbContext);
 
                 var courses = await courseRepository.GetCourses(
                     courseName,
-                    semesterLimitQtdeExact,
+                    semesterLimitQtdeType,
                     semesterLimitQtdeDe,
                     semesterLimitQtdeAte,
-                    isDescCourseName,
-                    isDescSemesterLimitQtde,
+                    fieldOrderLabel,
+                    isDesc,
                     currentPageNumber,
                     pageSize
                     );

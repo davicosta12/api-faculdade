@@ -10,6 +10,7 @@ namespace Dev_Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "Token")]
     public class AuthenticateController : ControllerBase
     {
         private readonly DbContext _dbContext;
@@ -102,12 +103,23 @@ namespace Dev_Backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Criar uma nova senha para o usuário.
+        ///
+        /// </summary>
+        /// <remarks>
+        /// Path: userId -> Id do usuário
+        ///
+        /// Body: 
+        ///
+        /// password -> senha;
+        ///
+        /// newPassword -> senha de confirmação.
+        /// </remarks>
+        /// <returns>A string status</returns>
+
         [HttpPut]
         [Route("{userId}/novaSenha")]
-        [SwaggerOperation(
-            Summary = "Criar uma nova senha para o usuário",
-            Description =
-            @"Body: password -> senha; newPassword -> senha de confirmação")]
         [AllowAnonymous]
         public async Task<ActionResult<ResponseMessage>> UserConfirmPassword(int userId, [FromBody] UserConfirmPassword userConfirmPassword)
         {

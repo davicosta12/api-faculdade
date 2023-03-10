@@ -1,5 +1,6 @@
 using Dev_Backend.Data.Models.Courses;
 using Dev_Backend.Data.Models.GenericPagings;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Dev_Backend.Data.Repositories
 {
@@ -11,32 +12,48 @@ namespace Dev_Backend.Data.Repositories
         }
 
         public async Task<GenericPaging<Course>> GetCourses(
-            string? courseName = null,
-            int? semesterLimitQtdeExact = null,
-            int? semesterLimitQtdeDe = null,
-            int? semesterLimitQtdeAte = null,
-            bool? isDescCourseName = null,
-            bool? isDescSemesterLimitQtde = null,
-            int currentPageNumber = 0,
-            int pageSize = 10)
+                string? courseName = null,
+                string? semesterLimitQtdeType = null,
+                int? semesterLimitQtdeDe = null,
+                int? semesterLimitQtdeAte = null,
+                string? fieldOrderLabel = null,
+                bool? isDesc = null,
+                int currentPageNumber = 0,
+                int pageSize = 10)
         {
             string where = "WHERE 1=1";
-            string orderBy = "ORDER BY c.I_Cod_Curso ASC";
-            string sqlSemesterLimitQtdeDe = semesterLimitQtdeDe != null ? " AND c.I_Qtd_Limite_Semestres >= @I_Qtd_Limite_SemestresDe" : "";
-            string sqlSemesterLimitQtdeAte = semesterLimitQtdeAte != null ? " AND c.I_Qtd_Limite_Semestres <= @I_Qtd_Limite_SemestresAte" : "";
+            string orderBy = "";
 
             if (String.IsNullOrEmpty(courseName) == false)
                 where += $" AND c.S_Nome=@S_Nome";
 
-            if (semesterLimitQtdeExact != null)
-                where += $" AND c.I_Qtd_Limite_Semestres=@I_Qtd_Limite_Semestres";
+            if (String.IsNullOrEmpty(semesterLimitQtdeType) == false)
+            {
+                switch (semesterLimitQtdeType.Trim().ToLower())
+                {
+                    case "exact":
+                        where += $" AND c.I_Qtd_Limite_Semestres=@I_Qtd_Limite_Semestres";
+                        break;
+                    case "interval":
+                        string sqlSemesterLimitQtdeDe = semesterLimitQtdeDe != null
+                            ? " AND c.I_Qtd_Limite_Semestres >= @I_Qtd_Limite_SemestresDe"
+                            : "";
 
-            where += $"{sqlSemesterLimitQtdeDe}{sqlSemesterLimitQtdeAte}";
+                        string sqlSemesterLimitQtdeAte = semesterLimitQtdeAte != null
+                            ? " AND c.I_Qtd_Limite_Semestres <= @I_Qtd_Limite_SemestresAte"
+                            : "";
 
-            if (isDescCourseName != null)
-                orderBy = isDescCourseName == false ? "ORDER BY c.S_Nome ASC" : "ORDER BY c.S_Nome DESC";
-            else if (isDescSemesterLimitQtde != null)
-                orderBy = isDescSemesterLimitQtde == false ? "ORDER BY c.I_Qtd_Limite_Semestres ASC" : "ORDER BY c.I_Qtd_Limite_Semestres DESC";
+                        where += $"{sqlSemesterLimitQtdeDe}{sqlSemesterLimitQtdeAte}";
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (String.IsNullOrEmpty(fieldOrderLabel) == false)
+            {
+                orderBy = isDesc == false ? $"ORDER BY c.{fieldOrderLabel} ASC" : $"ORDER BY c.{fieldOrderLabel} DESC";
+            }
 
             int maxPageSize = 50;
 
@@ -55,7 +72,7 @@ namespace Dev_Backend.Data.Repositories
             var reader = await QueryMultipleAsync(sql, new
             {
                 @S_Nome = courseName,
-                @I_Qtd_Limite_Semestres = semesterLimitQtdeExact,
+                @I_Qtd_Limite_Semestres = semesterLimitQtdeDe,
                 @I_Qtd_Limite_SemestresDe = semesterLimitQtdeDe,
                 @I_Qtd_Limite_SemestresAte = semesterLimitQtdeAte,
                 @_skip = skip,
