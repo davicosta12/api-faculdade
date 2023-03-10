@@ -1,6 +1,5 @@
 using Dev_Backend.Data.Models.Courses;
 using Dev_Backend.Data.Models.GenericPagings;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace Dev_Backend.Data.Repositories
 {
