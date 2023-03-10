@@ -18,6 +18,7 @@ const initialState: InitialStateType = {
       s_Senha: '',
       b_Tem_Senha_Temporaria: false
     },
+    courses: [],
   },
 }
 
