@@ -12,34 +12,22 @@ import GetCourseDto from '../../services/CourseService/dto/GetCourseDto';
 import GenericPagingDto from '../../services/GenericDto/GenericPagingDto';
 import { toast } from 'react-toastify';
 import { toastError, toastOptions } from '../../misc/utils/utils';
-import { FilterValue, SorterResult } from 'antd/es/table/interface';
-
-interface TableParams {
-  pagination?: TablePaginationConfig;
-  sortField?: string;
-  sortOrder?: string;
-  filters?: Record<string, FilterValue>;
-}
+import DataTable from '../../_commons/DataTable/DataTable';
 
 function CursosIndex() {
 
   const [courseResult, setCourseResult] = useState({} as GenericPagingDto<GetCourseDto>);
   const [filterParams, setFilterParams] = useState<CourseFilterParamsDto>(new CourseFilterParamsDto());
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
   const possiveisFiltros = LitColunaCursoMaker.Todos.map(x => x.descricao);
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
   }
-  const [tipoLimiteSemestresEscolhido, setTipoLimiteSemestresEscolhido] = useState('exact');
   const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: 1,
-      pageSize: 5,
-    },
-  });
 
   // const { state, dispatch } = useContext(AppContext);
 
@@ -49,22 +37,13 @@ function CursosIndex() {
     getCourses();
   }, []);
 
-  useEffect(() => {
-    getCourses();
-  }, [tableParams.pagination?.current, tableParams.pagination?.pageSize]);
-
-  const getCourses = async () => {
+  const getCourses = async (_page: number = page, _perPage: number = perPage) => {
+    setPage(_page);
+    setPerPage(_perPage);
     setIsLoading(true);
     try {
-      const _courseResult = await courseService.getCourses(filterParams, tableParams.pagination?.current, tableParams.pagination?.pageSize);
+      const _courseResult = await courseService.getCourses(filterParams, _page, _perPage);
       setCourseResult(_courseResult);
-      setTableParams({
-        ...tableParams,
-        pagination: {
-          ...tableParams.pagination,
-          total: _courseResult.paging.totalCount,
-        },
-      });
     }
     catch (err: any) {
       toast.error(toastError(err), toastOptions(toast));
@@ -74,23 +53,20 @@ function CursosIndex() {
     }
   }
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    console.log(pagination)
-    setTableParams({
-      pagination,
-    });
-
-    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setCourseResult({} as GenericPagingDto<GetCourseDto>);
-    }
-  };
-
   const handleCheckAvancado = (tag: string, checked: boolean) => {
     const nextSelectedTags = checked
       ? [...selectedFiltros, tag]
       : selectedFiltros.filter((t) => t !== tag);
     setSelectedFiltros(nextSelectedTags);
   };
+
+  const handleSearch = () => {
+    getCourses();
+  }
+
+  const handleChange = (ev: any) => {
+    setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
+  }
 
   // Ordenaçao
   let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
@@ -141,9 +117,10 @@ function CursosIndex() {
         </div>
 
         {/* Pesquisa */}
-        {!estaMostrandoFiltrosAvancados && <div className='half-padding'>
-          <Input placeholder="Termos" prefix={<SearchOutlined />} />
-        </div>}
+        {!estaMostrandoFiltrosAvancados &&
+          <div className='half-padding'>
+            <Input placeholder="Termos" prefix={<SearchOutlined />} />
+          </div>}
         <div className='half-padding'>
           <Collapse
             onChange={handleChangeActivePanels}
@@ -162,9 +139,15 @@ function CursosIndex() {
                     </Tag.CheckableTag>
                   ))}
                 </div>
-                {selectedFiltros.includes(LitColunaCursoMaker.Nome.descricao) && <div className="half-padding">
-                  <Input placeholder="Nome" />
-                </div>}
+                {selectedFiltros.includes(LitColunaCursoMaker.Nome.descricao) &&
+                  <div className="half-padding">
+                    <Input
+                      name='courseName'
+                      value={filterParams.courseName}
+                      placeholder="Nome"
+                      onChange={handleChange}
+                    />
+                  </div>}
                 {selectedFiltros.includes(LitColunaCursoMaker.QtdLimiteSemestres.descricao) && <div className="half-padding">
                   <div className="cursos-index-filtro-avancado">
                     <div className="half-padding">
@@ -172,26 +155,41 @@ function CursosIndex() {
                     </div>
                     <div className='half-padding'>
                       <Select
-                        defaultValue=""
                         style={{ width: 160 }}
                         options={[
                           { value: 'exact', label: 'Exato' },
                           { value: 'interval', label: 'Intervalo' },
                         ]}
-                        onChange={(value: string) => setTipoLimiteSemestresEscolhido(value)}
-                        value={tipoLimiteSemestresEscolhido}
+                        onChange={(value: string) => setFilterParams({ ...filterParams, 'semesterLimitQtdeType': value })}
+                        value={filterParams.semesterLimitQtdeType}
                       />
                     </div>
                   </div>
                   <div className="cursos-index-filtro-avancado">
                     <div className="half-padding">
-                      {tipoLimiteSemestresEscolhido == 'exact' ?
-                        <InputNumber placeholder="" /> :
-                        <InputNumber placeholder="De" />}
+                      {filterParams.semesterLimitQtdeType == 'exact' ?
+                        <InputNumber
+                          name='semesterLimitQtdeDe'
+                          placeholder=""
+                          value={filterParams.semesterLimitQtdeDe}
+                          onChange={handleChange}
+                        /> :
+                        <InputNumber
+                          name='semesterLimitQtdeDe'
+                          placeholder="De"
+                          value={filterParams.semesterLimitQtdeDe}
+                          onChange={handleChange}
+                        />}
                     </div>
-                    {tipoLimiteSemestresEscolhido != 'exact' && <div className='half-padding'>
-                      <InputNumber placeholder="Até" />
-                    </div>}
+                    {filterParams.semesterLimitQtdeType != 'exact' &&
+                      <div className='half-padding'>
+                        <InputNumber
+                          name='semesterLimitQtdeAte'
+                          placeholder="Até"
+                          value={filterParams.semesterLimitQtdeAte}
+                          onChange={handleChange}
+                        />
+                      </div>}
                   </div>
                 </div>}
               </div>
@@ -206,15 +204,23 @@ function CursosIndex() {
           </div>
           <div className='half-padding'>
             <Select
-              defaultValue=""
               style={{ width: 256 }}
               options={possiveisOrdenacoes}
+              onChange={(value: string) => setFilterParams({ ...filterParams, 'fieldOrderLabel': value })}
+              value={filterParams.fieldOrderLabel}
             />
           </div>
         </div>
         <div className='agrupar-horizontalmente'>
           <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<SearchOutlined />}>Pesquisar</Button>
+            <Button
+              type="primary"
+              shape="round"
+              icon={<SearchOutlined />}
+              onClick={handleSearch}
+            >
+              Pesquisar
+            </Button>
           </div>
           <div className='half-padding'>
             <Button type="primary" shape="round" icon={<PlusOutlined />}>Inserir...</Button>
@@ -224,13 +230,15 @@ function CursosIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <Table
-          rowKey={(course) => course.i_Cod_Curso}
+        <DataTable
+          handleRowKey={(course: any) => course.i_Cod_Curso}
           dataSource={courseResult.result}
-          pagination={tableParams.pagination}
           columns={columns}
-          loading={isLoading}
-          onChange={handleTableChange}
+          getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
+          setDataResult={setCourseResult}
+          totalCount={courseResult.paging?.totalCount}
+          pagination
+          isLoading={isLoading}
         />
 
       </div>
