@@ -10,11 +10,24 @@ export default class CourseService extends HttpService {
     let query: string = '';
 
     if (filterParams?.courseName) query += `courseName=${filterParams.courseName}&`;
-    if (filterParams?.semesterLimitQtdeType) query += `semesterLimitQtdeType=${filterParams.semesterLimitQtdeType}&`;
+    if (filterParams?.semesterLimitQtdeExact) query += `semesterLimitQtdeExact=${filterParams.semesterLimitQtdeExact}&`;
     if (filterParams?.semesterLimitQtdeDe) query += `semesterLimitQtdeDe=${filterParams.semesterLimitQtdeDe}&`;
     if (filterParams?.semesterLimitQtdeAte) query += `semesterLimitQtdeAte=${filterParams.semesterLimitQtdeAte}&`;
-    if (filterParams?.fieldOrderLabel) query += `fieldOrderLabel=${filterParams.fieldOrderLabel}&`;
-    if (filterParams?.isDesc || filterParams?.isDesc == false) query += `isDesc=${filterParams.isDesc}&`;
+    if (filterParams?.fieldOrderLabel) {
+        const split = filterParams?.fieldOrderLabel.split('--');
+        const _value = split[0].trim();
+        const _orderBy = split[1].trim();
+  
+        switch (_orderBy) {
+          case 'asc':
+            query += `fieldOrderLabel=${_value}&isDesc=${false}&`
+            break;
+          case 'desc':
+            query += `fieldOrderLabel=${_value}&isDesc=${true}&`
+            break;
+          default: break;
+        }   
+    }
 
     query += `currentPageNumber=${currentPageNumber - 1}&`;
     query += `pageSize=${pageSize}`;

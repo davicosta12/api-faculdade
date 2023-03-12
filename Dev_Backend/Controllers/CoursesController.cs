@@ -1,8 +1,10 @@
+using Dev_Backend.Bussiness.API;
+using Dev_Backend.Bussiness.API.GenericPagings;
 using Dev_Backend.Data;
 using Dev_Backend.Data.Models;
 using Dev_Backend.Data.Models.Courses;
-using Dev_Backend.Data.Models.GenericPagings;
 using Dev_Backend.Data.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace my_api.Controllers
@@ -20,58 +22,26 @@ namespace my_api.Controllers
         }
 
         /// <remarks>
-        /// semesterLimitQtdeType: exact para filtrar o semestre exato ou interval para filtrar um intervalo de semestres.
-        ///
-        /// semesterLimitQtdeDe: caso o semesterLimitQtdeType for exact, passar o valor somente nesse campo
-        ///
-        /// caso o semesterLimitQtdeType for interval, passar o valor de intervalo nos campos semesterLimitQtdeDe e semesterLimitQtdeAte.
-        ///
         /// fieldOrderLabel: digitar o nome do campo que queremos ordenar.
         ///
         /// isDesc: se deixarmos como true o campo, o fieldOrderLabel será ordem decrescente caso contrário crescente.
         /// </remarks>
-        /// <param name="semesterLimitQtdeType">digite exact ou interval</param>
         /// <param name="fieldOrderLabel">nome do campo</param>
         /// <returns>A string status</returns>
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<GenericPaging<Course>>> GetCourses(
-            [FromQuery] string? courseName = null,
-            [FromQuery] string? semesterLimitQtdeType = null,
-            [FromQuery] int? semesterLimitQtdeDe = null,
-            [FromQuery] int? semesterLimitQtdeAte = null,
-            [FromQuery] string? fieldOrderLabel = null,
-            [FromQuery] bool? isDesc = null,
-            [FromQuery] int currentPageNumber = 0,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] GetCourseFilterPaging filterParams,
+           int? currentPageNumber = 0, 
+           int? pageSize = 5
+        )
         {
-
             try
             {
-                if (String.IsNullOrEmpty(semesterLimitQtdeType) == false)
-                {
-                    if ((new List<string> { "exact", "interval" }).Any(type => type == semesterLimitQtdeType.Trim().ToLower()) == false)
-                    {
-                        var response = new ResponseMessage();
-                        response.isValid = false;
-                        response.errorMessage = $"semesterLimitQtdeType aceita somente dois nomes exact ou interval.";
-                        response.message = $"semesterLimitQtdeType aceita somente dois nomes exact ou interval.";
-                        return BadRequest(response);
-                    }
-                }
-
                 var courseRepository = new CourseRepository(_dbContext);
 
-                var courses = await courseRepository.GetCourses(
-                    courseName,
-                    semesterLimitQtdeType,
-                    semesterLimitQtdeDe,
-                    semesterLimitQtdeAte,
-                    fieldOrderLabel,
-                    isDesc,
-                    currentPageNumber,
-                    pageSize
-                    );
+                var courses = await courseRepository.GetCourses(filterParams, currentPageNumber, pageSize);
 
                 return Ok(courses);
             }

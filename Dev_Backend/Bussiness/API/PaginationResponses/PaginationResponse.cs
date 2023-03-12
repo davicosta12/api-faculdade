@@ -1,15 +1,15 @@
-namespace Dev_Backend.Data.Models.PaginationResponses
+namespace Dev_Backend.Bussiness.API.PaginationResponses
 {
     public class PaginationResponse
     {
         public int TotalCount { get; set; }
-        public int CurrentPageNumber { get; set; }
+        public int? CurrentPageNumber { get; set; }
         public int TotalPages { get; set; }
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
         public bool HasPreviousPage { get; set; }
         public bool HasNextPage { get; set; }
 
-        public PaginationResponse(int totalCount, int currentPageNumber, int pageSize)
+        public PaginationResponse(int totalCount, int? currentPageNumber, int? pageSize)
         {
             TotalCount = totalCount;
             CurrentPageNumber = currentPageNumber;

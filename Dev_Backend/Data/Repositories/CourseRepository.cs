@@ -1,5 +1,7 @@
+using Dev_Backend.Bussiness.API;
+using Dev_Backend.Bussiness.API.GenericPagings;
 using Dev_Backend.Data.Models.Courses;
-using Dev_Backend.Data.Models.GenericPagings;
+using Dev_Backend.Utils.WherePredicate;
 
 namespace Dev_Backend.Data.Repositories
 {
@@ -10,70 +12,35 @@ namespace Dev_Backend.Data.Repositories
 
         }
 
-        public async Task<GenericPaging<Course>> GetCourses(
-                string? courseName = null,
-                string? semesterLimitQtdeType = null,
-                int? semesterLimitQtdeDe = null,
-                int? semesterLimitQtdeAte = null,
-                string? fieldOrderLabel = null,
-                bool? isDesc = null,
-                int currentPageNumber = 0,
-                int pageSize = 10)
+        public async Task<GenericPaging<Course>> GetCourses(GetCourseFilterPaging filterParams, int? currentPageNumber, int? pageSize)
         {
-            string where = "WHERE 1=1";
+            string where = WherePredicate.GetCoursesFilterWhere(filterParams);
             string orderBy = "";
 
-            if (String.IsNullOrEmpty(courseName) == false)
-                where += $" AND c.S_Nome=@S_Nome";
-
-            if (String.IsNullOrEmpty(semesterLimitQtdeType) == false)
+            if (String.IsNullOrEmpty(filterParams.fieldOrderLabel) == false && filterParams.isDesc != null)
             {
-                switch (semesterLimitQtdeType.Trim().ToLower())
-                {
-                    case "exact":
-                        where += $" AND c.I_Qtd_Limite_Semestres=@I_Qtd_Limite_Semestres";
-                        break;
-                    case "interval":
-                        string sqlSemesterLimitQtdeDe = semesterLimitQtdeDe != null
-                            ? " AND c.I_Qtd_Limite_Semestres >= @I_Qtd_Limite_SemestresDe"
-                            : "";
-
-                        string sqlSemesterLimitQtdeAte = semesterLimitQtdeAte != null
-                            ? " AND c.I_Qtd_Limite_Semestres <= @I_Qtd_Limite_SemestresAte"
-                            : "";
-
-                        where += $"{sqlSemesterLimitQtdeDe}{sqlSemesterLimitQtdeAte}";
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            if (String.IsNullOrEmpty(fieldOrderLabel) == false)
-            {
-                orderBy = isDesc == false ? $"ORDER BY c.{fieldOrderLabel} ASC" : $"ORDER BY c.{fieldOrderLabel} DESC";
+                orderBy = filterParams.isDesc == false ? $"ORDER BY c.{filterParams.fieldOrderLabel} ASC" : $"ORDER BY c.{filterParams.fieldOrderLabel} DESC";
             }
 
             int maxPageSize = 50;
 
             pageSize = pageSize < maxPageSize ? pageSize : maxPageSize;
+            var skip = currentPageNumber * pageSize;
+            var take = pageSize;
 
-            int skip = currentPageNumber * pageSize;
-            int take = pageSize;
-
-            string sql = @$"SELECT COUNT(*) FROM Curso;
-
+            string sql = @$"SELECT COUNT(DISTINCT(c.i_Cod_Curso)) FROM Curso c WHERE 1=1 {where};
+                            
                             SELECT * FROM Curso c 
-                            {where}
+                            WHERE 1=1 {where}
                             {orderBy} 
                             LIMIT @_skip, @_take";
 
             var reader = await QueryMultipleAsync(sql, new
             {
-                @S_Nome = courseName,
-                @I_Qtd_Limite_Semestres = semesterLimitQtdeDe,
-                @I_Qtd_Limite_SemestresDe = semesterLimitQtdeDe,
-                @I_Qtd_Limite_SemestresAte = semesterLimitQtdeAte,
+                @courseName = filterParams.courseName,
+                @semesterLimitQtdeExact = filterParams.semesterLimitQtdeExact,
+                @semesterLimitQtdeDe = filterParams.semesterLimitQtdeDe,
+                @semesterLimitQtdeAte = filterParams.semesterLimitQtdeAte,
                 @_skip = skip,
                 @_take = take
             });
