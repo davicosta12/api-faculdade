@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using static Dapper.SqlMapper;
 
 namespace Dev_Backend.Data.Repositories
