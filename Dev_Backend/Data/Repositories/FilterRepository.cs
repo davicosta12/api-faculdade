@@ -1,6 +1,3 @@
-using Dev_Backend.Data.Models.Courses;
-using Dev_Backend.Data.Models.GenericPagings;
-
 namespace Dev_Backend.Data.Repositories
 {
     public class FilterRepository : RepositoryBase<DbContext>
