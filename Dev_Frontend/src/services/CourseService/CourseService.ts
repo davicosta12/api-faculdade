@@ -9,10 +9,11 @@ export default class CourseService extends HttpService {
   getCourses(filterParams: CourseFilterParamsDto, currentPageNumber: number = 1, pageSize: number = 5): Promise<GenericPagingDto<GetCourseDto>> {
     let query: string = '';
 
-    if (filterParams?.courseName) query += `courseName=${filterParams.courseName}&`;
+    if (filterParams?.courseName) query += `courseName=${encodeURI(filterParams.courseName)}&`;
     if (filterParams?.semesterLimitQtdeExact) query += `semesterLimitQtdeExact=${filterParams.semesterLimitQtdeExact}&`;
     if (filterParams?.semesterLimitQtdeDe) query += `semesterLimitQtdeDe=${filterParams.semesterLimitQtdeDe}&`;
     if (filterParams?.semesterLimitQtdeAte) query += `semesterLimitQtdeAte=${filterParams.semesterLimitQtdeAte}&`;
+    if (filterParams?.termsInput) query += `termsInput=${encodeURI(filterParams.termsInput)}&`;
     if (filterParams?.fieldOrderLabel) {
         const split = filterParams?.fieldOrderLabel.split('--');
         const _value = split[0].trim();

@@ -28,6 +28,7 @@ function CursosIndex() {
   const [semesterLimitQtdeType, setSemesterLimitQtdeType] = useState('exact');
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
+    setFilterParams({ ...filterParams, isAdvancedSearch: activePanels.length > 0 });
   }
   const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -129,7 +130,7 @@ function CursosIndex() {
         {/* Pesquisa */}
         {!estaMostrandoFiltrosAvancados &&
           <div className='half-padding'>
-            <Input placeholder="Termos" prefix={<SearchOutlined />} />
+            <Input placeholder="Termos" prefix={<SearchOutlined />} name='termsInput' onChange={handleChange} />
           </div>}
         <div className='half-padding'>
           <Collapse

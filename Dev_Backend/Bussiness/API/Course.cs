@@ -15,6 +15,9 @@ namespace Dev_Backend.Bussiness.API
 
         [ColumnDbName("i_Qtd_Limite_Semestres")]
         public int? semesterLimitQtdeAte { get; set; } = null;
+
+        public bool isAdvancedSearch { get; set; } = false;
+        public string? termsInput { get; set; } = null;
         
         public string? fieldOrderLabel { get; set; } = null;    
          

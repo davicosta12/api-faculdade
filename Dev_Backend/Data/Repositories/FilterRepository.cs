@@ -1,3 +1,5 @@
+using System.Dynamic;
+
 namespace Dev_Backend.Data.Repositories
 {
     public class FilterRepository : RepositoryBase<DbContext>
@@ -8,9 +10,13 @@ namespace Dev_Backend.Data.Repositories
         }
 
         public string GetWhereOfTerms(
-                string termsInput,
+                string? termsInput,
                 string[] sqlColumnNames)
         {
+            if (string.IsNullOrWhiteSpace(termsInput))
+            {
+                return "";
+            }
             var andTemplate = " AND (";
             int indexSqlColumn = 0;
             foreach (var iSqlColumnName in sqlColumnNames)
@@ -19,9 +25,10 @@ namespace Dev_Backend.Data.Repositories
                 {
                     andTemplate += " OR ";
                 }
-                andTemplate += "INSTR(LOWER(" + indexSqlColumn + "), LOWER(@_Term{0}))";
+                andTemplate += "INSTR(LOWER(" + iSqlColumnName + "), LOWER(@_Term{0}))";
                 indexSqlColumn++;
             }
+            andTemplate += ")";
 
             var whereOfTerms = "";
             var termsInputAsArray = termsInput.Split(separator: ' ', options: StringSplitOptions.RemoveEmptyEntries);
@@ -31,18 +38,28 @@ namespace Dev_Backend.Data.Repositories
                 whereOfTerms += string.Format(andTemplate, indexTerms);
                 indexTerms++;
             }
+            System.Console.WriteLine("where of terms:");
+            System.Console.WriteLine(whereOfTerms);
             return whereOfTerms;
         }
 
         public void AddTerms(
-                dynamic parameters,
-                string termsInput)
+                IDictionary<string, object?>? sqlParams,
+                string? termsInput)
         {
+            if (string.IsNullOrWhiteSpace(termsInput))
+            {
+                return;
+            }
             var termsInputAsArray = termsInput.Split(separator: ' ', options: StringSplitOptions.RemoveEmptyEntries);
             var indexTerms = 1;
+            if (sqlParams == null)
+            {
+                sqlParams = new Dictionary<string, object?>();
+            }
             foreach (var iTerm in termsInputAsArray)
             {
-                (parameters as Dictionary<string, object>).Add("@_Term" + indexTerms, iTerm);
+                sqlParams.TryAdd("@_Term" + indexTerms, iTerm);
                 indexTerms++;
             }
         }
