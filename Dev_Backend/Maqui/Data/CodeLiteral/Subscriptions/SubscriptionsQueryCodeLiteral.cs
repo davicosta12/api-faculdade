@@ -17,11 +17,11 @@ namespace Dev_Backend.Maqui.Data.CodeLiteral
             return new QueryCodeLiteral {
                 QueryName = "selectAlunos.sql",
                 QueryContent = @$"
-                    SELECT COUNT(DISTINCT(u.I_Cod_Usuario)) FROM Usuario u WHERE {where};
+                    SELECT COUNT(DISTINCT(I_Cod_Usuario)) FROM Usuario WHERE {where};
 
                     SELECT
-                        I_Cod_Usuario AS Key,
-                        @_DescriptionColumn AS Description,
+                        I_Cod_Usuario AS Cod,
+                        ^DescriptionColumn AS Description,
                         S_Nome,
                         S_RA
                     FROM Usuario WHERE {where}
@@ -45,11 +45,11 @@ namespace Dev_Backend.Maqui.Data.CodeLiteral
             return new QueryCodeLiteral {
                 QueryName = "selectCursos.sql",
                 QueryContent = @$"
-                    SELECT COUNT(DISTINCT(c.I_Cod_Curso)) FROM Curso c WHERE {where};
+                    SELECT COUNT(DISTINCT(I_Cod_Curso)) FROM Curso WHERE {where};
 
                     SELECT
-                        I_Cod_Curso AS Key,
-                        @_DescriptionColumn AS Description,
+                        I_Cod_Curso AS Cod,
+                        ^DescriptionColumn AS Description,
                         S_Nome
                     FROM Curso WHERE {where}
                     LIMIT @_take;

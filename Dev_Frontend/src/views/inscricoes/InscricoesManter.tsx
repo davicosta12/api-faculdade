@@ -7,6 +7,7 @@ import NavigationWrapper from "../_navigation/NavigationWrapper";
 import './InscricoesManter.css';
 import { CursosIndexState } from "../../integrations/cursos-index-state";
 import { UsuariosIndexState } from "../../integrations/usuarios-index-state";
+import Maqui_Campo_FK from "../../_commons/Maqui_Campo_FK/Maqui_Campo_FK";
 
 function InscricoesManter(props: { eAlteracao: boolean }) {
 
@@ -26,7 +27,13 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
             <Typography.Text>Nome do Aluno</Typography.Text>
           </div>
           <div className="half-padding">
-            <Select
+            <Maqui_Campo_FK
+              descriptionColumn="S_Nome"
+              queryName="selectAlunos.sql"
+              queryParameterName="Input_Nome"
+              minWidth={200}
+            />
+            {/*<Select
               defaultValue=""
               showSearch
               optionFilterProp="children"
@@ -37,7 +44,7 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
                 return { value: x.id + '', label: x.nome }
               }))}
                     
-            />
+            />*/}
           </div>
         </div>
         <div className="inscricoes-manter-selecionar">

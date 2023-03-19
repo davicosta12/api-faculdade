@@ -30,13 +30,14 @@ namespace Dev_Backend.Maqui.Data.Repositories
             var sqlParams = new Dictionary<string, object?>
             {
                 [queryParameterName] = queryParameterValue,
-                ["@_DescriptionColumn"] = descriptionColumn,
             };
             foreach(var defaultParam in queryCodeLiteral.DefaultParameters)
             {
                 sqlParams.TryAdd(defaultParam.Key, defaultParam.Value);
-            } 
-            var reader = await QueryMultipleAsync(queryCodeLiteral.QueryContent, sqlParams.AsExpandoObject());
+            }
+            var sqlReplaced = queryCodeLiteral.QueryContent.Replace("^DescriptionColumn", descriptionColumn);
+            
+            var reader = await QueryMultipleAsync(sqlReplaced, sqlParams.AsExpandoObject());
 
             int totalCount = reader.Read<int>().FirstOrDefault();
             var options = reader.Read<FKOption>().ToList();

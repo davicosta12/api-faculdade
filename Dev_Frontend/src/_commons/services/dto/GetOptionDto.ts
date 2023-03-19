@@ -1,4 +1,4 @@
 export default interface GetOptionDto {
-    key: number,
+    cod: number,
     description: string,
 }
