@@ -2,7 +2,7 @@ using Dev_Backend.Bussiness.API.GenericPagings;
 using Dev_Backend.Data;
 using Dev_Backend.Data.Models;
 using Dev_Backend.Data.Repositories;
-using Dev_Backend.Maqui.Data.Models;
+using Dev_Backend.Maqui.Business;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

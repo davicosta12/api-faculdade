@@ -2,6 +2,7 @@ using Dev_Backend.Bussiness.API;
 using Dev_Backend.Bussiness.API.GenericPagings;
 using Dev_Backend.Data.Models.Courses;
 using Dev_Backend.Extensions;
+using Dev_Backend.Maqui.Data.Models;
 using Dev_Backend.Utils.WherePredicate;
 
 namespace Dev_Backend.Data.Repositories
@@ -22,7 +23,7 @@ namespace Dev_Backend.Data.Repositories
             }
             else
             {
-                where = Maqui.FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new [] { "c.s_Nome", "c.i_Qtd_Limite_Semestres" });
+                where = FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new [] { "c.s_Nome", "c.i_Qtd_Limite_Semestres" });
             }
             string orderBy = "";
 
@@ -55,7 +56,7 @@ namespace Dev_Backend.Data.Repositories
             };
             if (!filterParams.isAdvancedSearch)
             {
-                Maqui.FilterByTerms.AddTerms(sqlParams, filterParams.termsInput);
+                FilterByTerms.AddTerms(sqlParams, filterParams.termsInput);
             }
             var reader = await QueryMultipleAsync(sql, sqlParams.AsExpandoObject());
 

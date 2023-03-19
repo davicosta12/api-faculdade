@@ -1,4 +1,4 @@
-namespace Dev_Backend.Maqui
+namespace Dev_Backend.Maqui.Data.Models
 {
     public static class FilterByTerms
     {

@@ -1,4 +1,4 @@
-namespace Dev_Backend.Maqui.Data.Models
+namespace Dev_Backend.Maqui.Business
 {
     public class FKOption
     {
