@@ -1,8 +1,8 @@
 using Dev_Backend.Bussiness.API.GenericPagings;
 using Dev_Backend.Data;
 using Dev_Backend.Data.Models;
-using Dev_Backend.Data.Repositories;
 using Dev_Backend.Maqui.Business;
+using Dev_Backend.Maqui.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,16 +36,16 @@ namespace my_api.Maqui.Controllers
             string? queryName,
             string? queryParameterName,
             string? queryParameterValue,
-            int? firstPageSize = 5
+            int? firstPageSize = 20
         )
         {
             try
             {
-                var courseRepository = new CourseRepository(_dbContext);
+                var queryRepository = new QueryRepository(_dbContext);
 
-                // var courses = await courseRepository.GetCourses(filterParams, currentPageNumber, pageSize);
+                var options = await queryRepository.GetOptionsForFKField(descriptionColumn, queryName, queryParameterName, queryParameterValue, firstPageSize);
 
-                return Ok();
+                return Ok(options);
             }
             catch (Exception e)
             {
