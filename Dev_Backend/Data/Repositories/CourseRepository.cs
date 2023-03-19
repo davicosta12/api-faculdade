@@ -16,14 +16,13 @@ namespace Dev_Backend.Data.Repositories
         public async Task<GenericPaging<Course>> GetCourses(GetCourseFilterPaging filterParams, int? currentPageNumber, int? pageSize)
         {
             string where = "";
-            var filterRepository = new FilterRepository(dbContext);
             if (filterParams.isAdvancedSearch)
             {
                 where = CoursesWherePredicate.GetCoursesFilterWhere(filterParams);
             }
             else
             {
-                where = filterRepository.GetWhereOfTerms(filterParams.termsInput, new [] { "c.s_Nome", "c.i_Qtd_Limite_Semestres" });
+                where = Maqui.FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new [] { "c.s_Nome", "c.i_Qtd_Limite_Semestres" });
             }
             string orderBy = "";
 
@@ -56,10 +55,9 @@ namespace Dev_Backend.Data.Repositories
             };
             if (!filterParams.isAdvancedSearch)
             {
-                filterRepository.AddTerms(sqlParams, filterParams.termsInput);
+                Maqui.FilterByTerms.AddTerms(sqlParams, filterParams.termsInput);
             }
-            var sqlParamsExpando = sqlParams.AsExpandoObject();
-            var reader = await QueryMultipleAsync(sql, sqlParamsExpando);
+            var reader = await QueryMultipleAsync(sql, sqlParams.AsExpandoObject());
 
             int totalCount = reader.Read<int>().FirstOrDefault();
             var courses = reader.Read<Course>().ToList();
