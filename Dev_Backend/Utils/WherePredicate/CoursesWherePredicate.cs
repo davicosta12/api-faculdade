@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Dev_Backend.Utils.WherePredicate
 {
-    public class WherePredicate
+    public class CoursesWherePredicate
     {
         public static string GetCoursesFilterWhere<T>(T parameter) where T : class
         {
@@ -74,23 +74,6 @@ namespace Dev_Backend.Utils.WherePredicate
             catch (Exception e)
             {
                 throw e;
-            }
-        }
-
-        public class ColumnDbName : Attribute
-        {
-            private string _columnName { get; set; }
-            public string ColumnName
-            {
-                get
-                {
-                    return _columnName;
-                }
-            }
-
-            public ColumnDbName(string columnName)
-            {
-                this._columnName = columnName;
             }
         }
     }

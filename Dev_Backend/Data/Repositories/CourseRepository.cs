@@ -19,7 +19,7 @@ namespace Dev_Backend.Data.Repositories
             var filterRepository = new FilterRepository(dbContext);
             if (filterParams.isAdvancedSearch)
             {
-                where = WherePredicate.GetCoursesFilterWhere(filterParams);
+                where = CoursesWherePredicate.GetCoursesFilterWhere(filterParams);
             }
             else
             {
