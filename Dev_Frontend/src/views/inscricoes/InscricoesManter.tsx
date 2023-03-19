@@ -31,6 +31,7 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
               descriptionColumn="S_Nome"
               queryName="selectAlunos.sql"
               queryParameterName="Input_Nome"
+              comSelecione={!props.eAlteracao}
               minWidth={200}
             />
             {/*<Select
@@ -52,17 +53,13 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
             <Typography.Text>RA do Aluno</Typography.Text>
           </div>
           <div className="half-padding">
-            <Select
-              defaultValue=""
-              showSearch
-              optionFilterProp="children"
-              style={{ width: 200 }}
-              options={[
-                { value: '', label: 'Selecione...' },
-              ].concat(UsuariosIndexState.usuariosApresentados.map(x => {
-                return { value: x.id + '', label: x.ra }
-              }))}
-                    
+            
+            <Maqui_Campo_FK
+              descriptionColumn="S_Nome"
+              queryName="selectAlunos.sql"
+              queryParameterName="Input_RA"
+              comSelecione={!props.eAlteracao}
+              minWidth={200}
             />
           </div>
         </div>
@@ -71,17 +68,12 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
             <Typography.Text>Nome do Curso</Typography.Text>
           </div>
           <div className="half-padding">
-            <Select
-              defaultValue=""
-              showSearch
-              optionFilterProp="children"
-              style={{ width: 200 }}
-              options={[
-                { value: '', label: 'Selecione...' },
-              ].concat(CursosIndexState.cursosApresentados.map(x => {
-                return { value: x.id + '', label: x.nome }
-              }))}
-                    
+            <Maqui_Campo_FK
+              descriptionColumn="S_Nome"
+              queryName="selectCursos.sql"
+              queryParameterName="Input_Nome"
+              comSelecione={!props.eAlteracao}
+              minWidth={200}
             />
           </div>
         </div>
