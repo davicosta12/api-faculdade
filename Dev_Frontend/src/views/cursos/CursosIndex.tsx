@@ -13,7 +13,8 @@ import GenericPagingDto from '../../services/GenericDto/GenericPagingDto';
 import { toast } from 'react-toastify';
 import { toastError, toastOptions } from '../../misc/utils/utils';
 import DataTable from '../../_commons/DataTable/DataTable';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import ModalConfirm from '../../_commons/ModalConfirm/ModalConfirm';
 
 function CursosIndex() {
 
@@ -59,6 +60,22 @@ function CursosIndex() {
     }
   }
 
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await courseService.deleteCourse(course.i_Cod_Curso);
+      toast.success(`Curso - "${course.s_Nome}" removido com sucesso`, toastOptions(toast));
+      getCourses();
+      setIsExcluirModalOpen(false);
+    }
+    catch (err: any) {
+      toast.error(toastError(err), toastOptions(toast));
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
   const handleCheckAvancado = (tag: string, checked: boolean) => {
     const nextSelectedTags = checked
       ? [...selectedFiltros, tag]
@@ -76,7 +93,16 @@ function CursosIndex() {
 
   const handleAdd = () => {
     setCourse({} as GetCourseDto);
-    navigate('/alunos/inserir');
+    navigate('/cursos/inserir');
+  }
+
+  const handleEdit = (rowData: GetCourseDto) => {
+    navigate('/cursos/alterar', { state: { course: rowData } });
+  }
+
+  const handleRemove = (rowData: GetCourseDto) => {
+    setCourse(rowData);
+    setIsExcluirModalOpen(true);
   }
 
   // Ordenaçao
@@ -87,16 +113,24 @@ function CursosIndex() {
   }
 
   // Resultados e Paginaçao default
-  const itensMais: MenuProps['items'] = [
-    {
-      key: 'mais-alterar',
-      label: (<a target="_blank" rel="noopener noreferrer" href="#">Alterar</a>),
-    },
-    {
-      key: 'mais-excluir',
-      label: (<a rel="noopener noreferrer" onClick={() => setIsExcluirModalOpen(true)}>Excluir</a>),
-    },
-  ]
+
+  const renderItensMais = (rowData: GetCourseDto) => {
+    const itensMais: MenuProps['items'] = [
+      {
+        key: 'mais-alterar',
+        label: (<a rel="noopener noreferrer">Alterar</a>),
+        onClick: () => handleEdit(rowData)
+      },
+      {
+        key: 'mais-excluir',
+        label: (<a rel="noopener noreferrer"
+          onClick={() => handleRemove(rowData)}>
+          Excluir</a>),
+      },
+    ];
+    return itensMais;
+  }
+
   let columns: ColumnsType<GetCourseDto> = [
     {
       title: 'Nome',
@@ -112,11 +146,13 @@ function CursosIndex() {
       title: '#',
       key: 'mais',
       dataIndex: 'mais',
-      render: () => (
-        <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-          <Button icon={<MoreOutlined />}></Button>
-        </Dropdown>
-      ),
+      render: (text, rowData: GetCourseDto, index) => {
+        return (
+          <Dropdown menu={{ items: renderItensMais(rowData) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+            <Button icon={<MoreOutlined />}></Button>
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -297,27 +333,13 @@ function CursosIndex() {
 
       </div>
 
-      {/* Confirmar a exclusão */}
-      <Modal
-        open={isExcluirModalOpen}
-        footer={null}
-        closable={true}
-        onCancel={() => setIsExcluirModalOpen(false)}
-      >
-        <div className="half-padding">
-          <div className="half-padding">
-            <Typography.Title level={5}>Deseja excluir o Curso? A ação não pode ser desfeita.</Typography.Title>
-          </div>
-          <div className="cursos-index-botoes-modal">
-            <div className="half-padding" >
-              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined />}>Voltar</Button>
-            </div>
-            <div className="half-padding" >
-              <Button danger type="primary" shape="round" icon={<DeleteFilled />}>Excluir</Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
+      <ModalConfirm 
+        openConfirm={isExcluirModalOpen}
+        setOpenConfirm={setIsExcluirModalOpen}
+        loading={isLoading}
+        onAction={handleDelete}
+      />
+      
     </NavigationWrapper>
   )
 }

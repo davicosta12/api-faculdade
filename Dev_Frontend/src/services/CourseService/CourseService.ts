@@ -41,4 +41,44 @@ export default class CourseService extends HttpService {
         .catch((err: AxiosResponse<any>) => reject(err))
     })
   }
+
+  getCourseById(id: number): Promise<GetCourseDto> {
+    return new Promise((resolve, reject) => {
+      this.getApi().get(`/Course/${id}`)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
+
+  createCourse(course: GetCourseDto): Promise<GetCourseDto> {
+    return new Promise((resolve, reject) => {
+      this.getApi().post(`/Course`, course)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
+
+  updateCourse(id: number, course: GetCourseDto): Promise<GetCourseDto> {
+    return new Promise((resolve, reject) => {
+      this.getApi().put(`/Course/${id}`, course)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
+
+  deleteCourse(id: number): Promise<GetCourseDto> {
+    return new Promise((resolve, reject) => {
+      this.getApi().delete(`/Course/${id}`)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
 }
