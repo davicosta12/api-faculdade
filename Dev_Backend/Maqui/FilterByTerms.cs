@@ -1,13 +1,8 @@
-namespace Dev_Backend.Data.Repositories
+namespace Dev_Backend.Maqui
 {
-    public class FilterRepository : RepositoryBase<DbContext>
+    public static class FilterByTerms
     {
-        public FilterRepository(DbContext dbContext) : base(dbContext)
-        {
-
-        }
-
-        public string GetWhereOfTerms(
+        public static string GetWhereOfTerms(
                 string? termsInput,
                 string[] sqlColumnNames)
         {
@@ -36,12 +31,10 @@ namespace Dev_Backend.Data.Repositories
                 whereOfTerms += string.Format(andTemplate, indexTerms);
                 indexTerms++;
             }
-            System.Console.WriteLine("where of terms:");
-            System.Console.WriteLine(whereOfTerms);
             return whereOfTerms;
         }
 
-        public void AddTerms(
+        public static void AddTerms(
                 IDictionary<string, object?>? sqlParams,
                 string? termsInput)
         {
