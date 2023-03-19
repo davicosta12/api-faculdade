@@ -15,7 +15,25 @@ export default class MaquiService extends HttpService {
     query += `firstPageSize=${firstPageSize}`;
 
     return new Promise((resolve, reject) => {
-      this.getApi().get(`/Maqui?${query}`)
+      this.getApi().get(`/Maqui/Options?${query}`)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch((err: AxiosResponse<any>) => reject(err))
+    })
+  }
+
+  getOptionByCod(cod: number, descriptionColumn: string = '', queryName: string = ''): Promise<GetOptionDto> {
+    let query: string = `cod=${cod}&`;
+
+    if (descriptionColumn) query += `descriptionColumn=${encodeURI(descriptionColumn)}&`;
+    if (queryName) query += `queryName=${encodeURI(queryName)}&`;
+    if (query[query.length - 1] == '&') {
+      query = query.substring(0, query.length - 1);
+    }
+
+    return new Promise((resolve, reject) => {
+      this.getApi().get(`/Maqui/OptionByCod?${query}`)
         .then(res => {
           resolve(res.data);
         })

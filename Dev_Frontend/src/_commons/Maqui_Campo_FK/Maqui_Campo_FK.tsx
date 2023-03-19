@@ -12,7 +12,8 @@ interface Props {
   queryParameterName: string;
   comSelecione: boolean;
   minWidth: number;
-  onChangeKey?: (value: number) => void;
+  codValue?: number | undefined;
+  onChangeCodValue?: (value: number | undefined) => void;
 }
 
 const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
@@ -23,13 +24,16 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
     queryParameterName,
     comSelecione,
     minWidth,
-    onChangeKey
+    codValue,
+    onChangeCodValue
   } = props;
 
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
   const [maquiResult, setMaquiResult] = useState({} as GenericPagingDto<GetOptionDto>);
+  const [appendedOption, setAppendedOption] = useState<{value: string, label: string} | undefined>(undefined);
+  const [options, setOptions] = useState<{value: string, label: string}[]>([]);
 
   const maquiService = new MaquiService();
 
@@ -51,10 +55,38 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
     }
   }
 
+  const searchOptionAsync = async () => {
+
+    setIsLoading(true);
+    const codPayload = codValue;
+
+    try {
+      const _option = await maquiService.getOptionByCod(codPayload ?? 0, descriptionColumn, queryName);
+      if (codPayload === codValue) {
+        setAppendedOption({ value: _option.cod + '', label: _option.description });
+      }
+    } catch (err: any) {
+      toast.error(toastError(err), toastOptions(toast));
+    } finally {
+      if (codPayload === codValue) {
+        setIsLoading(false);
+      }
+    }
+  }
+
   const handleChangeKey = (key: string) => {
     setSelectedValue(key);
-    if (!isNaN(+key) && onChangeKey) {
-      onChangeKey(+key);
+    if (key !== '' && !isNaN(+key) && onChangeCodValue) {
+      console.log('onChangeCodValue');
+      console.log(+key);
+      
+      onChangeCodValue(+key);
+    } else {
+      if (onChangeCodValue) {
+        console.log('onChangeCodValue');
+        console.log(undefined);
+        onChangeCodValue(undefined);
+      }
     }
   }
 
@@ -66,13 +98,47 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
     searchAsync();
   }, [search]);
 
+  useEffect(() => {
+    if (codValue === undefined) {
+      setSelectedValue('');
+    } else {
+      const alreadyFound = options.find(x => x.value === codValue + '');
+      if (alreadyFound) {
+        setSelectedValue(codValue + '')
+      } else {
+        searchOptionAsync();
+      }
+    }
+  }, [codValue])
+
   let initialArray: {value: string, label: string}[] = comSelecione ? [
     { value: '', label: 'Selecione...' },
   ] : [];
 
-  let options: {value: string, label: string}[] = maquiResult.result ? initialArray.concat(maquiResult.result.map(x => {
-    return { value: x.cod + '', label: x.description }
-  })) : initialArray;
+  useEffect(() => {
+    let optionsCalc: {value: string, label: string}[] = [...initialArray];
+    if (maquiResult.result) {
+      optionsCalc = optionsCalc.concat(maquiResult.result.map(x => 
+        ({ value: x.cod + '', label: x.description })
+      ));
+    }
+    if (appendedOption) {
+      optionsCalc = optionsCalc.concat([appendedOption]);
+    }
+    console.log('optionsCalc:')
+    console.log(optionsCalc);
+    
+    setOptions(optionsCalc);
+  }, [maquiResult, appendedOption]);
+
+  useEffect(() => {
+    console.log('verifying... codValue')
+    console.log(codValue);
+    
+    if (codValue !== undefined && (codValue + '') !== selectedValue) {
+      setSelectedValue(codValue + '');
+    }
+  }, [options]);
 
   return (
     

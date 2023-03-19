@@ -14,6 +14,13 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
   const { id } = useParams();
   
   const [eAlteracaoSenha, setEAlteracaoSenha] = useState(false);
+  const [codAluno, setCodAluno] = useState<number | undefined>(undefined);
+
+  const handleChangeCodValue = (newValue: number | undefined) => {
+    console.log('handleChangeCodValue:');
+    console.log(newValue);
+    setCodAluno(newValue);
+  }
   
   return (
       
@@ -33,19 +40,9 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
               queryParameterName="Input_Nome"
               comSelecione={!props.eAlteracao}
               minWidth={200}
+              codValue={codAluno}
+              onChangeCodValue={(newValue) => handleChangeCodValue(newValue)}
             />
-            {/*<Select
-              defaultValue=""
-              showSearch
-              optionFilterProp="children"
-              style={{ width: 200 }}
-              options={[
-                { value: '', label: 'Selecione...' },
-              ].concat(UsuariosIndexState.usuariosApresentados.map(x => {
-                return { value: x.id + '', label: x.nome }
-              }))}
-                    
-            />*/}
           </div>
         </div>
         <div className="inscricoes-manter-selecionar">
@@ -55,11 +52,13 @@ function InscricoesManter(props: { eAlteracao: boolean }) {
           <div className="half-padding">
             
             <Maqui_Campo_FK
-              descriptionColumn="S_Nome"
+              descriptionColumn="S_RA"
               queryName="selectAlunos.sql"
               queryParameterName="Input_RA"
               comSelecione={!props.eAlteracao}
               minWidth={200}
+              codValue={codAluno}
+              onChangeCodValue={(newValue) => setCodAluno(newValue)}
             />
           </div>
         </div>

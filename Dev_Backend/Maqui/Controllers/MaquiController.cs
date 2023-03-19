@@ -29,7 +29,7 @@ namespace my_api.Maqui.Controllers
         /// <param name="firstPageSize">Tamanho da primeira página</param>
         /// <returns>Primeira página do resultado de uma query</returns>
 
-        [HttpGet]
+        [HttpGet("Options")]
         [AllowAnonymous]
         public async Task<ActionResult<GenericPaging<FKOption>>> GetOptionsForFKField(
             string? descriptionColumn,
@@ -46,6 +46,41 @@ namespace my_api.Maqui.Controllers
                 var options = await queryRepository.GetOptionsForFKField(descriptionColumn, queryName, queryParameterName, queryParameterValue, firstPageSize);
 
                 return Ok(options);
+            }
+            catch (Exception e)
+            {
+                var response = new ResponseMessage();
+
+                response.isValid = false;
+                response.errorMessage = $"{e.Message}";
+                response.message = $"{e.Message}";
+                response.stackTrace = e.StackTrace;
+
+                return BadRequest(response);
+            }
+        }
+
+        [HttpGet("OptionByCod")]
+        public async Task<ActionResult<FKOption>> GetOptionByCod(int cod, string? descriptionColumn, string? queryName)
+        {
+            var res = new ResponseMessage()
+            {
+                isValid = false,
+                message = $"Id - ({cod}) da opção não foi encontrada!",
+                errorMessage = $"Id - ({cod}) do opção não foi encontrada!"
+            };
+
+            try
+            {
+                var queryRepository = new QueryRepository(_dbContext);
+
+                var optionFound = await queryRepository.GetOptionByCod(cod, descriptionColumn, queryName);
+
+                if (optionFound == null)
+                {
+                    return NotFound(res);
+                }
+                return Ok(optionFound);
             }
             catch (Exception e)
             {

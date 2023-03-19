@@ -26,9 +26,6 @@ namespace Dev_Backend.Maqui.Data.Repositories
             {
                 throw new NotImplementedException("Query named " + queryName + " does not exist");
             }
-
-            System.Console.WriteLine("queryParameterValue");
-            System.Console.WriteLine(queryParameterValue);
             
             var sqlParams = string.IsNullOrWhiteSpace(queryParameterValue)
                 ? new Dictionary<string, object?>()
@@ -40,14 +37,33 @@ namespace Dev_Backend.Maqui.Data.Repositories
             var sqlReplaced = queryCodeLiteral.QueryContent.Replace("^DescriptionColumn", descriptionColumn);
             
             var reader = await QueryMultipleAsync(sqlReplaced, sqlParams.AsExpandoObject());
-
             int totalCount = reader.Read<int>().FirstOrDefault();
             var options = reader.Read<FKOption>().ToList();
 
-            System.Console.WriteLine("totalCount");
-            System.Console.WriteLine(totalCount);
             var result = new GenericPaging<FKOption>(options, totalCount, 1, firstPageSize);
+            return result;
+        }
 
+        public async Task<FKOption> GetOptionByCod(int? cod, string? descriptionColumn, string? queryName)
+        {
+            var queryCodeLiteral = QueryCodeLiteralMaker.GetByQueryName(queryName);
+            if (queryCodeLiteral == null)
+            {
+                throw new NotImplementedException("Query named " + queryName + " does not exist");
+            }
+            
+            var sqlParams = new Dictionary<string, object?> { ["@I_Cod"] = cod, };
+            foreach(var defaultParam in queryCodeLiteral.DefaultParameters)
+            {
+                sqlParams.TryAdd(defaultParam.Key, defaultParam.Value);
+            }
+            var sqlReplaced = queryCodeLiteral.QueryContent.Replace("^DescriptionColumn", descriptionColumn);
+            
+            var reader = await QueryMultipleAsync(sqlReplaced, sqlParams.AsExpandoObject());
+            int totalCount = reader.Read<int>().FirstOrDefault();
+            var options = reader.Read<FKOption>().ToList();
+
+            var result = options.FirstOrDefault();
             return result;
         }
     }
