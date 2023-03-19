@@ -1,4 +1,4 @@
-using static Dev_Backend.Utils.WherePredicate.WherePredicate;
+using Dev_Backend.Utils.WherePredicate;
 
 namespace Dev_Backend.Bussiness.API
 {
