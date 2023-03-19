@@ -26,11 +26,13 @@ namespace Dev_Backend.Maqui.Data.Repositories
             {
                 throw new NotImplementedException("Query named " + queryName + " does not exist");
             }
+
+            System.Console.WriteLine("queryParameterValue");
+            System.Console.WriteLine(queryParameterValue);
             
-            var sqlParams = new Dictionary<string, object?>
-            {
-                [queryParameterName] = queryParameterValue,
-            };
+            var sqlParams = string.IsNullOrWhiteSpace(queryParameterValue)
+                ? new Dictionary<string, object?>()
+                : new Dictionary<string, object?> { ["@" + queryParameterName] = queryParameterValue, };
             foreach(var defaultParam in queryCodeLiteral.DefaultParameters)
             {
                 sqlParams.TryAdd(defaultParam.Key, defaultParam.Value);
@@ -42,6 +44,8 @@ namespace Dev_Backend.Maqui.Data.Repositories
             int totalCount = reader.Read<int>().FirstOrDefault();
             var options = reader.Read<FKOption>().ToList();
 
+            System.Console.WriteLine("totalCount");
+            System.Console.WriteLine(totalCount);
             var result = new GenericPaging<FKOption>(options, totalCount, 1, firstPageSize);
 
             return result;
