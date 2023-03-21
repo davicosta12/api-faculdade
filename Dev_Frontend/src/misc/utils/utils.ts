@@ -23,3 +23,5 @@ export const formatDate = (date: string) => {
   const dateMoment = moment(date);
   return dateMoment.isValid() ? dateMoment.format("DD/MM/YYYY") : "";
 }
+
+export const requiredMessage: string = "Por favor, preencha o campo!";
