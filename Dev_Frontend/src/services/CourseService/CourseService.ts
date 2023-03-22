@@ -14,20 +14,21 @@ export default class CourseService extends HttpService {
     if (filterParams?.semesterLimitQtdeDe) query += `semesterLimitQtdeDe=${filterParams.semesterLimitQtdeDe}&`;
     if (filterParams?.semesterLimitQtdeAte) query += `semesterLimitQtdeAte=${filterParams.semesterLimitQtdeAte}&`;
     if (filterParams?.termsInput) query += `termsInput=${encodeURI(filterParams.termsInput)}&`;
+    if (filterParams?.isAdvancedSearch !== undefined) query += `isAdvancedSearch=${filterParams.isAdvancedSearch}&`;
     if (filterParams?.fieldOrderLabel) {
-        const split = filterParams?.fieldOrderLabel.split('--');
-        const _value = split[0].trim();
-        const _orderBy = split[1].trim();
-  
-        switch (_orderBy) {
-          case 'asc':
-            query += `fieldOrderLabel=${_value}&isDesc=${false}&`
-            break;
-          case 'desc':
-            query += `fieldOrderLabel=${_value}&isDesc=${true}&`
-            break;
-          default: break;
-        }   
+      const split = filterParams?.fieldOrderLabel.split('--');
+      const _value = split[0].trim();
+      const _orderBy = split[1].trim();
+
+      switch (_orderBy) {
+        case 'asc':
+          query += `fieldOrderLabel=${_value}&isDesc=${false}&`
+          break;
+        case 'desc':
+          query += `fieldOrderLabel=${_value}&isDesc=${true}&`
+          break;
+        default: break;
+      }
     }
 
     query += `currentPageNumber=${currentPageNumber - 1}&`;

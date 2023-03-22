@@ -55,6 +55,9 @@ namespace Dev_Backend.Utils.WherePredicate
                             case "isDesc":
                                 break;
 
+                            case "isAdvancedSearch":
+                                break;
+
                             // case "branchPlatformId":
                             //     string platformValue = String.Join(",", ((List<int>)value).Select(x => x.ToString()).ToArray());
                             //     sb.Append($" o.{columnName} IN ({platformValue}) AND ");

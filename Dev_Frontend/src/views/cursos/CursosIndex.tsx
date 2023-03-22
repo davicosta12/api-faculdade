@@ -30,6 +30,18 @@ function CursosIndex() {
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
     setFilterParams({ ...filterParams, isAdvancedSearch: activePanels.length > 0 });
+
+    if (activePanels.length === 0) {
+      setFilterParams({
+        ...filterParams,
+        courseName: '',
+        semesterLimitQtdeAte: null,
+        semesterLimitQtdeDe: null,
+        semesterLimitQtdeExact: null
+      });
+      setSemesterLimitQtdeType('exact');
+      setSelectedFiltros([]);
+    }
   }
   const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -333,13 +345,13 @@ function CursosIndex() {
 
       </div>
 
-      <ModalConfirm 
+      <ModalConfirm
         openConfirm={isExcluirModalOpen}
         setOpenConfirm={setIsExcluirModalOpen}
         loading={isLoading}
         onAction={handleDelete}
       />
-      
+
     </NavigationWrapper>
   )
 }
