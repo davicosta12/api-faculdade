@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Card, Col, Row, Pagination } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
@@ -24,6 +24,8 @@ import Maqui_Filtro_Avancado_Logico from '../../_commons/MaquiAdvancedFilter/Maq
 import Maqui_Filtro_Avancado_Literal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
 import { LitSexoMaker } from '../../model/literal/lit-sexo';
 import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { Constantes } from '../../model/constantes';
 
 function CursosIndex() {
 
@@ -62,6 +64,7 @@ function CursosIndex() {
   // const { state, dispatch } = useContext(AppContext);
 
   const navigate = useNavigate();
+  const { windowWidth } = useWindowDimensions();
 
   const courseService = new CourseService();
 
@@ -256,16 +259,44 @@ function CursosIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <DataTable
-          handleRowKey={(course: any) => course.i_Cod_Curso}
-          dataSource={courseResult.result}
-          columns={columns}
-          getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
-          setDataResult={setCourseResult}
-          totalCount={courseResult.paging?.totalCount}
-          pagination
-          isLoading={isLoading}
-        />
+        
+
+        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult.result.length /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ ) ?
+          <Row>
+            {courseResult.result.map(xCurso => <Col span={12} className="half-padding">
+              <Card title={<div className="cursos-index-botoes-modal">
+                  <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                    <Button icon={<MoreOutlined />}></Button>
+                  </Dropdown>
+                </div>}
+                bodyStyle={{ padding: "6px" }}
+                headStyle={{ paddingRight: "12px" }}>
+                
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome</strong>: {xCurso.s_Nome}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.i_Qtd_Limite_Semestres}</span>
+                </div>
+                
+              </Card>
+              
+            </Col>)}
+          </Row> :
+          <DataTable
+            handleRowKey={(course: any) => course.i_Cod_Curso}
+            dataSource={courseResult.result}
+            columns={columns}
+            getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
+            setDataResult={setCourseResult}
+            totalCount={courseResult.paging?.totalCount}
+            pagination
+            isLoading={isLoading}
+          />}
+        
+        {windowWidth <= Constantes.WidthMaximoMobile && courseResult.result.length && <div className='usuarios-index-botoes-modal'>
+          <Pagination total={courseResult.result.length} defaultCurrent={1} />
+        </div>}
 
       </div>
 
