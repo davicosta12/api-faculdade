@@ -23,6 +23,7 @@ import Maqui_Filtro_Avancado_Data from '../../_commons/MaquiAdvancedFilter/Maqui
 import Maqui_Filtro_Avancado_Logico from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
 import Maqui_Filtro_Avancado_Literal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
 import { LitSexoMaker } from '../../model/literal/lit-sexo';
+import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 
 function CursosIndex() {
 
@@ -120,13 +121,6 @@ function CursosIndex() {
   const handleRemove = (rowData: GetCourseDto) => {
     setCourse(rowData);
     setIsExcluirModalOpen(true);
-  }
-
-  // Ordenaçao
-  let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
-  for (let iPossivelFiltro of possiveisFiltros) {
-    possiveisOrdenacoes.push({ value: iPossivelFiltro.value + '--asc', label: iPossivelFiltro.descricao + " Crescente" });
-    possiveisOrdenacoes.push({ value: iPossivelFiltro.value + '--desc', label: iPossivelFiltro.descricao + " Decrescente" });
   }
 
   // Resultados e Paginaçao default
@@ -231,19 +225,12 @@ function CursosIndex() {
           </>
         </Maqui_Filtro_Avancado_Wrapper>
         
-        <div className="cursos-index-filtro-avancado">
-          <div className='half-padding'>
-            <Typography.Text>Ordenar por</Typography.Text>
-          </div>
-          <div className='half-padding'>
-            <Select
-              style={{ width: 256 }}
-              options={possiveisOrdenacoes}
-              onChange={(value: string) => setFilterParams({ ...filterParams, fieldOrderLabel: value })}
-              value={filterParams.fieldOrderLabel}
+          <Maqui_Ordenar_Por
+            allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.value, description: x.descricao }) )}
+            onChangeFilterParams={setFilterParams}
+            filterParams={filterParams}
+            selectMinWith={256}
             />
-          </div>
-        </div>
         <div className='agrupar-horizontalmente'>
           <div className='half-padding'>
             <Button
