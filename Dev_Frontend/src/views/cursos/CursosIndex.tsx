@@ -175,7 +175,7 @@ function CursosIndex() {
         </div>
         <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={handleChange} />
         <Maqui_Filtro_Avancado_Wrapper
-          allLabelNames={[...(possiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */ /*, 'Ativo' */, 'Sexo']}
+          allLabelNames={[...(possiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */ /*, 'Ativo' */ /*, 'Sexo' */]}
           selectedLabelNames={selectedFiltros}
           onChangeSelectedLabelNames={setSelectedFiltros}
           show={estaMostrandoFiltrosAvancados}
