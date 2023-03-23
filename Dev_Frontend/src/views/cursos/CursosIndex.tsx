@@ -20,6 +20,9 @@ import Maqui_Filtro_Avancado_Wrapper from '../../_commons/MaquiAdvancedFilter/Ma
 import Maqui_Filtro_Avancado_Texto from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
 import Maqui_Filtro_Avancado_InteiroOuDecimal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_InteiroOuDecimal';
 import Maqui_Filtro_Avancado_Data from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Data';
+import Maqui_Filtro_Avancado_Logico from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
+import Maqui_Filtro_Avancado_Literal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
+import { LitSexoMaker } from '../../model/literal/lit-sexo';
 
 function CursosIndex() {
 
@@ -32,7 +35,7 @@ function CursosIndex() {
   const possiveisFiltros = LitColunaCursoMaker.Todos;
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const [semesterLimitQtdeType, setSemesterLimitQtdeType] = useState('exact');
-  const [testDateType, setTestDateType] = useState('exact');
+  // const [testDateType, setTestDateType] = useState('exact');
   const handleChangeActivePanels = (nextIsShowingAdvanced: boolean) => {
     setEstaMostrandoFiltrosAvancados(nextIsShowingAdvanced);
     if (!nextIsShowingAdvanced) {
@@ -178,7 +181,7 @@ function CursosIndex() {
         </div>
         <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={handleChange} />
         <Maqui_Filtro_Avancado_Wrapper
-          allLabelNames={[...(possiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */]}
+          allLabelNames={[...(possiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */ /*, 'Ativo' */, 'Sexo']}
           selectedLabelNames={selectedFiltros}
           onChangeSelectedLabelNames={setSelectedFiltros}
           show={estaMostrandoFiltrosAvancados}
@@ -209,7 +212,22 @@ function CursosIndex() {
                 onChangeFilterParams={setFilterParams}
                 filterParams={filterParams}
                 selectMinWidth={160}
+                
 />*/}
+            {/*<Maqui_Filtro_Avancado_Logico
+              selectedLabelNames={selectedFiltros}
+              labelName='Ativo'
+              inputName='isActive'
+              onChange={handleChange}
+              value={filterParams.isActive ?? false} />*/}
+            {/*<Maqui_Filtro_Avancado_Literal
+              selectedLabelNames={selectedFiltros}
+              labelName='Sexo'
+              literalOptions={LitSexoMaker.TodosOptions}
+              inputName='genderAbbr'
+              onChange={handleChange}
+              value={filterParams.genderAbbr ?? ''}
+              selectMinWith={120} />*/}
           </>
         </Maqui_Filtro_Avancado_Wrapper>
         
