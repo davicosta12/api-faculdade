@@ -261,7 +261,7 @@ function CursosIndex() {
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
         
 
-        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ ) ?
+        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ 
           <Row>
             {courseResult.result.map(xCurso => <Col span={12} className="half-padding">
               <Card title={<div className="cursos-index-botoes-modal">
