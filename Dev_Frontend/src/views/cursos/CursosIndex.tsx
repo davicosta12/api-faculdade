@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Card, Col, Row, Pagination } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Card, Col, Row, Pagination, Empty } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
@@ -261,7 +261,7 @@ function CursosIndex() {
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
         
 
-        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult.result.length /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ ) ?
+        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ ) ?
           <Row>
             {courseResult.result.map(xCurso => <Col span={12} className="half-padding">
               <Card title={<div className="cursos-index-botoes-modal">
@@ -282,19 +282,23 @@ function CursosIndex() {
               </Card>
               
             </Col>)}
-          </Row> :
-          <DataTable
-            handleRowKey={(course: any) => course.i_Cod_Curso}
-            dataSource={courseResult.result}
-            columns={columns}
-            getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
-            setDataResult={setCourseResult}
-            totalCount={courseResult.paging?.totalCount}
-            pagination
-            isLoading={isLoading}
-          />}
+          </Row> : <>{
+            courseResult?.result?.length ?
+            <DataTable
+              handleRowKey={(course: any) => course.i_Cod_Curso}
+              dataSource={courseResult.result}
+              columns={columns}
+              getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
+              setDataResult={setCourseResult}
+              totalCount={courseResult.paging?.totalCount}
+              pagination
+              isLoading={isLoading}
+              /> :
+              <Empty />
+            }</>
+          }
         
-        {windowWidth <= Constantes.WidthMaximoMobile && courseResult.result.length && <div className='usuarios-index-botoes-modal'>
+        {windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length && <div className='usuarios-index-botoes-modal'>
           <Pagination total={courseResult.result.length} defaultCurrent={1} />
         </div>}
 
