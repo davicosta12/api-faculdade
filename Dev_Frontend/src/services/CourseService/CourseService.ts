@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+import { prepareDateToAPI } from "../../misc/utils/utils";
 import GenericPagingDto from "../GenericDto/GenericPagingDto";
 import HttpService from "../HttpService";
 import CourseFilterParamsDto from "./dto/CourseFilterParamsDto";
@@ -13,6 +14,9 @@ export default class CourseService extends HttpService {
     if (filterParams?.semesterLimitQtdeExact) query += `semesterLimitQtdeExact=${filterParams.semesterLimitQtdeExact}&`;
     if (filterParams?.semesterLimitQtdeDe) query += `semesterLimitQtdeDe=${filterParams.semesterLimitQtdeDe}&`;
     if (filterParams?.semesterLimitQtdeAte) query += `semesterLimitQtdeAte=${filterParams.semesterLimitQtdeAte}&`;
+    // if (filterParams?.testDateExact) query += `testDateExact=${prepareDateToAPI(filterParams.testDateExact)}&`;
+    // if (filterParams?.testDateDe) query += `testDateDe=${prepareDateToAPI(filterParams.testDateDe)}&`;
+    // if (filterParams?.testDateAte) query += `testDateAte=${prepareDateToAPI(filterParams.testDateAte)}&`;
     if (filterParams?.termsInput) query += `termsInput=${encodeURI(filterParams.termsInput)}&`;
     if (filterParams?.isAdvancedSearch !== undefined) query += `isAdvancedSearch=${filterParams.isAdvancedSearch}&`;
     if (filterParams?.fieldOrderLabel) {

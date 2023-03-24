@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Card, Col, Row, Pagination, Empty } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
@@ -15,6 +15,17 @@ import { toastError, toastOptions } from '../../misc/utils/utils';
 import DataTable from '../../_commons/DataTable/DataTable';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirm from '../../_commons/ModalConfirm/ModalConfirm';
+import Maqui_Filtro_Termos from '../../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
+import Maqui_Filtro_Avancado_Wrapper from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
+import Maqui_Filtro_Avancado_Texto from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
+import Maqui_Filtro_Avancado_InteiroOuDecimal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_InteiroOuDecimal';
+import Maqui_Filtro_Avancado_Data from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Data';
+import Maqui_Filtro_Avancado_Logico from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
+import Maqui_Filtro_Avancado_Literal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
+import { LitSexoMaker } from '../../model/literal/lit-sexo';
+import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { Constantes } from '../../model/constantes';
 
 function CursosIndex() {
 
@@ -27,13 +38,14 @@ function CursosIndex() {
   const possiveisFiltros = LitColunaCursoMaker.Todos;
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const [semesterLimitQtdeType, setSemesterLimitQtdeType] = useState('exact');
-  const handleChangeActivePanels = (activePanels: string | string[]) => {
-    setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
-    setFilterParams({ ...filterParams, isAdvancedSearch: activePanels.length > 0 });
-
-    if (activePanels.length === 0) {
+  // const [testDateType, setTestDateType] = useState('exact');
+  const handleChangeActivePanels = (nextIsShowingAdvanced: boolean) => {
+    setEstaMostrandoFiltrosAvancados(nextIsShowingAdvanced);
+    if (!nextIsShowingAdvanced) {
+      
       setFilterParams({
         ...filterParams,
+        isAdvancedSearch: false,
         courseName: '',
         semesterLimitQtdeAte: null,
         semesterLimitQtdeDe: null,
@@ -41,6 +53,9 @@ function CursosIndex() {
       });
       setSemesterLimitQtdeType('exact');
       setSelectedFiltros([]);
+    } else {
+      setFilterParams({ ...filterParams, isAdvancedSearch: true });
+
     }
   }
   const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
@@ -49,6 +64,7 @@ function CursosIndex() {
   // const { state, dispatch } = useContext(AppContext);
 
   const navigate = useNavigate();
+  const { windowWidth } = useWindowDimensions();
 
   const courseService = new CourseService();
 
@@ -88,13 +104,6 @@ function CursosIndex() {
     }
   }
 
-  const handleCheckAvancado = (tag: string, checked: boolean) => {
-    const nextSelectedTags = checked
-      ? [...selectedFiltros, tag]
-      : selectedFiltros.filter((t) => t !== tag);
-    setSelectedFiltros(nextSelectedTags);
-  };
-
   const handleSearch = () => {
     getCourses(1, 5);
   }
@@ -115,13 +124,6 @@ function CursosIndex() {
   const handleRemove = (rowData: GetCourseDto) => {
     setCourse(rowData);
     setIsExcluirModalOpen(true);
-  }
-
-  // Ordenaçao
-  let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
-  for (let iPossivelFiltro of possiveisFiltros) {
-    possiveisOrdenacoes.push({ value: iPossivelFiltro.value + '--asc', label: iPossivelFiltro.descricao + " Crescente" });
-    possiveisOrdenacoes.push({ value: iPossivelFiltro.value + '--desc', label: iPossivelFiltro.descricao + " Decrescente" });
   }
 
   // Resultados e Paginaçao default
@@ -174,139 +176,64 @@ function CursosIndex() {
         <div className="half-padding">
           <Typography.Title level={3}>Cursos</Typography.Title>
         </div>
-
-        {/* Pesquisa */}
-        {!estaMostrandoFiltrosAvancados &&
-          <div className='half-padding'>
-            <Input placeholder="Termos" prefix={<SearchOutlined />} name='termsInput' onChange={handleChange} />
-          </div>}
-        <div className='half-padding'>
-          <Collapse
-            onChange={handleChangeActivePanels}
-            defaultActiveKey={estaMostrandoFiltrosAvancados ? ["filtros-avancados"] : []}
-          >
-            <Collapse.Panel header="Filtros Avançados" key="filtros-avancados">
-              <div className="half-padding">
-                <div className="half-padding ">
-                  {possiveisFiltros.map((obj) => (
-                    <Tag.CheckableTag
-                      key={obj.descricao}
-                      checked={selectedFiltros.includes(obj.descricao)}
-                      onChange={(checked) => handleCheckAvancado(obj.descricao, checked)}
-                    >
-                      {obj.descricao}
-                    </Tag.CheckableTag>
-                  ))}
-                </div>
-                {selectedFiltros.includes(LitColunaCursoMaker.Nome.descricao) &&
-                  <div className="half-padding">
-                    <Input
-                      name='courseName'
-                      value={filterParams.courseName}
-                      placeholder="Nome"
-                      onChange={handleChange}
-                    />
-                  </div>}
-                {selectedFiltros.includes(LitColunaCursoMaker.QtdLimiteSemestres.descricao) && <div className="half-padding">
-                  <div className="cursos-index-filtro-avancado">
-                    <div className="half-padding">
-                      <Typography.Text>Limite de Semestres</Typography.Text>
-                    </div>
-                    <div className='half-padding'>
-                      <Select
-                        style={{ width: 160 }}
-                        options={[
-                          { value: 'exact', label: 'Exato' },
-                          { value: 'interval', label: 'Intervalo' },
-                        ]}
-                        onChange={(value: string) => {
-                          setSemesterLimitQtdeType(value)
-
-                          if (value === 'exact') {
-                            setFilterParams({
-                              ...filterParams,
-                              semesterLimitQtdeDe: null,
-                              semesterLimitQtdeAte: null
-                            });
-                          }
-                          else if (value === 'interval') {
-                            setFilterParams({
-                              ...filterParams,
-                              semesterLimitQtdeExact: null,
-                            });
-                          }
-                        }}
-                        value={semesterLimitQtdeType}
-                      />
-                    </div>
-                  </div>
-                  <div className="cursos-index-filtro-avancado">
-                    <div className="half-padding">
-                      {semesterLimitQtdeType == 'exact' ?
-                        <InputNumber
-                          name='semesterLimitQtdeDe'
-                          placeholder=""
-                          value={filterParams.semesterLimitQtdeExact}
-                          onChange={(value: any) => {
-                            if (semesterLimitQtdeType === 'exact') {
-                              setFilterParams({
-                                ...filterParams,
-                                semesterLimitQtdeExact: value
-                              });
-                            }
-                          }}
-                        /> :
-                        <InputNumber
-                          name='semesterLimitQtdeDe'
-                          placeholder="De"
-                          value={filterParams.semesterLimitQtdeDe}
-                          onChange={(value: any) => {
-                            if (semesterLimitQtdeType === 'interval') {
-                              setFilterParams({
-                                ...filterParams,
-                                semesterLimitQtdeDe: value
-                              });
-                            }
-                          }}
-                        />}
-                    </div>
-                    {semesterLimitQtdeType !== 'exact' &&
-                      <div className='half-padding'>
-                        <InputNumber
-                          name='semesterLimitQtdeAte'
-                          placeholder="Até"
-                          value={filterParams.semesterLimitQtdeAte}
-                          onChange={(value: any) => {
-                            if (semesterLimitQtdeType === 'interval') {
-                              setFilterParams({
-                                ...filterParams,
-                                semesterLimitQtdeAte: value
-                              });
-                            }
-                          }}
-                        />
-                      </div>}
-                  </div>
-                </div>}
-              </div>
-            </Collapse.Panel>
-          </Collapse>
-        </div>
-
-        {/* Ordenar por */}
-        <div className="cursos-index-filtro-avancado">
-          <div className='half-padding'>
-            <Typography.Text>Ordenar por</Typography.Text>
-          </div>
-          <div className='half-padding'>
-            <Select
-              style={{ width: 256 }}
-              options={possiveisOrdenacoes}
-              onChange={(value: string) => setFilterParams({ ...filterParams, fieldOrderLabel: value })}
-              value={filterParams.fieldOrderLabel}
+        <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={handleChange} />
+        <Maqui_Filtro_Avancado_Wrapper
+          allLabelNames={[...(possiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */ /*, 'Ativo' */ /*, 'Sexo' */]}
+          selectedLabelNames={selectedFiltros}
+          onChangeSelectedLabelNames={setSelectedFiltros}
+          show={estaMostrandoFiltrosAvancados}
+          onChangeShow={handleChangeActivePanels} >
+          <>
+            <Maqui_Filtro_Avancado_Texto
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaCursoMaker.Nome.descricao}
+              inputName='courseName'
+              onChange={handleChange}
+              value={filterParams.courseName} />
+            <Maqui_Filtro_Avancado_InteiroOuDecimal
+              eTipoInteiro={true}
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaCursoMaker.QtdLimiteSemestres.descricao}
+              inputNameBasis='semesterLimitQtde'
+              onChangeType={setSemesterLimitQtdeType}
+              typeValue={semesterLimitQtdeType}
+              onChangeFilterParams={setFilterParams}
+              filterParams={filterParams}
+              selectMinWidth={160} />
+              {/*<Maqui_Filtro_Avancado_Data
+                selectedLabelNames={selectedFiltros}
+                labelName='Teste data'
+                inputNameBasis='testDate'
+                onChangeType={setTestDateType}
+                typeValue={testDateType}
+                onChangeFilterParams={setFilterParams}
+                filterParams={filterParams}
+                selectMinWidth={160}
+                
+/>*/}
+            {/*<Maqui_Filtro_Avancado_Logico
+              selectedLabelNames={selectedFiltros}
+              labelName='Ativo'
+              inputName='isActive'
+              onChange={handleChange}
+              value={filterParams.isActive ?? false} />*/}
+            {/*<Maqui_Filtro_Avancado_Literal
+              selectedLabelNames={selectedFiltros}
+              labelName='Sexo'
+              literalOptions={LitSexoMaker.TodosOptions}
+              inputName='genderAbbr'
+              onChange={handleChange}
+              value={filterParams.genderAbbr ?? ''}
+              selectMinWith={120} />*/}
+          </>
+        </Maqui_Filtro_Avancado_Wrapper>
+        
+          <Maqui_Ordenar_Por
+            allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.value, description: x.descricao }) )}
+            onChangeFilterParams={setFilterParams}
+            filterParams={filterParams}
+            selectMinWith={256}
             />
-          </div>
-        </div>
         <div className='agrupar-horizontalmente'>
           <div className='half-padding'>
             <Button
@@ -332,16 +259,48 @@ function CursosIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <DataTable
-          handleRowKey={(course: any) => course.i_Cod_Curso}
-          dataSource={courseResult.result}
-          columns={columns}
-          getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
-          setDataResult={setCourseResult}
-          totalCount={courseResult.paging?.totalCount}
-          pagination
-          isLoading={isLoading}
-        />
+        
+
+        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ 
+          <Row>
+            {courseResult.result.map(xCurso => <Col span={12} className="half-padding">
+              <Card title={<div className="cursos-index-botoes-modal">
+                  <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                    <Button icon={<MoreOutlined />}></Button>
+                  </Dropdown>
+                </div>}
+                bodyStyle={{ padding: "6px" }}
+                headStyle={{ paddingRight: "12px" }}>
+                
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Nome</strong>: {xCurso.s_Nome}</span>
+                </div>
+                <div className='half-padding'>
+                  <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.i_Qtd_Limite_Semestres}</span>
+                </div>
+                
+              </Card>
+              
+            </Col>)}
+          </Row> : <>{
+            courseResult?.result?.length ?
+            <DataTable
+              handleRowKey={(course: any) => course.i_Cod_Curso}
+              dataSource={courseResult.result}
+              columns={columns}
+              getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
+              setDataResult={setCourseResult}
+              totalCount={courseResult.paging?.totalCount}
+              pagination
+              isLoading={isLoading}
+              /> :
+              <Empty />
+            }</>
+          }
+        
+        {windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length && <div className='usuarios-index-botoes-modal'>
+          <Pagination total={courseResult.result.length} defaultCurrent={1} />
+        </div>}
 
       </div>
 

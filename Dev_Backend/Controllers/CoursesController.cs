@@ -41,6 +41,12 @@ namespace my_api.Controllers
            int? pageSize = 5
         )
         {
+            // System.Console.WriteLine("testDateExact:");
+            // System.Console.WriteLine((filterParams.testDateExact?.ToShortDateString() ?? "") + " T " + (filterParams.testDateExact?.ToShortTimeString()));
+            // System.Console.WriteLine("testDateDe:");
+            // System.Console.WriteLine((filterParams.testDateDe?.ToShortDateString() ?? "") + " T " + (filterParams.testDateDe?.ToShortTimeString()));
+            // System.Console.WriteLine("testDateAte:");
+            // System.Console.WriteLine((filterParams.testDateAte?.ToShortDateString() ?? "") + " T " + (filterParams.testDateAte?.ToShortTimeString()));
             try
             {
                 var courseRepository = new CourseRepository(_dbContext);
