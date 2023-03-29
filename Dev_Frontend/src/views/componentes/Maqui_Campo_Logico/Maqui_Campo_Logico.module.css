@@ -1,0 +1,11 @@
+/* 
+    Arquivo .module.css - Permite que todos os nomes de classes/ids
+    sejam aplicados apenas ao componente selecionado.
+
+    Dessa forma, não ocorrem conflitos de classes/ids iguais em outros componentes
+*/
+.maquiCampoLogico {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
