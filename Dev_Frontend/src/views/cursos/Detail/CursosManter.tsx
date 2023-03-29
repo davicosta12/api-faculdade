@@ -10,6 +10,8 @@ import CourseService from "../../../services/CourseService/CourseService";
 import GetCourseDto from "../../../services/CourseService/dto/GetCourseDto";
 import { FinalInputNumber } from "../../../_commons/FinalForm/FinalInputNumber";
 import { FinalInputText } from "../../../_commons/FinalForm/FinalInputText";
+import Maqui_Botao_Lento from "../../../_commons/MaquiButton/Maqui_Botao_Lento";
+import Maqui_Botao_Voltar from "../../../_commons/MaquiButton/Maqui_Botao_Voltar";
 import NavigationWrapper from "../../_navigation/NavigationWrapper";
 import { CourseFormValidators } from "./validators";
 
@@ -107,28 +109,17 @@ const CursosManter: FunctionComponent<Props> = (props) => {
                   placeholder="Limite de Semestres"
                   maxLength={3}
                   component={FinalInputNumber}
+                  isDecimal={false}
                 />
               </div>
               <div className="agrupar-horizontalmente">
-                <div className="half-padding" >
-                  <Button
-                    shape="round"
-                    icon={<ArrowLeftOutlined />}
-                    onClick={handleGoBack}>
-                    Voltar
-                  </Button>
-                </div>
-                <div className="half-padding" >
-                  <Button
-                    type="primary"
-                    shape="round"
-                    icon={<SaveFilled />}
-                    loading={isLoading}
-                    onClick={() => handleSubmit(values as GetCourseDto)}
-                  >
-                    Confirmar
-                  </Button>
-                </div>
+                <Maqui_Botao_Voltar Acao_Voltar={handleGoBack} /> 
+                <Maqui_Botao_Lento
+                  Rotulo_Botao="Confirmar"
+                  Icone={<SaveFilled/>}
+                  Carregando={isLoading}
+                  Acao={() => handleSubmit(values as GetCourseDto)} />
+                
               </div>
             </div>
           )

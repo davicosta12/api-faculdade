@@ -1,18 +1,16 @@
-import { InputNumber } from "antd";
+import { DatePicker, InputNumber } from "antd";
 import { FunctionComponent } from "react";
 import { FieldRenderProps } from 'react-final-form';
 import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from "../../layout/general";
 
 interface Props extends FieldRenderProps<any, HTMLElement> {
   label: string;
-  isInteger: boolean;
 }
 
-export const FinalInputNumber: FunctionComponent<Props> = ({
+export const FinalInputDate: FunctionComponent<Props> = ({
   input: { name, onChange, onBlur, type, value },
   meta: { touched, active, initial, error, dirty, },
   label,
-  isInteger,
   ...custom
 }: Props) => {
 
@@ -22,32 +20,24 @@ export const FinalInputNumber: FunctionComponent<Props> = ({
     ...custom.styles
   };
 
-  const decimalInputProps = isInteger ?
-    {} :
-    {
-      decimalSeparator: ',',
-      formatter: (value: any) => (value + '').replaceAll('.', ',')
-    }
-
-  const handleChange = (text: string | null) => {
-    onChange(text);
+  const handleChange = (value: any) => {
+    onChange(value);
   }
 
   return (
     <>
       {custom.required && <RequiredSpan>*</RequiredSpan>}
       <Label htmlFor={name}> {label} </Label>
-      <InputNumber
+      <DatePicker
         id={name}
         name={name}
         value={value}
         placeholder={custom?.placeholder}
-        maxLength={custom?.maxLength}
         status={error && touched ? 'error' : ''}
         style={inputStyles}
         onChange={handleChange}
         onBlur={(event) => onBlur(event)}
-        {...decimalInputProps}
+        format='DD/MM/YYYY'
       />
       {error && touched && custom.required
         ?

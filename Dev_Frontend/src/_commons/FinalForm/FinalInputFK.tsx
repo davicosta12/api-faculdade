@@ -1,32 +1,38 @@
-import { Select, Spin } from 'antd';
+import { Select, Spin, Typography } from 'antd';
 import { FunctionComponent, useEffect, useState } from "react"
 import MaquiService from '../services/MaquiService';
 import GenericPagingDto from '../../services/GenericDto/GenericPagingDto';
 import GetOptionDto from '../services/dto/GetOptionDto';
 import { toast } from 'react-toastify';
 import { toastError, toastOptions } from '../../misc/utils/utils';
+import { DatePicker, InputNumber } from "antd";
+import { FieldRenderProps } from 'react-final-form';
+import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from "../../layout/general";
 
-interface Props {
+interface Props extends FieldRenderProps<any, HTMLElement> {
+  label: string;
   descriptionColumn: string;
   queryName: string;
   queryParameterName: string;
   comSelecione: boolean;
-  minWidth: number;
-  codValue?: number | undefined;
-  onChangeCodValue?: (value: number | undefined) => void;
 }
 
-const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
+export const FinalInputFK: FunctionComponent<Props> = ({
+  input: { name, onChange, onBlur, type, value },
+  meta: { touched, active, initial, error, dirty, },
+  label,
+  descriptionColumn,
+  queryName,
+  queryParameterName,
+  comSelecione,
+  ...custom
+}: Props) => {
 
-  const {
-    descriptionColumn,
-    queryName,
-    queryParameterName,
-    comSelecione,
-    minWidth,
-    codValue,
-    onChangeCodValue
-  } = props;
+  const inputStyles = {
+    width: '100%',
+    marginTop: 3,
+    ...custom.styles
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -58,17 +64,17 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
   const searchOptionAsync = async () => {
 
     setIsLoading(true);
-    const codPayload = codValue;
+    const codPayload = value;
 
     try {
       const _option = await maquiService.getOptionByCod(codPayload ?? 0, descriptionColumn, queryName);
-      if (codPayload === codValue) {
+      if (codPayload === value) {
         setAppendedOption({ value: _option.cod + '', label: _option.description });
       }
     } catch (err: any) {
       toast.error(toastError(err), toastOptions(toast));
     } finally {
-      if (codPayload === codValue) {
+      if (codPayload === value) {
         setIsLoading(false);
       }
     }
@@ -76,17 +82,12 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
 
   const handleChangeKey = (key: string) => {
     setSelectedValue(key);
-    if (key !== '' && !isNaN(+key) && onChangeCodValue) {
-      console.log('onChangeCodValue');
-      console.log(+key);
-      
-      onChangeCodValue(+key);
+    if (key !== '' && !isNaN(+key)) {
+      onChange(key);
+      // onChangeCodValue(+key);
     } else {
-      if (onChangeCodValue) {
-        console.log('onChangeCodValue');
-        console.log(undefined);
-        onChangeCodValue(undefined);
-      }
+      onChange(undefined);
+      // onChangeCodValue(undefined);
     }
   }
 
@@ -99,17 +100,17 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
   }, [search]);
 
   useEffect(() => {
-    if (codValue === undefined) {
+    if (value === undefined || value === '') {
       setSelectedValue('');
     } else {
-      const alreadyFound = options.find(x => x.value === codValue + '');
+      const alreadyFound = options.find(x => x.value === value + '');
       if (alreadyFound) {
-        setSelectedValue(codValue + '')
+        setSelectedValue(value + '')
       } else {
         searchOptionAsync();
       }
     }
-  }, [codValue])
+  }, [value])
 
   let initialArray: {value: string, label: string}[] = comSelecione ? [
     { value: '', label: 'Selecione...' },
@@ -125,36 +126,38 @@ const Maqui_Campo_FK: FunctionComponent<Props> = (props) => {
     if (appendedOption) {
       optionsCalc = optionsCalc.concat([appendedOption]);
     }
-    console.log('optionsCalc:')
-    console.log(optionsCalc);
     
     setOptions(optionsCalc);
   }, [maquiResult, appendedOption]);
 
   useEffect(() => {
-    console.log('verifying... codValue')
-    console.log(codValue);
-    
-    if (codValue !== undefined && (codValue + '') !== selectedValue) {
-      setSelectedValue(codValue + '');
+    if (value !== undefined && (value + '') !== selectedValue) {
+      setSelectedValue(value + '');
     }
   }, [options]);
 
   return (
-    
-    <div className="half-padding">
-      {maquiResult.result && <Select
+    <>
+      {custom.required && <RequiredSpan>*</RequiredSpan>}
+      <Label htmlFor={name}> {label} </Label>
+      {maquiResult.result ? <Select
+        id={name}
         showSearch
         onSearch={(text: string) => setSearch(text)}
         filterOption={false}
-        style={{ minWidth: minWidth }}
+        style={inputStyles}
         options={options}
         notFoundContent={isLoading ? <Spin className='antd-top-padding' /> : null}
         onChange={(key: string) => handleChangeKey(key)}
         value={selectedValue}
-      />}
-    </div>
+        onBlur={(event) => onBlur(event)}
+        status={error && touched ? 'error' : ''}
+        /> : <Spin className='antd-top-padding' /> }
+      {error && touched && custom.required
+        ?
+        <ContainerFormMessageError>
+          <FormMessageError>{error}</FormMessageError>
+        </ContainerFormMessageError> : null}
+    </>
   )
 }
-
-export default Maqui_Campo_FK

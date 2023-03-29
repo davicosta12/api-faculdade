@@ -1,3 +1,4 @@
+import { LiteralOption } from "../../_commons/MaquiInterfaces/Maqui_Interfaces";
 import GetLiteralOptionDto from "../../_commons/services/dto/GetLiteralOptionDto";
 
 export type LitSexoSigla = 'M' | 'F';
@@ -31,6 +32,10 @@ class LitSexoMaker {
 
     static get TodosOptions(): GetLiteralOptionDto[] {
         return LitSexoMaker.Todos.map(x => ({ key: x.sigla, description: x.descricao }) ); 
+    }
+
+    static get TodosFormOptions(): LiteralOption[] {
+        return LitSexoMaker.Todos.map(x => ({ value: x.sigla, label: x.descricao }) ); 
     }
 }
 

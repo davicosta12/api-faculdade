@@ -1,20 +1,25 @@
-import { InputNumber } from "antd";
+import { DatePicker, InputNumber, Select } from "antd";
 import { FunctionComponent } from "react";
 import { FieldRenderProps } from 'react-final-form';
 import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from "../../layout/general";
+import { LiteralOption } from "../MaquiInterfaces/Maqui_Interfaces";
 
 interface Props extends FieldRenderProps<any, HTMLElement> {
-  label: string;
-  isInteger: boolean;
+  Nome_do_Campo: string;
+  Opcoes: Array<LiteralOption>;
+  Com_Selecione?: Boolean;
 }
 
-export const FinalInputNumber: FunctionComponent<Props> = ({
+export const FinalInputLiteral: FunctionComponent<Props> = ({
   input: { name, onChange, onBlur, type, value },
   meta: { touched, active, initial, error, dirty, },
-  label,
-  isInteger,
+  Nome_do_Campo,
+  Opcoes,
+  Com_Selecione,
   ...custom
 }: Props) => {
+  const selecione = { value: '', label: 'Selecione...' };
+  const OpcoesSelect = Com_Selecione ? [ selecione, ...Opcoes ] : Opcoes;
 
   const inputStyles = {
     width: '100%',
@@ -22,32 +27,23 @@ export const FinalInputNumber: FunctionComponent<Props> = ({
     ...custom.styles
   };
 
-  const decimalInputProps = isInteger ?
-    {} :
-    {
-      decimalSeparator: ',',
-      formatter: (value: any) => (value + '').replaceAll('.', ',')
-    }
-
-  const handleChange = (text: string | null) => {
-    onChange(text);
+  const handleChange = (value: any) => {
+    onChange(value);
   }
 
   return (
     <>
       {custom.required && <RequiredSpan>*</RequiredSpan>}
-      <Label htmlFor={name}> {label} </Label>
-      <InputNumber
+      <Label htmlFor={name}> {Nome_do_Campo} </Label>
+      <Select
+        options={ OpcoesSelect }
+        defaultValue={ OpcoesSelect[0].value }
         id={name}
-        name={name}
         value={value}
-        placeholder={custom?.placeholder}
-        maxLength={custom?.maxLength}
         status={error && touched ? 'error' : ''}
         style={inputStyles}
         onChange={handleChange}
         onBlur={(event) => onBlur(event)}
-        {...decimalInputProps}
       />
       {error && touched && custom.required
         ?

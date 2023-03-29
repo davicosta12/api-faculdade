@@ -4,8 +4,13 @@
 
     Dessa forma, não ocorrem conflitos de classes/ids iguais em outros componentes
 */
-.maquiCampoLogico {
+.maquiCampoLogico, .erroEmVolta {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.erroEmVolta {
+    border: 1px solid rgb(255, 77, 79);
+    border-radius: 6px;
 }

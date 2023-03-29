@@ -31,7 +31,13 @@ type LiteralOption = {
 interface IBotaoLento {
     Rotulo_Botao: string;
     Carregando: boolean;
+    Acao: () => void;
+    Icone: any;
     [rest: string]: any;
 }
 
-export type { ICampo, ICampoTexto, ICampoTextoCPF, ICampoLiteral, IBotaoLento };
+interface IBotaoVoltar {
+    Acao_Voltar: () => void;
+}
+
+export type { ICampo, ICampoTexto, ICampoTextoCPF, ICampoLiteral, IBotaoLento, IBotaoVoltar, LiteralOption };

@@ -1,18 +1,19 @@
-import { InputNumber } from "antd";
+import { Input } from "antd";
+import { MaskedInput } from "antd-mask-input";
 import { FunctionComponent } from "react";
 import { FieldRenderProps } from 'react-final-form';
 import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from "../../layout/general";
 
 interface Props extends FieldRenderProps<any, HTMLElement> {
   label: string;
-  isInteger: boolean;
+  mask: string;
 }
 
-export const FinalInputNumber: FunctionComponent<Props> = ({
+export const FinalInputMaskedText: FunctionComponent<Props> = ({
   input: { name, onChange, onBlur, type, value },
   meta: { touched, active, initial, error, dirty, },
   label,
-  isInteger,
+  mask,
   ...custom
 }: Props) => {
 
@@ -22,32 +23,23 @@ export const FinalInputNumber: FunctionComponent<Props> = ({
     ...custom.styles
   };
 
-  const decimalInputProps = isInteger ?
-    {} :
-    {
-      decimalSeparator: ',',
-      formatter: (value: any) => (value + '').replaceAll('.', ',')
-    }
-
-  const handleChange = (text: string | null) => {
-    onChange(text);
+  const handleChange = (ev: any) => {
+    onChange(ev.unmaskedValue);
   }
 
   return (
     <>
       {custom.required && <RequiredSpan>*</RequiredSpan>}
       <Label htmlFor={name}> {label} </Label>
-      <InputNumber
+      <MaskedInput
         id={name}
         name={name}
         value={value}
-        placeholder={custom?.placeholder}
-        maxLength={custom?.maxLength}
+        mask={mask}
         status={error && touched ? 'error' : ''}
         style={inputStyles}
         onChange={handleChange}
         onBlur={(event) => onBlur(event)}
-        {...decimalInputProps}
       />
       {error && touched && custom.required
         ?
