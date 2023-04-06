@@ -99,7 +99,7 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                   required
                   component={FinalInputLiteral}
                   Nome_do_Campo='Sexo'
-                  Opcoes={LitSexoMaker.TodosFormOptions}
+                  Opcoes={LitSexoMaker.TodosOptions}
                   Com_Selecione={true}
                 />
               </div>

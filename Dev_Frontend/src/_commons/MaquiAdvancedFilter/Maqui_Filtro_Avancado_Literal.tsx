@@ -1,12 +1,12 @@
 import { Select, Switch, Typography } from "antd";
 import { FunctionComponent } from "react";
-import GetLiteralOptionDto from "../services/dto/GetLiteralOptionDto";
+import { LiteralOption } from "../MaquiInterfaces/Maqui_Interfaces";
 import './Maqui.css';
 
 interface Props {
     selectedLabelNames: string[];
     labelName: string;
-    literalOptions: GetLiteralOptionDto[];
+    literalOptions: LiteralOption[];
     inputName: string;
     onChange: (ev: any) => void;
     value?: string;
@@ -35,6 +35,9 @@ const Maqui_Filtro_Avancado_Literal: FunctionComponent<Props> = (props) => {
     value,
     selectMinWith
   } = props;
+  
+  const selecione = { value: '', label: 'Selecione...' };
+  const literalOptionsSelect = [ selecione, ...literalOptions ];
 
   const handleChange = (selectedKey: string) => {
     const eventLike = new EventLike(inputName, selectedKey);
@@ -53,23 +56,13 @@ const Maqui_Filtro_Avancado_Literal: FunctionComponent<Props> = (props) => {
               ? <Select
                   defaultValue=""
                   style={{ minWidth: selectMinWith }}
-                  options={[
-                    { value: '', label: 'Selecione...' },
-                    ...(literalOptions.map(x =>
-                      ({ value: x.key, label: x.description })
-                    )) 
-                  ]}
+                  options={literalOptionsSelect}
                   onChange={handleChange}
                   value={value} />
               : <Select
                   defaultValue=""
                   style={{ minWidth: selectMinWith }}
-                  options={[
-                    { value: '', label: 'Selecione...' },
-                    ...(literalOptions.map(x =>
-                      ({ value: x.key, label: x.description })
-                    )) 
-                  ]}
+                  options={literalOptionsSelect}
                   onChange={handleChange} />}
           </div>
         </div>}
