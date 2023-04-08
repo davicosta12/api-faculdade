@@ -1,4 +1,4 @@
-.login-background {
+.cadastrar-se-background {
   background-image: url('../../assets/login-sala.webp');
   width: 100vw;
   height: 100vh;
@@ -8,17 +8,18 @@
   align-items: center;
 }
 
-.login-card {
+.cadastrar-se-card {
   width: max(30vw, 300px);
 }
 
-.login-avancar {
-  display: flex;
-  justify-content: center;
-}
-
-.login-botoes {
+.cadastrar-se-botoes {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+
+.cadastrar-se-selecao-sexo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }

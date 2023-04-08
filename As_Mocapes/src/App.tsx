@@ -10,6 +10,7 @@ import InscricoesIndex from './views/inscricoes/InscricoesIndex';
 import InscricoesManter from './views/inscricoes/InscricoesManter';
 import Login from './views/login/Login';
 import NovaSenha from './views/login/NovaSenha';
+import NovoAluno from './views/login/NovoAluno';
 import UsuariosIndex from './views/usuarios/UsuariosIndex';
 import UsuariosManter from './views/usuarios/UsuariosManter';
 
@@ -19,6 +20,7 @@ function App() {
     /* Modulo 01 > Autenticaçao  */
     { path: '/login', element: <Login/> },
     { path: '/login/nova-senha', element: <NovaSenha/> },
+    { path: '/login/cadastrar-se', element: <NovoAluno/> },
     { path: '/', element: <Home/> },
     
     /* Modulo 01 > Manutençao de Usuario  */

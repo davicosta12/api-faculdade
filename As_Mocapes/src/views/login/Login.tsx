@@ -1,7 +1,7 @@
 import React from 'react';
 import './Login.css';
 import { Card, Input, Button, Typography, Spin } from 'antd';
-import { CheckOutlined } from '@ant-design/icons';
+import { CheckOutlined, PlusOutlined } from '@ant-design/icons';
 import LoginState from '../../integrations/login-state';
 
 function Login() {
@@ -22,8 +22,14 @@ function Login() {
           {LoginState.SenhaNaoInformada && <div className="half-padding">
             <Typography.Text type="danger">A senha é obrigatória</Typography.Text>
           </div>}
-          <div className="half-padding login-avancar">
-            {LoginState.AvancarEstaCarregando ? <Spin /> : <Button type="primary" shape="round" icon={<CheckOutlined/>}>Avançar</Button>}
+          <div className="login-botoes">
+            <div className='half-padding'>
+              <Button shape='round' icon={<PlusOutlined/>} >Cadastrar-se</Button>
+            </div>
+            <div className="half-padding login-avancar">
+              {LoginState.AvancarEstaCarregando ? <Spin /> : <Button type="primary" shape="round" icon={<CheckOutlined/>}>Avançar</Button>}
+            </div>
+            
           </div>
         </div>
       </Card>
