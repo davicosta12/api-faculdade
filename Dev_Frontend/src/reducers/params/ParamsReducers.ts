@@ -9,6 +9,12 @@ export const paramsReducer = (state: ParamsType, action: ParamsActions) => {
         activeUser: { ...action.payload }
       }
 
+    case Types.SET_COURSES_GROUP:
+      return {
+        ...state,
+        courses: [...action.payload]
+      }
+
     default:
       return state;
   }

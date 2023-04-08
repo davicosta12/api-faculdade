@@ -1,6 +1,6 @@
 USE db_Faculdade;
 
---Variáveis
+--Parâmetros de entrada
 SET @CPF = '00000000191';
 SET @Senha = 'admin007';
 

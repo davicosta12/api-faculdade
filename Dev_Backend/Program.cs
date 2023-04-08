@@ -1,7 +1,8 @@
+using System.Reflection;
 using System.Text;
 using Dev_Backend.Data;
+using Dev_Backend.Domain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using static Dev_Backend.Helpers.AuthenticationHelper;
@@ -17,25 +18,19 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+var contact = VersionApi.GetVersion();
+
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend Token Teste", Version = "v1" });
+    c.SwaggerDoc("Token", contact);
 
-    c.TagActionsBy(api =>
-      {
-          if (api.GroupName != null)
-          {
-              return new[] { api.GroupName };
-          }
+    c.SwaggerDoc("Course", contact);
 
-          var controllerActionDescriptor = api.ActionDescriptor as ControllerActionDescriptor;
-          if (controllerActionDescriptor != null)
-          {
-              return new[] { controllerActionDescriptor.ControllerName };
-          }
-
-          throw new InvalidOperationException("Unable to determine tag for endpoint.");
-      });
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
@@ -63,7 +58,7 @@ builder.Services.AddSwaggerGen(c =>
                     }
     });
 
-    c.DocInclusionPredicate((name, api) => true);
+    c.ResolveConflictingActions(a => a.First());
     c.EnableAnnotations();
 });
 
@@ -102,11 +97,19 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.EnablePersistAuthorization();
+        c.SwaggerEndpoint("/swagger/Token/swagger.json", "Token");
+        c.SwaggerEndpoint("/swagger/Course/swagger.json", "Course");
+        c.DocumentTitle = "API - Documentation - Swagger";
+    });
     app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseCors(x => x
             .AllowAnyOrigin()

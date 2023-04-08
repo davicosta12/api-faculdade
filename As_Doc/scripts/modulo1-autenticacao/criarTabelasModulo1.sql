@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
   S_Nome_Mae VARCHAR(100),
   B_E_Ativo TINYINT,
   S_Email VARCHAR(80),
-  S_Senha VARCHAR(512), --Por conta do Hash
+  S_Senha VARCHAR(512),
   B_Tem_Senha_Temporaria TINYINT
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Inscricao_Curso (
   I_Cod_Usuario_Aluno INT NOT NULL,
   I_Cod_Curso INT NOT NULL,
   D_Data_Inicio DATETIME,
-  D_Data_Fim DATETIME,
+  D_Data_Fim DATETIME NULL,
   CONSTRAINT fk_Inscricao_Curso_Cod_Usuario_Aluno
     FOREIGN KEY(I_Cod_Usuario_Aluno)
     REFERENCES Usuario (I_Cod_Usuario),
@@ -33,5 +33,3 @@ CREATE TABLE IF NOT EXISTS Inscricao_Curso (
     FOREIGN KEY(I_Cod_Curso)
     REFERENCES Curso (I_Cod_Curso)
 );
-
-

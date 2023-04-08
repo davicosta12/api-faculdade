@@ -1,6 +1,6 @@
 USE db_Faculdade;
 
---Variáveis
+--Parâmetros de entrada
 SET @Perfil = 'S';
 SET @Ordenacao_Por = '';
 SET @E_Ordenacao_Crescente = 1;
