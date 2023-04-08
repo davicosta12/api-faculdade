@@ -23,3 +23,25 @@ export const formatDate = (date: string) => {
   const dateMoment = moment(date);
   return dateMoment.isValid() ? dateMoment.format("DD/MM/YYYY") : "";
 }
+
+export const toUTCDateString = (date: Date): string => {
+  return date.getUTCFullYear()
+    + '-' + ((date.getUTCMonth() + 1) + '').padStart(2, '0')
+    + '-' + (date.getUTCDate() + '').padStart(2, '0')
+    + 'T' + (date.getUTCHours() + '').padStart(2, '0')
+    + ':' + (date.getUTCMinutes() + '').padStart(2, '0')
+    + ':' + (date.getUTCSeconds() + '').padStart(2, '0');
+}
+
+export const prepareDateToAPI = (date: Date): string => {
+  return encodeURI(
+    date.getUTCFullYear()
+      + '-' + ((date.getUTCMonth() + 1) + '').padStart(2, '0')
+      + '-' + (date.getUTCDate() + '').padStart(2, '0')
+      + 'T' + (date.getUTCHours() + '').padStart(2, '0')
+      + ':' + (date.getUTCMinutes() + '').padStart(2, '0')
+      + ':' + (date.getUTCSeconds() + '').padStart(2, '0')
+  );
+}
+
+export const requiredMessage: string = "Por favor, preencha o campo!";

@@ -1,6 +1,8 @@
 using Dev_Backend.Bussiness.API;
 using Dev_Backend.Bussiness.API.GenericPagings;
 using Dev_Backend.Data.Models.Courses;
+using Dev_Backend.Extensions;
+using Dev_Backend.Maqui.Data.Models;
 using Dev_Backend.Utils.WherePredicate;
 
 namespace Dev_Backend.Data.Repositories
@@ -14,7 +16,15 @@ namespace Dev_Backend.Data.Repositories
 
         public async Task<GenericPaging<Course>> GetCourses(GetCourseFilterPaging filterParams, int? currentPageNumber, int? pageSize)
         {
-            string where = WherePredicate.GetCoursesFilterWhere(filterParams);
+            string where = "";
+            if (filterParams.isAdvancedSearch)
+            {
+                where = CoursesWherePredicate.GetCoursesFilterWhere(filterParams);
+            }
+            else
+            {
+                where = FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new [] { "c.s_Nome", "c.i_Qtd_Limite_Semestres" });
+            }
             string orderBy = "";
 
             if (String.IsNullOrEmpty(filterParams.fieldOrderLabel) == false && filterParams.isDesc != null)
@@ -34,16 +44,21 @@ namespace Dev_Backend.Data.Repositories
                             WHERE 1=1 {where}
                             {orderBy} 
                             LIMIT @_skip, @_take";
-
-            var reader = await QueryMultipleAsync(sql, new
+            
+            var sqlParams = new Dictionary<string, object?>
             {
-                @courseName = filterParams.courseName,
-                @semesterLimitQtdeExact = filterParams.semesterLimitQtdeExact,
-                @semesterLimitQtdeDe = filterParams.semesterLimitQtdeDe,
-                @semesterLimitQtdeAte = filterParams.semesterLimitQtdeAte,
-                @_skip = skip,
-                @_take = take
-            });
+                ["@courseName"] = filterParams.courseName,
+                ["@semesterLimitQtdeExact"] = filterParams.semesterLimitQtdeExact,
+                ["@semesterLimitQtdeDe"] = filterParams.semesterLimitQtdeDe,
+                ["@semesterLimitQtdeAte"] = filterParams.semesterLimitQtdeAte,
+                ["@_skip"] = skip,
+                ["@_take"] = take
+            };
+            if (!filterParams.isAdvancedSearch)
+            {
+                FilterByTerms.AddTerms(sqlParams, filterParams.termsInput);
+            }
+            var reader = await QueryMultipleAsync(sql, sqlParams.AsExpandoObject());
 
             int totalCount = reader.Read<int>().FirstOrDefault();
             var courses = reader.Read<Course>().ToList();

@@ -3,14 +3,14 @@ import { useRoutes } from 'react-router-dom';
 import NavigationState from './integrations/navigation-state';
 import { LitPerfilSigla } from './model/literal/lit-perfil';
 import CursosIndex from './views/cursos/CursosIndex';
-import CursosManter from './views/cursos/CursosManter';
+import CursosManter from './views/cursos/Detail/CursosManter';
 import Home from './views/home/Home';
 import InscricoesIndex from './views/inscricoes/InscricoesIndex';
-import InscricoesManter from './views/inscricoes/InscricoesManter';
+import InscricoesManter from './views/inscricoes/Detail/InscricoesManter';
 import Login from './views/login/Login';
 import NovaSenha from './views/login/NovaSenha';
 import UsuariosIndex from './views/usuarios/UsuariosIndex';
-import UsuariosManter from './views/usuarios/UsuariosManter';
+import UsuariosManter from './views/usuarios/Detail/UsuariosManter';
 
 interface Props {
 }

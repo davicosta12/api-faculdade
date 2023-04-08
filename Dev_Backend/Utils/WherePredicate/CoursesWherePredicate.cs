@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Dev_Backend.Utils.WherePredicate
 {
-    public class WherePredicate
+    public class CoursesWherePredicate
     {
         public static string GetCoursesFilterWhere<T>(T parameter) where T : class
         {
@@ -55,6 +55,9 @@ namespace Dev_Backend.Utils.WherePredicate
                             case "isDesc":
                                 break;
 
+                            case "isAdvancedSearch":
+                                break;
+
                             // case "branchPlatformId":
                             //     string platformValue = String.Join(",", ((List<int>)value).Select(x => x.ToString()).ToArray());
                             //     sb.Append($" o.{columnName} IN ({platformValue}) AND ");
@@ -74,23 +77,6 @@ namespace Dev_Backend.Utils.WherePredicate
             catch (Exception e)
             {
                 throw e;
-            }
-        }
-
-        public class ColumnDbName : Attribute
-        {
-            private string _columnName { get; set; }
-            public string ColumnName
-            {
-                get
-                {
-                    return _columnName;
-                }
-            }
-
-            public ColumnDbName(string columnName)
-            {
-                this._columnName = columnName;
             }
         }
     }

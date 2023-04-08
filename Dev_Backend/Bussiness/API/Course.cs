@@ -1,4 +1,4 @@
-using static Dev_Backend.Utils.WherePredicate.WherePredicate;
+using Dev_Backend.Utils.WherePredicate;
 
 namespace Dev_Backend.Bussiness.API
 {
@@ -15,6 +15,15 @@ namespace Dev_Backend.Bussiness.API
 
         [ColumnDbName("i_Qtd_Limite_Semestres")]
         public int? semesterLimitQtdeAte { get; set; } = null;
+
+        // public DateTime? testDateExact { get; set; } = null;
+
+        // public DateTime? testDateDe { get; set; } = null;
+
+        // public DateTime? testDateAte { get; set; } = null;
+
+        public bool isAdvancedSearch { get; set; } = false;
+        public string? termsInput { get; set; } = null;
         
         public string? fieldOrderLabel { get; set; } = null;    
          
