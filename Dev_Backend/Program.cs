@@ -27,6 +27,8 @@ builder.Services.AddSwaggerGen(c =>
 
     c.SwaggerDoc("Course", contact);
 
+    c.SwaggerDoc("User", contact);
+
     // Set the comments path for the Swagger JSON and UI.
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -102,6 +104,7 @@ if (app.Environment.IsDevelopment())
         c.EnablePersistAuthorization();
         c.SwaggerEndpoint("/swagger/Token/swagger.json", "Token");
         c.SwaggerEndpoint("/swagger/Course/swagger.json", "Course");
+        c.SwaggerEndpoint("/swagger/User/swagger.json", "User");
         c.DocumentTitle = "API - Documentation - Swagger";
     });
     app.UseDeveloperExceptionPage();
