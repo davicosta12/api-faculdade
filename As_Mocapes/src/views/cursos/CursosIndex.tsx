@@ -18,7 +18,7 @@ function CursosIndex() {
   const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
-  const possiveisFiltros = LitColunaCursoMaker.Todos.map(x => x.descricao);
+  const possiveisFiltros = ['Nome'];
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
@@ -29,7 +29,6 @@ function CursosIndex() {
       : selectedFiltros.filter((t) => t !== tag);
     setSelectedFiltros(nextSelectedTags);
   };
-  const [tipoLimiteSemestresEscolhido, setTipoLimiteSemestresEscolhido] = useState('limite-semestres-exato');
     
   // Ordenaçao
   let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
@@ -55,11 +54,6 @@ function CursosIndex() {
       title: LitColunaCursoMaker.Nome.descricao,
       dataIndex: LitColunaCursoMaker.Nome.nomePropriedade,
       key: LitColunaCursoMaker.Nome.nomePropriedade,
-    },
-    {
-      title: LitColunaCursoMaker.QtdLimiteSemestres.descricao,
-      dataIndex: LitColunaCursoMaker.QtdLimiteSemestres.nomePropriedade,
-      key: LitColunaCursoMaker.QtdLimiteSemestres.nomePropriedade,
     },
     {
       title: '#',
@@ -101,35 +95,6 @@ function CursosIndex() {
                 </div>
                 {selectedFiltros.includes(LitColunaCursoMaker.Nome.descricao) && <div className="half-padding">
                   <Input placeholder="Nome" />
-                </div>}
-                {selectedFiltros.includes(LitColunaCursoMaker.QtdLimiteSemestres.descricao) && <div className="half-padding">
-                  <div className="cursos-index-filtro-avancado">
-                    <div className="half-padding">
-                      <Typography.Text>Limite de Semestres</Typography.Text>
-                    </div>
-                    <div className='half-padding'>
-                      <Select
-                        defaultValue=""
-                        style={{ width: 160 }}
-                        options={[
-                          { value: 'limite-semestres-exato', label: 'Exato' },
-                          { value: 'limite-semestres-intervalo', label: 'Intervalo' },
-                        ]}
-                        onChange={(value: string) => setTipoLimiteSemestresEscolhido(value)}
-                        value={tipoLimiteSemestresEscolhido}
-                      />
-                    </div>
-                  </div>
-                  <div className="cursos-index-filtro-avancado">
-                    <div className="half-padding">
-                      {tipoLimiteSemestresEscolhido == 'limite-semestres-exato' ?
-                        <InputNumber placeholder="" /> :
-                        <InputNumber placeholder="De" />}
-                    </div>
-                    {tipoLimiteSemestresEscolhido != 'limite-semestres-exato' && <div className='half-padding'>
-                      <InputNumber placeholder="Até" />
-                    </div>}
-                  </div>
                 </div>}
               </div>
             </Collapse.Panel>
@@ -174,10 +139,7 @@ function CursosIndex() {
                 headStyle={{ paddingRight: "12px" }}>
                 
                 <div className='half-padding'>
-                  <span className='card-text-size'><strong>Nome</strong>: {xCurso.nome}</span>
-                </div>
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.qtdLimiteSemestres}</span>
+                  <span className='card-text-size'><strong>{xCurso.nome}</strong></span>
                 </div>
                 
               </Card>
@@ -214,7 +176,7 @@ function CursosIndex() {
           </>}
           {(!CursosIndexState.estaCarregandoSePodeExcluir && !CursosIndexState.podeExcluir) && <>
             <div className="half-padding">
-              <Typography.Title level={5}>Não é possível excluir um curso enquanto ele tiver inscrições.</Typography.Title>
+              <Typography.Title level={5}>Não é possível excluir um curso enquanto ele tiver ocupações.</Typography.Title>
             </div>
             <div className="usuarios-index-botoes-modal">
               <div className="half-padding" >

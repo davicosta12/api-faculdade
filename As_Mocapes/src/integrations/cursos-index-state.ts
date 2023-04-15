@@ -1,20 +1,19 @@
 import { IResultadoCurso } from "../model/curso-resultado";
 
-const createMockedCurso = (nome: string, qtdLimiteSemestres: number): IResultadoCurso => {
+const createMockedCurso = (nome: string): IResultadoCurso => {
     return {
-        id: new Date().getTime(),
+        id: +window.crypto.getRandomValues(new Uint32Array(1)),
         nome: nome,
-        qtdLimiteSemestres: qtdLimiteSemestres,
     }
 }
 
 const CursosIndexState = {
     cursosApresentados: [
-        createMockedCurso('Matemática', 12),
-        createMockedCurso('Psicologia', 14),
-        createMockedCurso('Análise de Sistemas', 12),
-        createMockedCurso('Biologia', 16),
-        createMockedCurso('Engenharia', 14),
+        createMockedCurso('HTML Básico'),
+        createMockedCurso('Javascript'),
+        createMockedCurso('React'),
+        createMockedCurso('C#'),
+        createMockedCurso('MariaDB'),
     ],
     estaCarregandoSePodeExcluir: false,
     podeExcluir: true

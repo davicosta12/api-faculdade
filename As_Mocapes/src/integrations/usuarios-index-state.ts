@@ -2,7 +2,7 @@ import { IResultadoUsuario } from "../model/usuario-resultado";
 
 const createMockedUsuario = (nome: string, ra: string, sexo: 'M' | 'F', nomeMae: string, eAtivo: boolean): IResultadoUsuario => {
     return {
-        id: new Date().getTime(),
+        id: +window.crypto.getRandomValues(new Uint32Array(1)),
         nome: nome,
         ra: ra,
         sexo: sexo,
