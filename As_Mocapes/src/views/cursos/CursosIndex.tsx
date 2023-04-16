@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row, Spin } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row, Spin, Empty } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
@@ -10,6 +10,7 @@ import { CursosIndexState } from '../../integrations/cursos-index-state';
 import { IResultadoCurso } from '../../model/curso-resultado';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
+import DataTable from '../_commons/DataTable/DataTable';
 
 
 function CursosIndex() {
@@ -127,7 +128,7 @@ function CursosIndex() {
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
         
-        {windowWidth <= Constantes.WidthMaximoMobile ?
+        {(windowWidth <= Constantes.WidthMaximoMobile && CursosIndexState.cursosApresentados.length > 0) ?
           <Row>
             {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
               <Card title={<div className="cursos-index-botoes-modal">
@@ -145,8 +146,21 @@ function CursosIndex() {
               </Card>
               
             </Col>)}
-          </Row> :
-          <Table dataSource={CursosIndexState.cursosApresentados} columns={columns} />}
+          </Row> : <>{
+            CursosIndexState.cursosApresentados.length > 0 ?
+            <DataTable
+              handleRowKey={(course: any) => course.i_Cod_Curso}
+              dataSource={CursosIndexState.cursosApresentados}
+              columns={columns}
+              getData={(_page: number | undefined, _perPage: number | undefined) => {}}
+              setDataResult={null}
+              totalCount={CursosIndexState.cursosApresentados.length}
+              pagination
+              isLoading={false}
+              /> :
+            <Empty />
+          }</>
+        }
         
         {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
           <Pagination total={CursosIndexState.cursosApresentados.length} defaultCurrent={1} />

@@ -12,30 +12,53 @@ import { UsuariosIndexState } from '../../integrations/usuarios-index-state';
 import type { MenuProps } from 'antd';
 import { Constantes } from '../../model/constantes';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
+import Maqui_Filtro_Termos from '../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
+import Maqui_Filtro_Avancado_Wrapper from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
+import Maqui_Filtro_Avancado_Texto from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
+import Maqui_Filtro_Avancado_Literal from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
+import Maqui_Filtro_Avancado_Logico from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
+import UserFilterParamsDto from '../../services/UserService/dto/UserFilterParamsDto';
+import { LitSexoMaker } from '../../model/literal/lit-sexo';
+import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
 
 
 function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   const litPerfil = LitPerfilMaker.PorSiglaOrNull(props.siglaPerfil);
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
+  const [filterParams, setFilterParams] = useState<UserFilterParamsDto>(new UserFilterParamsDto());
+  const handleChangeActivePanels = (next: boolean) => {
+    setEstaMostrandoFiltrosAvancados(next);
+    if (!next) {
+      setFilterParams({
+        ...filterParams,
+        isAdvancedSearch: false,
+        name: '',
+        ra: '',
+        genderAbbrev: null,
+        motherName: '',
+        isActive: null,
+      });
+      setSelectedFiltros([]);
+    } else {
+      setFilterParams({ ...filterParams, isAdvancedSearch: true });
+
+    }
+  }
     
   const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
-  let possiveisFiltros: string[] = []
-  possiveisFiltros = LitColunaUsuarioMaker.Todos.map(x => x.descricao);
+  let possiveisFiltros: LitColunaUsuario[] = [];
+  possiveisFiltros = LitColunaUsuarioMaker.Todos;
   if (props.siglaPerfil !== 'A') {
-    possiveisFiltros = possiveisFiltros.filter(x => x !== LitColunaUsuarioMaker.RA.descricao);
+    possiveisFiltros = possiveisFiltros.filter(x => x.nomePropriedade !== LitColunaUsuarioMaker.RA.nomePropriedade);
   }
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
-  const handleChangeActivePanels = (activePanels: string | string[]) => {
-    setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
+
+  const handleChange = (ev: any) => {
+    setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
   }
-  const handleCheckAvancado = (tag: string, checked: boolean) => {
-    const nextSelectedTags = checked
-      ? [...selectedFiltros, tag]
-      : selectedFiltros.filter((t) => t !== tag);
-    setSelectedFiltros(nextSelectedTags);
-  };
     
   // Ordenaçao
   let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
@@ -95,7 +118,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     },
   ];
  
-  columns = columns.filter(x => x.title == '#' || possiveisFiltros.some(y => y == x.title ?? ''));
+  columns = columns.filter(x => x.title == '#' || possiveisFiltros.some(y => y.descricao == x.title ?? ''));
     
   return (
     <NavigationWrapper>
@@ -105,79 +128,61 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         </div>
         
         {/* Pesquisa */}
-        {!estaMostrandoFiltrosAvancados && <div className='half-padding'>
-          <Input placeholder="Termos" prefix={<SearchOutlined/>} />
-        </div>}
-        <div className='half-padding'>
-          <Collapse onChange={handleChangeActivePanels} defaultActiveKey={estaMostrandoFiltrosAvancados ? ["filtros-avancados"] : []} >
-            <Collapse.Panel header="Filtros Avançados" key="filtros-avancados">
-              <div className="half-padding">
-                <div className="half-padding ">
-                  {possiveisFiltros.map((tag) => (
-                    <Tag.CheckableTag
-                      key={tag}
-                      checked={selectedFiltros.includes(tag)}
-                      onChange={(checked) => handleCheckAvancado(tag, checked)}
-                    >
-                      {tag}
-                    </Tag.CheckableTag>
-                  ))}
-                </div>
-                {selectedFiltros.includes('Nome') && <div className="half-padding">
-                  <Input placeholder="Nome" />
-                </div>}
-                {selectedFiltros.includes('RA') && <div className="half-padding">
-                  <Input placeholder="RA" />
-                </div>}
-                {selectedFiltros.includes('Sexo') && <div className="usuarios-index-filtro-avancado">
-                  <div className='half-padding'>
-                    <Typography.Text>Sexo</Typography.Text>
-                  </div>
-                  <div className='half-padding'>
-                    <Select
-                      defaultValue=""
-                      style={{ width: 120 }}
-                      options={[
-                        { value: '', label: 'Selecione...' },
-                        { value: 'M', label: 'Masculino' },
-                        { value: 'F', label: 'Feminino' },
-                      ]} 
-                    />
-                  </div>
-                </div>}
-                {selectedFiltros.includes('Nome da mãe') && <div className="half-padding">
-                  <Input placeholder="Nome da mãe" />
-                </div>}
-                {selectedFiltros.includes('Ativo') && <div className="usuarios-index-filtro-avancado">
-                  <div className='half-padding'>
-                    <Switch />
-                  </div>
-                  <div className='half-padding'>
-                    <Typography.Text>Ativo</Typography.Text>
-                  </div>
-                </div>}
-              </div>
-            </Collapse.Panel>
-          </Collapse>
-        </div>
         
-        {/* Ordenar por */}
-        <div className="usuarios-index-filtro-avancado">
-          <div className='half-padding'>
-            <Typography.Text>Ordenar por</Typography.Text>
-          </div>
-          <div className='half-padding'>
-            <Select
-              defaultValue=""
-              style={{ width: 256 }}
-              options={possiveisOrdenacoes}
-            />
-          </div>
-        </div>
+        <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={(_ev: any) => {}} />
+        <Maqui_Filtro_Avancado_Wrapper
+          allLabelNames={possiveisFiltros.map(x => x.descricao)}
+          selectedLabelNames={selectedFiltros}
+          onChangeSelectedLabelNames={setSelectedFiltros}
+          show={estaMostrandoFiltrosAvancados}
+          onChangeShow={handleChangeActivePanels} >
+          <>
+            <Maqui_Filtro_Avancado_Texto
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaUsuarioMaker.Nome.descricao}
+              inputName='name'
+              onChange={handleChange}
+              value={filterParams.name} />
+            <Maqui_Filtro_Avancado_Texto
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaUsuarioMaker.RA.descricao}
+              inputName='ra'
+              onChange={handleChange}
+              value={filterParams.ra} />
+            <Maqui_Filtro_Avancado_Literal
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaUsuarioMaker.Sexo.descricao}
+              literalOptions={LitSexoMaker.TodosOptions}
+              inputName='genderAbbrev'
+              onChange={handleChange}
+              value={filterParams.genderAbbrev ?? ''}
+              selectMinWith={120} />
+            <Maqui_Filtro_Avancado_Texto
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaUsuarioMaker.NomeMae.descricao}
+              inputName='motherName'
+              onChange={handleChange}
+              value={filterParams.motherName} />
+            <Maqui_Filtro_Avancado_Logico
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaUsuarioMaker.EAtivo.descricao}
+              inputName='isActive'
+              onChange={handleChange}
+              value={filterParams.isActive ?? false} />
+          </>  
+        </Maqui_Filtro_Avancado_Wrapper>
+        
+        <Maqui_Ordenar_Por
+          allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.nomePropriedade, description: x.descricao }) )}
+          onChangeFilterParams={setFilterParams}
+          filterParams={filterParams}
+          selectMinWith={256} />
         <div className='agrupar-horizontalmente'>
-          <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<SearchOutlined/>}>Pesquisar</Button>
-          </div>
+          <Maqui_Botao_Lento
+            Rotulo_Botao='Pesquisar'
+            Icone={<SearchOutlined/>}
+            Carregando={false}
+            Acao={() => {}} />
           <div className='half-padding'>
             <Button type="primary" shape="round" icon={<PlusOutlined/>}>Inserir...</Button>
           </div>
