@@ -16,7 +16,7 @@ const CursosIndexState = {
         createMockedCurso('MariaDB'),
     ],
     estaCarregandoSePodeExcluir: false,
-    podeExcluir: true
+    podeExcluir: false,
 };
 
 export { CursosIndexState }

@@ -10,17 +10,10 @@ class LitColunaCursoMaker {
             descricao: 'Nome',
         }
     }
-    static get QtdLimiteSemestres(): LitColunaCurso {
-        return {
-            nomePropriedade: 'qtdLimiteSemestres',
-            descricao: 'Limite de Semestres',
-        }
-    }
     
     static get Todos(): LitColunaCurso[] {
         return [
             LitColunaCursoMaker.Nome,
-            LitColunaCursoMaker.QtdLimiteSemestres,
         ];
     }
     static PorNomePropriedadeOrNull(nomePropriedade: string): LitColunaCurso | undefined {

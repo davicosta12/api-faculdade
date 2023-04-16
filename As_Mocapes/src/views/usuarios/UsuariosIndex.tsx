@@ -42,7 +42,6 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       setSelectedFiltros([]);
     } else {
       setFilterParams({ ...filterParams, isAdvancedSearch: true });
-
     }
   }
     
@@ -58,13 +57,6 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
 
   const handleChange = (ev: any) => {
     setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
-  }
-    
-  // Ordenaçao
-  let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
-  for (let iPossivelFiltro of possiveisFiltros) {
-    possiveisOrdenacoes.push({ value: iPossivelFiltro + '--asc', label: iPossivelFiltro + " Crescente" });
-    possiveisOrdenacoes.push({ value: iPossivelFiltro + '--desc', label: iPossivelFiltro + " Decrescente" });
   }
     
   // Resultados e Paginaçao default

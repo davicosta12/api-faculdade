@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
 import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row, Spin, Empty } from 'antd';
@@ -9,28 +9,83 @@ import { LitColunaCursoMaker } from '../../model/literal/lit-coluna-curso';
 import { CursosIndexState } from '../../integrations/cursos-index-state';
 import { IResultadoCurso } from '../../model/curso-resultado';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
+import Maqui_Filtro_Termos from '../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
+import Maqui_Filtro_Avancado_Wrapper from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
+import CourseFilterParamsDto from '../../services/CourseService/dto/CourseFilterParamsDto';
 import { Constantes } from '../../model/constantes';
 import DataTable from '../_commons/DataTable/DataTable';
+import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
+import Maqui_Filtro_Avancado_Texto from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
+import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import GetCourseDto from '../../services/CourseService/dto/GetCourseDto';
+import { useNavigate } from 'react-router-dom';
+import ModalConfirm from '../_commons/ModalConfirm/ModalConfirm';
 
 
 function CursosIndex() {
+  const [course, setCourse] = useState({} as GetCourseDto)
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
+  const [filterParams, setFilterParams] = useState<CourseFilterParamsDto>(new CourseFilterParamsDto());
+  const handleChangeActivePanels = (next: boolean) => {
+    setEstaMostrandoFiltrosAvancados(next);
+    if (!next) {
+      setFilterParams({
+        ...filterParams,
+        isAdvancedSearch: false,
+        name: '',
+        description: '',
+      });
+      setSelectedFiltros([]);
+    } else {
+      setFilterParams({ ...filterParams, isAdvancedSearch: true });
+    }
+  }
+  const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
+  const navigate = useNavigate();
   const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
-  const possiveisFiltros = ['Nome'];
+  const possiveisFiltros = LitColunaCursoMaker.Todos;
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
-  const handleChangeActivePanels = (activePanels: string | string[]) => {
-    setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
+  
+  useEffect(() => {
+    getCourses();
+  }, []);
+
+  const getCourses = async (_page: number = page, _perPage: number = perPage) => {
+    // Chamada para API
   }
-  const handleCheckAvancado = (tag: string, checked: boolean) => {
-    const nextSelectedTags = checked
-      ? [...selectedFiltros, tag]
-      : selectedFiltros.filter((t) => t !== tag);
-    setSelectedFiltros(nextSelectedTags);
-  };
-    
+
+  const handleDelete = async () => {
+    // Chamada para API
+  }
+
+  const handleSearch = () => {
+    getCourses(1, 5);
+  }
+
+  const handleChange = (ev: any) => {
+    setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
+  }
+
+  const handleAdd = () => {
+    setCourse({} as GetCourseDto);
+    navigate('/cursos/inserir');
+  }
+
+  const handleEdit = (rowData: IResultadoCurso) => {
+    navigate('/cursos/alterar', { state: { course: rowData } });
+  }
+
+  const handleOpenDelete = (rowData: IResultadoCurso) => {
+    //setCourse(rowData);
+    setIsExcluirModalOpen(true);
+  }
+  
   // Ordenaçao
   let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
   for (let iPossivelFiltro of possiveisFiltros) {
@@ -39,17 +94,23 @@ function CursosIndex() {
   }
     
   // Resultados e Paginaçao default
-  const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
-  const itensMais: MenuProps['items'] = [
-    {
-      key: 'mais-alterar',
-      label: (<a target="_blank" rel="noopener noreferrer" href="#">Alterar</a>),
-    },
-    {
-      key: 'mais-excluir',
-      label: (<a rel="noopener noreferrer" onClick={() => setIsExcluirModalOpen(true)}>Excluir</a>),
-    },
-  ]
+  const renderItensMais = (rowData: IResultadoCurso) => {
+    const itensMais: MenuProps['items'] = [
+      {
+        key: 'mais-alterar',
+        label: (<a rel="noopener noreferrer">Alterar</a>),
+        onClick: () => handleEdit(rowData)
+      },
+      {
+        key: 'mais-excluir',
+        label: (<a rel="noopener noreferrer"
+          onClick={() => handleOpenDelete(rowData)}>
+          Excluir</a>),
+      },
+    ]
+    return itensMais;
+  }
+  
   let columns: ColumnsType<IResultadoCurso> = [
     {
       title: LitColunaCursoMaker.Nome.descricao,
@@ -60,11 +121,13 @@ function CursosIndex() {
       title: '#',
       key: 'mais',
       dataIndex: 'mais',
-      render: () => (
-        <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-          <Button icon={<MoreOutlined />}></Button>
-        </Dropdown>
-      ),
+      render: (text, rowData: IResultadoCurso, index) => {
+        return (
+          <Dropdown menu={{ items: renderItensMais(rowData) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+            <Button icon={<MoreOutlined />}></Button>
+          </Dropdown>
+        )
+      },
     },
   ];
     
@@ -76,49 +139,34 @@ function CursosIndex() {
         </div>
         
         {/* Pesquisa */}
-        {!estaMostrandoFiltrosAvancados && <div className='half-padding'>
-          <Input placeholder="Termos" prefix={<SearchOutlined/>} />
-        </div>}
-        <div className='half-padding'>
-          <Collapse onChange={handleChangeActivePanels} defaultActiveKey={estaMostrandoFiltrosAvancados ? ["filtros-avancados"] : []} >
-            <Collapse.Panel header="Filtros Avançados" key="filtros-avancados">
-              <div className="half-padding">
-                <div className="half-padding ">
-                  {possiveisFiltros.map((tag) => (
-                    <Tag.CheckableTag
-                      key={tag}
-                      checked={selectedFiltros.includes(tag)}
-                      onChange={(checked) => handleCheckAvancado(tag, checked)}
-                    >
-                      {tag}
-                    </Tag.CheckableTag>
-                  ))}
-                </div>
-                {selectedFiltros.includes(LitColunaCursoMaker.Nome.descricao) && <div className="half-padding">
-                  <Input placeholder="Nome" />
-                </div>}
-              </div>
-            </Collapse.Panel>
-          </Collapse>
-        </div>
+        <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={(_ev: any) => {}} />
+        <Maqui_Filtro_Avancado_Wrapper
+          allLabelNames={possiveisFiltros.map(x => x.descricao)}
+          selectedLabelNames={selectedFiltros}
+          onChangeSelectedLabelNames={setSelectedFiltros}
+          show={estaMostrandoFiltrosAvancados}
+          onChangeShow={handleChangeActivePanels} >
+          <>
+            <Maqui_Filtro_Avancado_Texto
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaCursoMaker.Nome.descricao}
+              inputName='name'
+              onChange={handleChange}
+              value={filterParams.name} />
+          </>
+        </Maqui_Filtro_Avancado_Wrapper>
         
-        {/* Ordenar por */}
-        <div className="cursos-index-filtro-avancado">
-          <div className='half-padding'>
-            <Typography.Text>Ordenar por</Typography.Text>
-          </div>
-          <div className='half-padding'>
-            <Select
-              defaultValue=""
-              style={{ width: 256 }}
-              options={possiveisOrdenacoes}
-            />
-          </div>
-        </div>
+        <Maqui_Ordenar_Por
+          allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.nomePropriedade, description: x.descricao }) )}
+          onChangeFilterParams={setFilterParams}
+          filterParams={filterParams}
+          selectMinWith={256} />
         <div className='agrupar-horizontalmente'>
-          <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<SearchOutlined/>}>Pesquisar</Button>
-          </div>
+          <Maqui_Botao_Lento
+            Rotulo_Botao='Pesquisar'
+            Icone={<SearchOutlined/>}
+            Carregando={false}
+            Acao={() => {}} />
           <div className='half-padding'>
             <Button type="primary" shape="round" icon={<PlusOutlined/>}>Inserir...</Button>
           </div>
@@ -132,7 +180,7 @@ function CursosIndex() {
           <Row>
             {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
               <Card title={<div className="cursos-index-botoes-modal">
-                  <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                  <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                     <Button icon={<MoreOutlined />}></Button>
                   </Dropdown>
                 </div>}
@@ -167,39 +215,15 @@ function CursosIndex() {
         </div>}
       </div>
       
-      {/* Confirmar a exclusão */}
-      <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
-        <div className="half-padding">
-          {CursosIndexState.estaCarregandoSePodeExcluir && <>
-            <div className="half-padding" >
-              <Spin /> 
-            </div>
-          </>}
-          {(!CursosIndexState.estaCarregandoSePodeExcluir && CursosIndexState.podeExcluir) && <>
-          <div className="half-padding">
-            <Typography.Title level={5}>Deseja excluir o Curso? A ação não pode ser desfeita.</Typography.Title>
-          </div>
-          <div className="cursos-index-botoes-modal">
-            <div className="half-padding" >
-              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
-            </div>
-            <div className="half-padding" >
-              <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
-            </div>
-          </div>
-          </>}
-          {(!CursosIndexState.estaCarregandoSePodeExcluir && !CursosIndexState.podeExcluir) && <>
-            <div className="half-padding">
-              <Typography.Title level={5}>Não é possível excluir um curso enquanto ele tiver ocupações.</Typography.Title>
-            </div>
-            <div className="usuarios-index-botoes-modal">
-              <div className="half-padding" >
-                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
-              </div>
-            </div>
-          </>}
-        </div>
-      </Modal>
+      <ModalConfirm
+        openConfirm={isExcluirModalOpen}
+        setOpenConfirm={setIsExcluirModalOpen}
+        loading={isLoading}
+        onAction={handleDelete}
+        isAllowed={CursosIndexState.podeExcluir}
+        isAllowedLabel='Deseja excluir o Curso? A ação não pode ser desfeita.'
+        isNotAllowedLabel='Não é possível excluir um curso enquanto ele tiver ocupações.'
+      />
     </NavigationWrapper>
   )
 }
