@@ -1,4 +1,4 @@
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Spin } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { FunctionComponent } from "react"
 
@@ -10,6 +10,7 @@ interface Props {
   isAllowed: boolean;
   isAllowedLabel: string;
   isNotAllowedLabel: string;
+  isLoadingContent: boolean;
 }
 
 const ModalConfirm: FunctionComponent<Props> = (props) => {
@@ -22,6 +23,7 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
     isAllowed,
     isAllowedLabel,
     isNotAllowedLabel,
+    isLoadingContent,
   } = props;
 
   const handleAction = () => {
@@ -35,7 +37,7 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
       closable={true}
       onCancel={() => setOpenConfirm(false)}
     >
-      <div className="half-padding">
+      {isLoadingContent ? <Spin /> : <div className="half-padding">
         <div className="half-padding">
           <Typography.Title level={5}>{isAllowed ? isAllowedLabel : isNotAllowedLabel}</Typography.Title>
         </div>
@@ -48,7 +50,7 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
             >Voltar
             </Button>
           </div>
-          <div className="half-padding" >
+          {isAllowed && <div className="half-padding" >
             <Button
               danger
               type="primary"
@@ -59,9 +61,9 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
             >
               Excluir
             </Button>
-          </div>
+          </div>}
         </div>
-      </div>
+      </div>}
     </Modal>
   )
 }

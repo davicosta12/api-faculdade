@@ -298,6 +298,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         isAllowed={true}
         isAllowedLabel={'Deseja excluir o ' + litPerfil?.tituloH3ManterUm + '? A ação não pode ser desfeita.'}
         isNotAllowedLabel=''
+        isLoadingContent={false}
       />
     </NavigationWrapper>
   )

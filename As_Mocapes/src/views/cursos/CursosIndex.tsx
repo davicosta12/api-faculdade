@@ -227,6 +227,7 @@ function CursosIndex() {
         isAllowed={CursosIndexState.podeExcluir}
         isAllowedLabel='Deseja excluir o Curso? A ação não pode ser desfeita.'
         isNotAllowedLabel='Não é possível excluir um curso enquanto ele tiver ocupações.'
+        isLoadingContent={false}
       />
     </NavigationWrapper>
   )
