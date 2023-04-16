@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
@@ -21,11 +21,16 @@ import UserFilterParamsDto from '../../services/UserService/dto/UserFilterParams
 import { LitSexoMaker } from '../../model/literal/lit-sexo';
 import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
+import GetUserDto from '../../services/UserService/dto/GetUserDto';
+import { useNavigate } from 'react-router-dom';
 
 
 function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   const litPerfil = LitPerfilMaker.PorSiglaOrNull(props.siglaPerfil);
+  const [user, setUser] = useState({} as GetUserDto)
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [filterParams, setFilterParams] = useState<UserFilterParamsDto>(new UserFilterParamsDto());
   const handleChangeActivePanels = (next: boolean) => {
     setEstaMostrandoFiltrosAvancados(next);
@@ -44,7 +49,10 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       setFilterParams({ ...filterParams, isAdvancedSearch: true });
     }
   }
-    
+  const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const navigate = useNavigate();
   const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
@@ -54,23 +62,59 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     possiveisFiltros = possiveisFiltros.filter(x => x.nomePropriedade !== LitColunaUsuarioMaker.RA.nomePropriedade);
   }
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
+  
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const getUsers = async (_page: number = page, _perPage: number = perPage) => {
+    // Chamada para API
+  }
+
+  const handleDelete = async () => {
+    // Chamada para API
+  }
+
+  const handleSearch = () => {
+    getUsers(1, 5);
+  }
 
   const handleChange = (ev: any) => {
     setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
   }
+
+  const handleAdd = () => {
+    setUser({} as GetUserDto);
+    navigate('/cursos/inserir');
+  }
+
+  const handleEdit = (rowData: IResultadoUsuario) => {
+    navigate('/cursos/alterar', { state: { course: rowData } });
+  }
+
+  const handleOpenDelete = (rowData: IResultadoUsuario) => {
+    //setUser(rowData);
+    setIsExcluirModalOpen(true);
+  }
     
   // Resultados e Paginaçao default
-  const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
-  const itensMais: MenuProps['items'] = [
-    {
-      key: 'mais-alterar',
-      label: (<a target="_blank" rel="noopener noreferrer" href="#">Alterar</a>),
-    },
-    {
-      key: 'mais-excluir',
-      label: (<a rel="noopener noreferrer" onClick={() => setIsExcluirModalOpen(true)}>Excluir</a>),
-    },
-  ]
+  const renderItensMais = (rowData: IResultadoUsuario) => {
+    const itensMais: MenuProps['items'] = [
+      {
+        key: 'mais-alterar',
+        label: (<a rel="noopener noreferrer">Alterar</a>),
+        onClick: () => handleEdit(rowData)
+      },
+      {
+        key: 'mais-excluir',
+        label: (<a rel="noopener noreferrer"
+          onClick={() => handleOpenDelete(rowData)}>
+          Excluir</a>),
+      },
+    ]
+    return itensMais;
+  }
+  
   let columns: ColumnsType<IResultadoUsuario> = [
     {
       title: LitColunaUsuarioMaker.Nome.descricao,
@@ -102,11 +146,13 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       title: '#',
       key: 'mais',
       dataIndex: 'mais',
-      render: () => (
-        <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-          <Button icon={<MoreOutlined />}></Button>
-        </Dropdown>
-      ),
+      render: (text, rowData: IResultadoUsuario, index) => {
+        return (
+          <Dropdown menu={{ items: renderItensMais(rowData) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+            <Button icon={<MoreOutlined />}></Button>
+          </Dropdown>
+        )
+      },
     },
   ];
  
@@ -174,9 +220,15 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
             Rotulo_Botao='Pesquisar'
             Icone={<SearchOutlined/>}
             Carregando={false}
-            Acao={() => {}} />
+            Acao={handleSearch} />
           <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<PlusOutlined/>}>Inserir...</Button>
+            <Button
+              type="primary"
+              shape="round"
+              icon={<PlusOutlined/>}
+              onClick={handleAdd}>
+              Inserir...
+            </Button>
           </div>
         </div>
         
@@ -188,7 +240,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
           <Row>
             {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding">
               <Card title={<div className="usuarios-index-botoes-modal">
-                  <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                  <Dropdown menu={{ items: renderItensMais(xUsuario) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                     <Button icon={<MoreOutlined />}></Button>
                   </Dropdown>
                 </div>}

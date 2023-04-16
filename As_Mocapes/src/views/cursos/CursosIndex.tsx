@@ -85,13 +85,6 @@ function CursosIndex() {
     //setCourse(rowData);
     setIsExcluirModalOpen(true);
   }
-  
-  // Ordenaçao
-  let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
-  for (let iPossivelFiltro of possiveisFiltros) {
-    possiveisOrdenacoes.push({ value: iPossivelFiltro + '--asc', label: iPossivelFiltro + " Crescente" });
-    possiveisOrdenacoes.push({ value: iPossivelFiltro + '--desc', label: iPossivelFiltro + " Decrescente" });
-  }
     
   // Resultados e Paginaçao default
   const renderItensMais = (rowData: IResultadoCurso) => {
@@ -166,9 +159,15 @@ function CursosIndex() {
             Rotulo_Botao='Pesquisar'
             Icone={<SearchOutlined/>}
             Carregando={false}
-            Acao={() => {}} />
+            Acao={handleSearch} />
           <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<PlusOutlined/>}>Inserir...</Button>
+            <Button
+              type="primary"
+              shape="round"
+              icon={<PlusOutlined/>}
+              onClick={handleAdd}>
+              Inserir...
+            </Button>
           </div>
         </div>
         
@@ -178,25 +177,30 @@ function CursosIndex() {
         
         {isLoading ?
           <Spin /> :
-          ((windowWidth <= Constantes.WidthMaximoMobile && CursosIndexState.cursosApresentados.length > 0) ?
-            <Row>
-              {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
-                <Card title={<div className="cursos-index-botoes-modal">
-                    <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-                      <Button icon={<MoreOutlined />}></Button>
-                    </Dropdown>
-                  </div>}
-                  bodyStyle={{ padding: "6px" }}
-                  headStyle={{ paddingRight: "12px" }}>
+          <>{(windowWidth <= Constantes.WidthMaximoMobile && CursosIndexState.cursosApresentados.length > 0) ?
+            <>
+              <Row>
+                {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
+                  <Card title={<div className="cursos-index-botoes-modal">
+                      <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                        <Button icon={<MoreOutlined />}></Button>
+                      </Dropdown>
+                    </div>}
+                    bodyStyle={{ padding: "6px" }}
+                    headStyle={{ paddingRight: "12px" }}>
+                    
+                    <div className='half-padding'>
+                      <span className='card-text-size'><strong>{xCurso.nome}</strong></span>
+                    </div>
+                    
+                  </Card>
                   
-                  <div className='half-padding'>
-                    <span className='card-text-size'><strong>{xCurso.nome}</strong></span>
-                  </div>
-                  
-                </Card>
-                
-              </Col>)}
-            </Row> : <>{
+                </Col>)}
+              </Row>
+              <div className='usuarios-index-botoes-modal'>
+                <Pagination total={CursosIndexState.cursosApresentados.length} defaultCurrent={1} />
+              </div>
+            </> : <>{
               CursosIndexState.cursosApresentados.length > 0 ?
               <DataTable
                 handleRowKey={(course: any) => course.i_Cod_Curso}
@@ -210,12 +214,9 @@ function CursosIndex() {
                 /> :
               <Empty />
             }</>
-          )
+          }</>
         }
         
-        {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
-          <Pagination total={CursosIndexState.cursosApresentados.length} defaultCurrent={1} />
-        </div>}
       </div>
       
       <ModalConfirm
