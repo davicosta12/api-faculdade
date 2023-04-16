@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
 import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Pagination, Card, Col, Row, Spin, Empty } from 'antd';
@@ -8,17 +9,16 @@ import type { MenuProps } from 'antd';
 import { LitColunaCursoMaker } from '../../model/literal/lit-coluna-curso';
 import { CursosIndexState } from '../../integrations/cursos-index-state';
 import { IResultadoCurso } from '../../model/curso-resultado';
+import { Constantes } from '../../model/constantes';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import Maqui_Filtro_Termos from '../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
 import Maqui_Filtro_Avancado_Wrapper from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
-import CourseFilterParamsDto from '../../services/CourseService/dto/CourseFilterParamsDto';
-import { Constantes } from '../../model/constantes';
-import DataTable from '../_commons/DataTable/DataTable';
-import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
 import Maqui_Filtro_Avancado_Texto from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
+import CourseFilterParamsDto from '../../services/CourseService/dto/CourseFilterParamsDto';
+import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
 import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import DataTable from '../_commons/DataTable/DataTable';
 import GetCourseDto from '../../services/CourseService/dto/GetCourseDto';
-import { useNavigate } from 'react-router-dom';
 import ModalConfirm from '../_commons/ModalConfirm/ModalConfirm';
 
 

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Card, Col, Row, Spin } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Card, Col, Row, Spin, Empty } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
 import type { ColumnsType } from 'antd/es/table';
-import { IResultadoUsuario } from '../../model/usuario-resultado';
-import { UsuariosIndexState } from '../../integrations/usuarios-index-state';
 import type { MenuProps } from 'antd';
+import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
+import { UsuariosIndexState } from '../../integrations/usuarios-index-state';
+import { IResultadoUsuario } from '../../model/usuario-resultado';
 import { Constantes } from '../../model/constantes';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import Maqui_Filtro_Termos from '../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
@@ -19,10 +20,11 @@ import Maqui_Filtro_Avancado_Literal from '../_commons/MaquiAdvancedFilter/Maqui
 import Maqui_Filtro_Avancado_Logico from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
 import UserFilterParamsDto from '../../services/UserService/dto/UserFilterParamsDto';
 import { LitSexoMaker } from '../../model/literal/lit-sexo';
-import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
+import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import DataTable from '../_commons/DataTable/DataTable';
 import GetUserDto from '../../services/UserService/dto/GetUserDto';
-import { useNavigate } from 'react-router-dom';
+import ModalConfirm from '../_commons/ModalConfirm/ModalConfirm';
 
 
 function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
@@ -232,80 +234,71 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
           </div>
         </div>
         
-        {/* Resultados e Paginaçao default
-                atributos visiveis pra mobile: nome; sexo, ativo e mais
-                atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-                
-        {windowWidth <= Constantes.WidthMaximoMobile ?
-          <Row>
-            {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding">
-              <Card title={<div className="usuarios-index-botoes-modal">
-                  <Dropdown menu={{ items: renderItensMais(xUsuario) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-                    <Button icon={<MoreOutlined />}></Button>
-                  </Dropdown>
-                </div>}
-                bodyStyle={{ padding: "6px" }}
-                headStyle={{ paddingRight: "12px" }}>
-                
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>Nome</strong>: {xUsuario.nome}</span>
-                </div>
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>RA</strong>: {xUsuario.ra}</span>
-                </div>
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>Sexo</strong>: {xUsuario.sexo == 'M' ? 'Masculino' : 'Feminino'}</span>
-                </div>
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>Nome da mãe</strong>: {xUsuario.nomeMae}</span>
-                </div>
-                <div className='half-padding usuarios-index-filtro-avancado'>
-                  <span className='card-text-size'><strong>Ativo</strong>: <Switch disabled={true} defaultChecked={xUsuario.eAtivo}></Switch></span>
-                </div>
-                
-              </Card>
-              
-            </Col>)}
-          </Row> :
-          <Table dataSource={UsuariosIndexState.usuariosApresentados} columns={columns} />}
-        
-        {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
-          <Pagination total={UsuariosIndexState.usuariosApresentados.length} defaultCurrent={1} />
-        </div>}
+        {isLoading ?
+          <Spin /> :
+          <>{(windowWidth <= Constantes.WidthMaximoMobile && UsuariosIndexState.usuariosApresentados.length > 0) ?
+            <>
+              <Row>
+                {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding">
+                  <Card title={<div className="usuarios-index-botoes-modal">
+                      <Dropdown menu={{ items: renderItensMais(xUsuario) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                        <Button icon={<MoreOutlined />}></Button>
+                      </Dropdown>
+                    </div>}
+                    bodyStyle={{ padding: "6px" }}
+                    headStyle={{ paddingRight: "12px" }}>
+                    
+                    <div className='half-padding'>
+                      <span className='card-text-size'><strong>{xUsuario.nome}</strong></span>
+                    </div>
+                    <div className='half-padding'>
+                      <span className='card-text-size'><strong>RA</strong>: {xUsuario.ra}</span>
+                    </div>
+                    <div className='half-padding'>
+                      <span className='card-text-size'><strong>Sexo</strong>: {xUsuario.sexo == 'M' ? 'Masculino' : 'Feminino'}</span>
+                    </div>
+                    <div className='half-padding'>
+                      <span className='card-text-size'><strong>Nome da mãe</strong>: {xUsuario.nomeMae}</span>
+                    </div>
+                    <div className='half-padding usuarios-index-filtro-avancado'>
+                      <span className='card-text-size'><strong>Ativo</strong>: <Switch disabled={true} defaultChecked={xUsuario.eAtivo}></Switch></span>
+                    </div>
+                    
+                  </Card>
+                  
+                </Col>)}
+              </Row>
+              <div className='usuarios-index-botoes-modal'>
+                <Pagination total={UsuariosIndexState.usuariosApresentados.length} defaultCurrent={1} />
+              </div>
+            </> : <>{
+              UsuariosIndexState.usuariosApresentados.length > 0 ?
+              <DataTable
+                handleRowKey={(course: any) => course.i_Cod_Curso}
+                dataSource={UsuariosIndexState.usuariosApresentados}
+                columns={columns}
+                getData={(_page: number | undefined, _perPage: number | undefined) => {}}
+                setDataResult={null}
+                totalCount={UsuariosIndexState.usuariosApresentados.length}
+                pagination
+                isLoading={false}
+                /> :
+              <Empty/>
+            }</>
+          }</>
+        }
         
       </div>
-      <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
-        <div className="half-padding">
-          {UsuariosIndexState.estaCarregandoSePodeExcluir && <>
-            <div className="half-padding" >
-              <Spin /> 
-            </div>
-          </>}
-          {(!UsuariosIndexState.estaCarregandoSePodeExcluir && UsuariosIndexState.podeExcluir) && <>
-            <div className="half-padding">
-              <Typography.Title level={5}>Deseja excluir o {litPerfil?.tituloH3ManterUm}? A ação não pode ser desfeita.</Typography.Title>
-            </div>
-            <div className="usuarios-index-botoes-modal">
-              <div className="half-padding" >
-                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
-              </div>
-              <div className="half-padding" >
-                <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
-              </div>
-            </div>
-          </>}
-          {(!UsuariosIndexState.estaCarregandoSePodeExcluir && !UsuariosIndexState.podeExcluir) && <>
-            <div className="half-padding">
-              <Typography.Title level={5}>Não é possível excluir um aluno enquanto ele tiver inscrições.</Typography.Title>
-            </div>
-            <div className="usuarios-index-botoes-modal">
-              <div className="half-padding" >
-                <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
-              </div>
-            </div>
-          </>}
-        </div>
-      </Modal>
+      
+      <ModalConfirm
+        openConfirm={isExcluirModalOpen}
+        setOpenConfirm={setIsExcluirModalOpen}
+        loading={isLoading}
+        onAction={handleDelete}
+        isAllowed={true}
+        isAllowedLabel={'Deseja excluir o ' + litPerfil?.tituloH3ManterUm + '? A ação não pode ser desfeita.'}
+        isNotAllowedLabel=''
+      />
     </NavigationWrapper>
   )
 }
