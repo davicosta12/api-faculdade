@@ -176,38 +176,41 @@ function CursosIndex() {
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
         
-        {(windowWidth <= Constantes.WidthMaximoMobile && CursosIndexState.cursosApresentados.length > 0) ?
-          <Row>
-            {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
-              <Card title={<div className="cursos-index-botoes-modal">
-                  <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-                    <Button icon={<MoreOutlined />}></Button>
-                  </Dropdown>
-                </div>}
-                bodyStyle={{ padding: "6px" }}
-                headStyle={{ paddingRight: "12px" }}>
+        {isLoading ?
+          <Spin /> :
+          ((windowWidth <= Constantes.WidthMaximoMobile && CursosIndexState.cursosApresentados.length > 0) ?
+            <Row>
+              {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
+                <Card title={<div className="cursos-index-botoes-modal">
+                    <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                      <Button icon={<MoreOutlined />}></Button>
+                    </Dropdown>
+                  </div>}
+                  bodyStyle={{ padding: "6px" }}
+                  headStyle={{ paddingRight: "12px" }}>
+                  
+                  <div className='half-padding'>
+                    <span className='card-text-size'><strong>{xCurso.nome}</strong></span>
+                  </div>
+                  
+                </Card>
                 
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>{xCurso.nome}</strong></span>
-                </div>
-                
-              </Card>
-              
-            </Col>)}
-          </Row> : <>{
-            CursosIndexState.cursosApresentados.length > 0 ?
-            <DataTable
-              handleRowKey={(course: any) => course.i_Cod_Curso}
-              dataSource={CursosIndexState.cursosApresentados}
-              columns={columns}
-              getData={(_page: number | undefined, _perPage: number | undefined) => {}}
-              setDataResult={null}
-              totalCount={CursosIndexState.cursosApresentados.length}
-              pagination
-              isLoading={false}
-              /> :
-            <Empty />
-          }</>
+              </Col>)}
+            </Row> : <>{
+              CursosIndexState.cursosApresentados.length > 0 ?
+              <DataTable
+                handleRowKey={(course: any) => course.i_Cod_Curso}
+                dataSource={CursosIndexState.cursosApresentados}
+                columns={columns}
+                getData={(_page: number | undefined, _perPage: number | undefined) => {}}
+                setDataResult={null}
+                totalCount={CursosIndexState.cursosApresentados.length}
+                pagination
+                isLoading={false}
+                /> :
+              <Empty />
+            }</>
+          )
         }
         
         {windowWidth <= Constantes.WidthMaximoMobile && <div className='usuarios-index-botoes-modal'>
