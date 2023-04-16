@@ -297,7 +297,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         onAction={handleDelete}
         isAllowed={true}
         isAllowedLabel={'Deseja excluir o ' + litPerfil?.tituloH3ManterUm + '? A ação não pode ser desfeita.'}
-        isNotAllowedLabel=''
+        isNotAllowedLabel='Não é possível excluir um professor enquanto ele tiver ocupações.'
         isLoadingContent={false}
       />
     </NavigationWrapper>
