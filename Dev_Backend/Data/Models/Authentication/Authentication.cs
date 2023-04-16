@@ -19,17 +19,27 @@ namespace Dev_Backend.Data.Models.Authentication
 
     public class SignUpUser
     {
+        [Required]
         public string C_Perfil { get; set; }
+
         public string S_Nome { get; set; }
+
         [Required]
         public string S_CPF { get; set; }
+
         public string S_RA { get; set; }
+        
         public string C_Sexo { get; set; }
+
         public string S_Nome_Mae { get; set; }
+
         public bool B_E_Ativo { get; set; }
+
         public string S_Email { get; set; }
+
         [Required]
         public string S_Senha { get; set; }
+        
         public bool B_Tem_Senha_Temporaria { get; set; }
     }
 

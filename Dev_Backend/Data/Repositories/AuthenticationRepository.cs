@@ -58,7 +58,7 @@ namespace Dev_Backend.Data.Repositories
             return null;
         }
 
-        public async Task<SignUpUser> UserRegister(SignUpUser userRegister)
+        public async Task<User> UserRegister(SignUpUser userRegister)
         {
             string sqlHash = @"SELECT SHA2(@S_Senha, 512)";
             string sql = @"INSERT INTO Usuario (
@@ -82,14 +82,15 @@ namespace Dev_Backend.Data.Repositories
                             @B_E_Ativo, 
                             @S_Email, 
                             @Senha_Hash, 
-                            @B_Tem_Senha_Temporaria);";
+                            @B_Tem_Senha_Temporaria);
+                            SELECT LAST_INSERT_ID();";
 
             var passwordHash = (await QueryAsync<string>(sqlHash, new
             {
                 @S_Senha = userRegister.S_Senha.Trim()
-            })).FirstOrDefault();
+            })).First();
 
-            await ExecuteAsync(sql, new
+            int identityId = await ExecuteScalarAsync<int>(sql, new
             {
                 @C_Perfil = userRegister.C_Perfil.Trim(),
                 @S_Nome = userRegister.S_Nome.Trim(),
@@ -103,8 +104,9 @@ namespace Dev_Backend.Data.Repositories
                 @B_Tem_Senha_Temporaria = userRegister.B_Tem_Senha_Temporaria
             });
 
-            var createUser = new SignUpUser()
+            var createUser = new User()
             {
+                I_Cod_Usuario = identityId,
                 C_Perfil = userRegister.C_Perfil.Trim(),
                 S_Nome = userRegister.S_Nome.Trim(),
                 S_CPF = userRegister.S_CPF.Trim(),
