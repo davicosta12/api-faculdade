@@ -5,6 +5,7 @@ class LitPerfil {
     sigla: LitPerfilSigla = 'A';
     tituloH3Index = '';
     tituloH3ManterUm = '';
+    urlPath = '';
 }
 
 class LitPerfilMaker {
@@ -13,6 +14,7 @@ class LitPerfilMaker {
             sigla: 'A',
             tituloH3Index: 'Alunos',
             tituloH3ManterUm: 'Aluno',
+            urlPath: 'alunos',
         }
     }
     static get Professor(): LitPerfil {
@@ -20,6 +22,7 @@ class LitPerfilMaker {
             sigla: 'P',
             tituloH3Index: 'Professores',
             tituloH3ManterUm: 'Professor',
+            urlPath: 'professores',
         }
     }
     static get Secretario(): LitPerfil {
@@ -27,6 +30,7 @@ class LitPerfilMaker {
             sigla: 'S',
             tituloH3Index: 'Secretários',
             tituloH3ManterUm: 'Secretário',
+            urlPath: 'secretarios',
         }
     }
     

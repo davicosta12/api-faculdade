@@ -6,11 +6,11 @@ import { LitPerfilSigla } from './model/literal/lit-perfil';
 import CursosIndex from './views/cursos/CursosIndex';
 import CursosManter from './views/cursos/CursosManter';
 import Home from './views/home/Home';
-import InscricoesIndex from './views/inscricoes/InscricoesIndex';
-import InscricoesManter from './views/inscricoes/InscricoesManter';
 import Login from './views/login/Login';
 import NovaSenha from './views/login/NovaSenha';
 import NovoAluno from './views/login/NovoAluno';
+import OcupacoesIndex from './views/ocupacoes/OcupacoesIndex';
+import OcupacoesManter from './views/ocupacoes/OcupacoesManter';
 import UsuariosIndex from './views/usuarios/UsuariosIndex';
 import UsuariosManter from './views/usuarios/UsuariosManter';
 
@@ -42,10 +42,10 @@ function App() {
     { path: '/cursos/inserir', element: <CursosManter eAlteracao={false} /> },
     { path: '/cursos/alterar', element: <CursosManter eAlteracao={true} /> },
     
-    /* Modulo 01 > Manutençao de Inscriçao */
-    { path: '/inscricoes', element: <InscricoesIndex /> },
-    { path: '/inscricoes/inserir', element: <InscricoesManter eAlteracao={false} /> },
-    { path: '/inscricoes/alterar', element: <InscricoesManter eAlteracao={true} /> },
+    /* Modulo 01 > Manutençao de Ocupaçao */
+    { path: '/ocupacoes', element: <OcupacoesIndex /> },
+    { path: '/ocupacoes/inserir', element: <OcupacoesManter eAlteracao={false} /> },
+    { path: '/ocupacoes/alterar', element: <OcupacoesManter eAlteracao={true} /> },
     
   ])
   

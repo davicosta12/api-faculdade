@@ -1,50 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './UsuariosIndex.css';
-import { LitPerfilMaker } from '../../model/literal/lit-perfil';
-import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
+import './OcupacoesIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Tag, Select, Button, Switch, Dropdown, Pagination, Card, Col, Row, Spin, Empty } from 'antd';
+import { Typography, Tag, Select, Button, Switch, Dropdown, Pagination, Card, Col, Row, Spin, Empty } from 'antd';
 import { MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
-import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
-import { UsuariosIndexState } from '../../integrations/usuarios-index-state';
-import { IResultadoUsuario } from '../../model/usuario-resultado';
 import { Constantes } from '../../model/constantes';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import Maqui_Filtro_Termos from '../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
 import Maqui_Filtro_Avancado_Wrapper from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
 import Maqui_Filtro_Avancado_Texto from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
 import Maqui_Filtro_Avancado_Literal from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
-import Maqui_Filtro_Avancado_Logico from '../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
-import UserFilterParamsDto from '../../services/UserService/dto/UserFilterParamsDto';
-import { LitSexoMaker } from '../../model/literal/lit-sexo';
 import Maqui_Botao_Lento from '../_commons/MaquiButton/Maqui_Botao_Lento';
 import Maqui_Ordenar_Por from '../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 import DataTable from '../_commons/DataTable/DataTable';
 import GetUserDto from '../../services/UserService/dto/GetUserDto';
 import ModalConfirm from '../_commons/ModalConfirm/ModalConfirm';
+import OccupationFilterParamsDto from '../../services/OccupationService/dto/OccupationFilterParamsDto';
+import { IResultadoOcupacao } from '../../model/ocupacao-resultado';
+import { LitColunaOcupacao, LitColunaOcupacaoMaker } from '../../model/literal/lit-coluna-ocupacao';
+import { LitDiaSemana, LitDiaSemanaMaker, LitDiaSemanaSiglaNull } from '../../model/literal/lit-dia-semana';
+import Maqui_Filtro_Avancado_Hora from './Maqui_Filtro_Avancado_Hora';
+import { OcupacoesIndexState } from '../../integrations/ocupacoes-index-state';
 
 
-function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
-  const litPerfil = LitPerfilMaker.PorSiglaOrNull(props.siglaPerfil);
-  const [user, setUser] = useState({} as GetUserDto)
+function OcupacoesIndex() {
+  const [occupation, setOccupation] = useState({} as GetUserDto)
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-  const [filterParams, setFilterParams] = useState<UserFilterParamsDto>(new UserFilterParamsDto());
+  const [filterParams, setFilterParams] = useState<OccupationFilterParamsDto>(new OccupationFilterParamsDto());
   const handleChangeActivePanels = (next: boolean) => {
     setEstaMostrandoFiltrosAvancados(next);
     if (!next) {
       setFilterParams({
         ...filterParams,
         isAdvancedSearch: false,
-        name: '',
-        ra: '',
-        genderAbbrev: null,
-        motherName: '',
-        isActive: null,
+        teacherName: '',
+        courseName: '',
+        weekDayAbbrev: '',
+        startTimeMinutes: null,
+        endTimeMinutes: null,
       });
       setSelectedFiltros([]);
     } else {
@@ -58,18 +55,14 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   const { windowWidth } = useWindowDimensions();
     
   // Filtros avançados
-  let possiveisFiltros: LitColunaUsuario[] = [];
-  possiveisFiltros = LitColunaUsuarioMaker.Todos;
-  if (props.siglaPerfil !== 'A') {
-    possiveisFiltros = possiveisFiltros.filter(x => x.nomePropriedade !== LitColunaUsuarioMaker.RA.nomePropriedade);
-  }
+  let possiveisFiltros = LitColunaOcupacaoMaker.Todos;
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   
   useEffect(() => {
-    getUsers();
+    getOccupations();
   }, []);
 
-  const getUsers = async (_page: number = page, _perPage: number = perPage) => {
+  const getOccupations = async (_page: number = page, _perPage: number = perPage) => {
     // Chamada para API
   }
 
@@ -78,7 +71,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   }
 
   const handleSearch = () => {
-    getUsers(1, 5);
+    getOccupations(1, 5);
   }
 
   const handleChange = (ev: any) => {
@@ -86,21 +79,21 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   }
 
   const handleAdd = () => {
-    setUser({} as GetUserDto);
-    navigate('/' + litPerfil?.urlPath + '/inserir');
+    setOccupation({} as GetUserDto);
+    navigate('/ocupacoes/inserir');
   }
 
-  const handleEdit = (rowData: IResultadoUsuario) => {
-    navigate('/' + litPerfil?.urlPath + '/alterar', { state: { course: rowData } });
+  const handleEdit = (rowData: IResultadoOcupacao) => {
+    navigate('/ocupacoes/alterar', { state: { course: rowData } });
   }
 
-  const handleOpenDelete = (rowData: IResultadoUsuario) => {
-    //setUser(rowData);
+  const handleOpenDelete = (rowData: IResultadoOcupacao) => {
+    //setOccupation(rowData);
     setIsExcluirModalOpen(true);
   }
     
   // Resultados e Paginaçao default
-  const renderItensMais = (rowData: IResultadoUsuario) => {
+  const renderItensMais = (rowData: IResultadoOcupacao) => {
     const itensMais: MenuProps['items'] = [
       {
         key: 'mais-alterar',
@@ -117,38 +110,57 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     return itensMais;
   }
   
-  let columns: ColumnsType<IResultadoUsuario> = [
+  const showHours = (hours: Date) => {
+    return (hours.getHours().toString().padStart(2, '0'))
+      + ':' + hours.getMinutes().toString().padStart(2, '0');
+  }
+  
+  let columns: ColumnsType<IResultadoOcupacao> = [
     {
-      title: LitColunaUsuarioMaker.Nome.descricao,
-      dataIndex: LitColunaUsuarioMaker.Nome.nomePropriedade,
-      key: LitColunaUsuarioMaker.Nome.nomePropriedade,
+      title: LitColunaOcupacaoMaker.NomeProfessor.descricao,
+      dataIndex: LitColunaOcupacaoMaker.NomeProfessor.nomePropriedade,
+      key: LitColunaOcupacaoMaker.NomeProfessor.nomePropriedade,
     },
     {
-      title: LitColunaUsuarioMaker.RA.descricao,
-      dataIndex: LitColunaUsuarioMaker.RA.nomePropriedade,
-      key: LitColunaUsuarioMaker.RA.nomePropriedade,
+      title: LitColunaOcupacaoMaker.NomeCurso.descricao,
+      dataIndex: LitColunaOcupacaoMaker.NomeCurso.nomePropriedade,
+      key: LitColunaOcupacaoMaker.NomeCurso.nomePropriedade,
     },
     {
-      title: LitColunaUsuarioMaker.Sexo.descricao,
-      dataIndex: LitColunaUsuarioMaker.Sexo.nomePropriedade,
-      key: LitColunaUsuarioMaker.Sexo.nomePropriedade,
+      title: LitColunaOcupacaoMaker.DiaSemana.descricao,
+      dataIndex: LitColunaOcupacaoMaker.DiaSemana.nomePropriedade,
+      key: LitColunaOcupacaoMaker.DiaSemana.nomePropriedade,
+      render: (text, rowData: IResultadoOcupacao, index) => {
+        return (
+          <span>{LitDiaSemanaMaker.PorSiglaOrNull(rowData.diaSemana as LitDiaSemanaSiglaNull)?.descricao}</span>
+        )
+      },
     },
     {
-      title: LitColunaUsuarioMaker.NomeMae.descricao,
-      dataIndex: LitColunaUsuarioMaker.NomeMae.nomePropriedade,
-      key: LitColunaUsuarioMaker.NomeMae.nomePropriedade,
+      title: LitColunaOcupacaoMaker.HoraInicio.descricao,
+      dataIndex: LitColunaOcupacaoMaker.HoraInicio.nomePropriedade,
+      key: LitColunaOcupacaoMaker.HoraInicio.nomePropriedade,
+      render: (text, rowData: IResultadoOcupacao, index) => {
+        return (
+          <span>{showHours(rowData.horaInicio)}</span>
+        )
+      },
     },
     {
-      title: LitColunaUsuarioMaker.EAtivo.descricao,
-      dataIndex: LitColunaUsuarioMaker.EAtivo.nomePropriedade,
-      key: LitColunaUsuarioMaker.EAtivo.nomePropriedade,
-      render: (eAtivo: boolean) => <Switch disabled={true} defaultChecked={eAtivo}></Switch>
+      title: LitColunaOcupacaoMaker.HoraFim.descricao,
+      dataIndex: LitColunaOcupacaoMaker.HoraFim.nomePropriedade,
+      key: LitColunaOcupacaoMaker.HoraFim.nomePropriedade,
+      render: (text, rowData: IResultadoOcupacao, index) => {
+        return (
+          <span>{showHours(rowData.horaFim)}</span>
+        )
+      },
     },
     {
       title: '#',
       key: 'mais',
       dataIndex: 'mais',
-      render: (text, rowData: IResultadoUsuario, index) => {
+      render: (text, rowData: IResultadoOcupacao, index) => {
         return (
           <Dropdown menu={{ items: renderItensMais(rowData) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
             <Button icon={<MoreOutlined />}></Button>
@@ -164,7 +176,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     <NavigationWrapper>
       <div className="half-padding">
         <div className="half-padding">
-          <Typography.Title level={3}>{litPerfil?.tituloH3Index}</Typography.Title>
+          <Typography.Title level={3}>Ocupações</Typography.Title>
         </div>
         
         {/* Pesquisa */}
@@ -179,36 +191,36 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
           <>
             <Maqui_Filtro_Avancado_Texto
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaUsuarioMaker.Nome.descricao}
-              inputName='name'
+              labelName={LitColunaOcupacaoMaker.NomeProfessor.descricao}
+              inputName='teacherName'
               onChange={handleChange}
-              value={filterParams.name} />
+              value={filterParams.teacherName} />
             <Maqui_Filtro_Avancado_Texto
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaUsuarioMaker.RA.descricao}
-              inputName='ra'
+              labelName={LitColunaOcupacaoMaker.NomeCurso.descricao}
+              inputName='courseName'
               onChange={handleChange}
-              value={filterParams.ra} />
+              value={filterParams.courseName} />
             <Maqui_Filtro_Avancado_Literal
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaUsuarioMaker.Sexo.descricao}
-              literalOptions={LitSexoMaker.TodosOptions}
-              inputName='genderAbbrev'
+              labelName={LitColunaOcupacaoMaker.DiaSemana.descricao}
+              literalOptions={LitDiaSemanaMaker.TodosOptions}
+              inputName='weekDayAbbrev'
               onChange={handleChange}
-              value={filterParams.genderAbbrev ?? ''}
-              selectMinWith={120} />
-            <Maqui_Filtro_Avancado_Texto
+              value={filterParams.weekDayAbbrev ?? ''}
+              selectMinWith={180} />
+            <Maqui_Filtro_Avancado_Hora
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaUsuarioMaker.NomeMae.descricao}
-              inputName='motherName'
+              labelName={LitColunaOcupacaoMaker.HoraInicio.descricao}
+              inputName='startTimeMinutes'
               onChange={handleChange}
-              value={filterParams.motherName} />
-            <Maqui_Filtro_Avancado_Logico
+              valueMinutes={filterParams.startTimeMinutes} />
+            <Maqui_Filtro_Avancado_Hora
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaUsuarioMaker.EAtivo.descricao}
-              inputName='isActive'
+              labelName={LitColunaOcupacaoMaker.HoraFim.descricao}
+              inputName='endTimeMinutes'
               onChange={handleChange}
-              value={filterParams.isActive ?? false} />
+              valueMinutes={filterParams.endTimeMinutes} />
           </>  
         </Maqui_Filtro_Avancado_Wrapper>
         
@@ -236,12 +248,12 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         
         {isLoading ?
           <Spin /> :
-          <>{(windowWidth <= Constantes.WidthMaximoMobile && UsuariosIndexState.usuariosApresentados.length > 0) ?
+          <>{(windowWidth <= Constantes.WidthMaximoMobile && OcupacoesIndexState.result.length > 0) ?
             <>
               <Row>
-                {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding">
-                  <Card title={<div className="usuarios-index-botoes-modal">
-                      <Dropdown menu={{ items: renderItensMais(xUsuario) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                {OcupacoesIndexState.result.map(xOcupacao => <Col span={12} className="half-padding">
+                  <Card title={<div className="ocupacoes-index-botoes-modal">
+                      <Dropdown menu={{ items: renderItensMais(xOcupacao) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                         <Button icon={<MoreOutlined />}></Button>
                       </Dropdown>
                     </div>}
@@ -249,37 +261,34 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
                     headStyle={{ paddingRight: "12px" }}>
                     
                     <div className='half-padding'>
-                      <span className='card-text-size'><strong>{xUsuario.nome}</strong></span>
+                      <span className='card-text-size'><strong>{xOcupacao.nomeProfessor} - {xOcupacao.nomeCurso}</strong></span>
                     </div>
                     <div className='half-padding'>
-                      <span className='card-text-size'><strong>RA</strong>: {xUsuario.ra}</span>
+                      <span className='card-text-size'><strong>Dia da semana</strong>: {LitDiaSemanaMaker.PorSiglaOrNull(xOcupacao.diaSemana as LitDiaSemanaSiglaNull)?.descricao}</span>
                     </div>
                     <div className='half-padding'>
-                      <span className='card-text-size'><strong>Sexo</strong>: {xUsuario.sexo == 'M' ? 'Masculino' : 'Feminino'}</span>
+                      <span className='card-text-size'><strong>Hora Início</strong>: {showHours(xOcupacao.horaInicio)}</span>
                     </div>
                     <div className='half-padding'>
-                      <span className='card-text-size'><strong>Nome da mãe</strong>: {xUsuario.nomeMae}</span>
-                    </div>
-                    <div className='half-padding usuarios-index-filtro-avancado'>
-                      <span className='card-text-size'><strong>Ativo</strong>: <Switch disabled={true} defaultChecked={xUsuario.eAtivo}></Switch></span>
+                      <span className='card-text-size'><strong>Hora Fim</strong>: {showHours(xOcupacao.horaFim)}</span>
                     </div>
                     
                   </Card>
                   
                 </Col>)}
               </Row>
-              <div className='usuarios-index-botoes-modal'>
-                <Pagination total={UsuariosIndexState.usuariosApresentados.length} defaultCurrent={1} />
+              <div className='ocupacoes-index-botoes-modal'>
+                <Pagination total={OcupacoesIndexState.result.length} defaultCurrent={1} />
               </div>
             </> : <>{
-              UsuariosIndexState.usuariosApresentados.length > 0 ?
+              OcupacoesIndexState.result.length > 0 ?
               <DataTable
-                handleRowKey={(course: any) => course.i_Cod_Curso}
-                dataSource={UsuariosIndexState.usuariosApresentados}
+                handleRowKey={(occupation: any) => occupation.i_Cod_Ocupacao}
+                dataSource={OcupacoesIndexState.result}
                 columns={columns}
                 getData={(_page: number | undefined, _perPage: number | undefined) => {}}
                 setDataResult={null}
-                totalCount={UsuariosIndexState.usuariosApresentados.length}
+                totalCount={OcupacoesIndexState.result.length}
                 pagination
                 isLoading={false}
                 /> :
@@ -296,12 +305,12 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         loading={isLoading}
         onAction={handleDelete}
         isAllowed={true}
-        isAllowedLabel={'Deseja excluir o ' + litPerfil?.tituloH3ManterUm + '? A ação não pode ser desfeita.'}
-        isNotAllowedLabel='Não é possível excluir um professor enquanto ele tiver ocupações.'
+        isAllowedLabel={'Deseja excluir a Ocupação? A ação não pode ser desfeita.'}
+        isNotAllowedLabel=''
         isLoadingContent={false}
       />
     </NavigationWrapper>
   )
 }
 
-export default UsuariosIndex;
+export default OcupacoesIndex;

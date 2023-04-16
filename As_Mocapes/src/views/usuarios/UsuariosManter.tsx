@@ -1,17 +1,15 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
-import { ArrowLeftOutlined, SaveFilled } from "@ant-design/icons";
+import { SaveFilled } from "@ant-design/icons";
 import { FormApi } from "final-form";
 import { Card, Typography, Input, Button, Spin, Switch, Select } from "antd";
 import { Field, Form } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { toastError, toastOptions } from "../../misc/utils/utils";
-import { UsuariosManterState } from "../../integrations/usuarios-manter-state";
 import NavigationWrapper from "../_navigation/NavigationWrapper";
 import { LitPerfilMaker, LitPerfilSigla } from "../../model/literal/lit-perfil";
 import './UsuariosManter.css';
 import { FinalInputText } from "../_commons/FinalForm/FinalInputText";
-import { FinalInputNumber } from "../_commons/FinalForm/FinalInputNumber";
 import GetUserDto from "../../services/UserService/dto/GetUserDto";
 import { UserFormValidators } from "./UserFormValidators";
 import { FinalInputMaskedText } from "../_commons/FinalForm/FinalInputMaskedText";
@@ -204,80 +202,6 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
             )
           }}
         />
-        {/*}<div className="half-padding">
-          <Input placeholder="Nome" status={UsuariosManterState.NomeNaoInformado ? "error" : ""} />
-        </div>
-        <div className="half-padding">
-          <Input placeholder="CPF" />
-        </div>
-        {props.siglaPerfil === 'A' && <div className="half-padding">
-          <Input placeholder="RA" />
-        </div>}
-        <div className="usuarios-manter-switch-senha">
-          <div className='half-padding'>
-            <Typography.Text>Sexo</Typography.Text>
-          </div>
-          <div className='half-padding'>
-            <Select
-              defaultValue=""
-              style={{ width: 120 }}
-              options={[
-                { value: '', label: 'Selecione...' },
-                { value: 'M', label: 'Masculino' },
-                { value: 'F', label: 'Feminino' },
-              ]} 
-            />
-          </div>
-        </div>
-        <div className="usuarios-manter-switch-senha">
-          <div className='half-padding'>
-            <Switch />
-          </div>
-          <div className='half-padding'>
-            <Typography.Text>Mãe não informada</Typography.Text>
-          </div>
-        </div>
-        <div className="half-padding">
-          <Input placeholder="Nome da mãe" />
-        </div>
-        <div className="usuarios-manter-switch-senha">
-          <div className='half-padding'>
-            <Switch defaultChecked={true} disabled={!props.eAlteracao} />
-          </div>
-          <div className='half-padding'>
-            <Typography.Text>Ativo</Typography.Text>
-          </div>
-        </div>
-        <div className="half-padding">
-          <Input placeholder="E-mail" />
-        </div>
-        {props.eAlteracao && <div className="usuarios-manter-switch-senha">
-          <div className='half-padding'>
-            <Switch checked={(eAlteracaoSenha || !props.eAlteracao) } onChange={(checked) => setEAlteracaoSenha(checked)} />
-          </div>
-          <div className='half-padding'>
-            <Typography.Text>Alterar a Senha</Typography.Text>
-          </div>
-        </div>}
-        {(eAlteracaoSenha || !props.eAlteracao) && <>
-          <div className="half-padding">
-            <Input.Password placeholder="Nova Senha" />
-          </div>
-          <div className="half-padding">
-            <Input.Password placeholder="Confirmar Senha"/>
-          </div>
-        </>}
-        {UsuariosManterState.NomeNaoInformado && <div className="half-padding">
-          <Typography.Text type="danger">O nome é obrigatório</Typography.Text>
-        </div>}
-        <div className="agrupar-horizontalmente">
-          <div className="half-padding" >
-            <Button shape="round" icon={<ArrowLeftOutlined/>}>Voltar</Button>
-          </div>
-          <div className="half-padding" >
-            {UsuariosManterState.AvancarEstaCarregando ? <Spin className="antd-top-padding" /> : <Button type="primary" shape="round" icon={<SaveFilled/>}>Confirmar</Button>}
-          </div>
-        </div>*/}
       </div>
     </NavigationWrapper>
   )

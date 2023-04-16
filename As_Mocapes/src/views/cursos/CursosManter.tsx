@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
-import { ArrowLeftOutlined, InsertRowBelowOutlined, SaveFilled } from "@ant-design/icons";
+import { InsertRowBelowOutlined, SaveFilled } from "@ant-design/icons";
 import { FormApi } from "final-form";
-import { Typography, Input, Button, InputNumber, Breadcrumb } from "antd";
+import { Typography, Input, Button, Breadcrumb } from "antd";
 import { Field, Form } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,10 +13,8 @@ import CursosManter_Inscricoes_Manter from "./listaInscricoes/manter/CursosMante
 import GetCourseDto from "../../services/CourseService/dto/GetCourseDto";
 import { CourseFormValidators } from "./CourseFormValidators";
 import { FinalInputText } from "../_commons/FinalForm/FinalInputText";
-import { FinalInputNumber } from "../_commons/FinalForm/FinalInputNumber";
 import Maqui_Botao_Voltar from "../_commons/MaquiButton/Maqui_Botao_Voltar";
 import Maqui_Botao_Lento from "../_commons/MaquiButton/Maqui_Botao_Lento";
-import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from "../../layout/general";
 import { FinalInputDescricao } from "./FinalInputDescricao";
 
 function CursosManter(props: { eAlteracao: boolean }) {
