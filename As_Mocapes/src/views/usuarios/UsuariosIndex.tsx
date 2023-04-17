@@ -239,7 +239,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
           <>{(windowWidth <= Constantes.WidthMaximoMobile && UsuariosIndexState.usuariosApresentados.length > 0) ?
             <>
               <Row>
-                {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding">
+                {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding" key={xUsuario.id}>
                   <Card title={<div className="usuarios-index-botoes-modal">
                       <Dropdown menu={{ items: renderItensMais(xUsuario) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                         <Button icon={<MoreOutlined />}></Button>

@@ -180,7 +180,7 @@ function CursosIndex() {
           <>{(windowWidth <= Constantes.WidthMaximoMobile && CursosIndexState.cursosApresentados.length > 0) ?
             <>
               <Row>
-                {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding">
+                {CursosIndexState.cursosApresentados.map(xCurso => <Col span={12} className="half-padding" key={xCurso.id}>
                   <Card title={<div className="cursos-index-botoes-modal">
                       <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                         <Button icon={<MoreOutlined />}></Button>

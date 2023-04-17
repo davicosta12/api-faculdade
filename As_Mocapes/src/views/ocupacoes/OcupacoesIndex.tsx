@@ -251,7 +251,7 @@ function OcupacoesIndex() {
           <>{(windowWidth <= Constantes.WidthMaximoMobile && OcupacoesIndexState.result.length > 0) ?
             <>
               <Row>
-                {OcupacoesIndexState.result.map(xOcupacao => <Col span={12} className="half-padding">
+                {OcupacoesIndexState.result.map(xOcupacao => <Col span={12} className="half-padding" key={xOcupacao.id}>
                   <Card title={<div className="ocupacoes-index-botoes-modal">
                       <Dropdown menu={{ items: renderItensMais(xOcupacao) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                         <Button icon={<MoreOutlined />}></Button>
