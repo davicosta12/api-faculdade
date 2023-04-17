@@ -274,7 +274,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
             </> : <>{
               UsuariosIndexState.usuariosApresentados.length > 0 ?
               <DataTable
-                handleRowKey={(course: any) => course.i_Cod_Curso}
+                handleRowKey={(course: any) => course.id}
                 dataSource={UsuariosIndexState.usuariosApresentados}
                 columns={columns}
                 getData={(_page: number | undefined, _perPage: number | undefined) => {}}

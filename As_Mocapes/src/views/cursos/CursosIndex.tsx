@@ -203,7 +203,7 @@ function CursosIndex() {
             </> : <>{
               CursosIndexState.cursosApresentados.length > 0 ?
               <DataTable
-                handleRowKey={(course: any) => course.i_Cod_Curso}
+                handleRowKey={(course: any) => course.id}
                 dataSource={CursosIndexState.cursosApresentados}
                 columns={columns}
                 getData={(_page: number | undefined, _perPage: number | undefined) => {}}

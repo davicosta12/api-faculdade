@@ -283,7 +283,7 @@ function OcupacoesIndex() {
             </> : <>{
               OcupacoesIndexState.result.length > 0 ?
               <DataTable
-                handleRowKey={(occupation: any) => occupation.i_Cod_Ocupacao}
+                handleRowKey={(occupation: any) => occupation.id}
                 dataSource={OcupacoesIndexState.result}
                 columns={columns}
                 getData={(_page: number | undefined, _perPage: number | undefined) => {}}
