@@ -3,13 +3,19 @@
   width: 100vw;
   height: 100vh;
   background-size: cover;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  grid-template-rows: 1fr max-content 1fr;
   justify-content: center;
   align-items: center;
 }
 
 .nova-senha-card {
-  width: max(30vw, 300px);
+  width: min(80vw, 300px);
+  grid-column-start: 2;
+  grid-row-start: 2;
+  max-height: calc(100vh - var(--padding-length) * 2);
+  overflow-y: auto;
 }
 
 .nova-senha-botoes {

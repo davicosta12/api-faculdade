@@ -9,6 +9,8 @@ export default interface GetUserDto {
     s_Nome_Mae: string,
     b_E_Ativo: boolean,
     s_Email: string,
+    b_E_Alterar_Senha: boolean,
     s_Senha: string,
+    s_Confirmar_Senha: string,
     b_Tem_Senha_Temporaria: boolean
 }

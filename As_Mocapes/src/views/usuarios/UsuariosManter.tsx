@@ -18,11 +18,10 @@ import { LitSexoMaker } from "../../model/literal/lit-sexo";
 import { FinalInputLogical } from "../_commons/FinalForm/FinalInputLogical";
 import Maqui_Botao_Voltar from "../_commons/MaquiButton/Maqui_Botao_Voltar";
 import Maqui_Botao_Lento from "../_commons/MaquiButton/Maqui_Botao_Lento";
+import { FinalInputPassword } from "../_commons/FinalForm/FinalInputPassword";
 
 function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolean, eMinhaConta?: boolean | undefined }) {
   const litPerfil = LitPerfilMaker.PorSiglaOrNull(props.siglaPerfil);
-  
-  const [eAlteracaoSenha, setEAlteracaoSenha] = useState(false);
   
   const getTituloH3 = (): string => {
     if (props.eMinhaConta !== undefined)
@@ -187,6 +186,36 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                     component={FinalInputText}
                   />
                 </div>
+                
+                {props.eAlteracao && <div className="half-padding">
+                  <Field
+                    label="Alterar Senha"
+                    name="b_E_Alterar_Senha"
+                    component={FinalInputLogical}
+                  />
+                </div>}
+                {(!props.eAlteracao || values.b_E_Alterar_Senha) && <>
+                  <div className="half-padding">
+                    <Field
+                      label="Senha"
+                      name="s_Senha"
+                      required={!props.eAlteracao}
+                      placeholder="Senha"
+                      maxLength={30}
+                      component={FinalInputPassword}
+                    />
+                  </div>
+                  <div className="half-padding">
+                    <Field
+                      label="Confirmar Senha"
+                      name="s_Confirmar_Senha"
+                      required={!props.eAlteracao}
+                      placeholder="Confirmar Senha"
+                      maxLength={30}
+                      component={FinalInputPassword}
+                    />
+                  </div>
+                </>}
                 
               <div className="agrupar-horizontalmente">
                 <Maqui_Botao_Voltar Acao_Voltar={handleGoBack} /> 
