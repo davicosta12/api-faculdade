@@ -166,7 +166,7 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                   />
                 </div>
                 
-                <div className="half-padding">
+                {(!(props.eMinhaConta ?? false)) && <div className="half-padding">
                   <Field
                     label="Ativo"
                     name="b_E_Ativo"
@@ -175,7 +175,7 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                     checked={props.eAlteracao ? values.b_E_Ativo : true}
                     component={FinalInputLogical}
                   />
-                </div>
+                </div>}
                 <div className="half-padding">
                   <Field
                     label="E-mail"

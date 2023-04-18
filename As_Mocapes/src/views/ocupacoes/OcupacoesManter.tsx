@@ -76,7 +76,7 @@ function OcupacoesManter(props: { eAlteracao: boolean }) {
     navigate(-1);
   }
   
-  let mockedTeachers = UsuariosIndexState.usuariosApresentados.map(x => ({ value: x.id + '', label: x.nome }) );
+  let mockedTeachers = UsuariosIndexState.professores.map(x => ({ value: x.id + '', label: x.nome }) );
   let mockedCourses = CursosIndexState.cursosApresentados.map(x => ({ value: x.id + '', label: x.nome }) );
   
   return (

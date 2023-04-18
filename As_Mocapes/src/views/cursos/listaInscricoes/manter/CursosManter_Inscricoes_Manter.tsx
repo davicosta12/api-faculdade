@@ -29,7 +29,7 @@ function CursosManter_Inscricoes_Manter(props: { eAlteracao: boolean, onChangeTr
               style={{ width: 200 }}
               options={[
                 { value: '', label: 'Selecione...' },
-              ].concat(UsuariosIndexState.usuariosApresentados.map(x => {
+              ].concat(UsuariosIndexState.alunos.map(x => {
                 return { value: x.id + '', label: x.nome }
               }))}
                     
@@ -48,7 +48,7 @@ function CursosManter_Inscricoes_Manter(props: { eAlteracao: boolean, onChangeTr
               style={{ width: 200 }}
               options={[
                 { value: '', label: 'Selecione...' },
-              ].concat(UsuariosIndexState.usuariosApresentados.map(x => {
+              ].concat(UsuariosIndexState.alunos.map(x => {
                 return { value: x.id + '', label: x.ra }
               }))}
                     

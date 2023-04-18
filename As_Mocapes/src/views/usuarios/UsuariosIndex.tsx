@@ -99,6 +99,8 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     setIsExcluirModalOpen(true);
   }
     
+    let mockedUsuarios = props.siglaPerfil === 'A' ? UsuariosIndexState.alunos : UsuariosIndexState.professores;
+    
   // Resultados e Paginaçao default
   const renderItensMais = (rowData: IResultadoUsuario) => {
     const itensMais: MenuProps['items'] = [
@@ -236,10 +238,10 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         
         {isLoading ?
           <Spin /> :
-          <>{(windowWidth <= Constantes.WidthMaximoMobile && UsuariosIndexState.usuariosApresentados.length > 0) ?
+          <>{(windowWidth <= Constantes.WidthMaximoMobile && mockedUsuarios.length > 0) ?
             <>
               <Row>
-                {UsuariosIndexState.usuariosApresentados.map(xUsuario => <Col span={12} className="half-padding" key={xUsuario.id}>
+                {mockedUsuarios.map(xUsuario => <Col span={12} className="half-padding" key={xUsuario.id}>
                   <Card title={<div className="usuarios-index-botoes-modal">
                       <Dropdown menu={{ items: renderItensMais(xUsuario) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
                         <Button icon={<MoreOutlined />}></Button>
@@ -269,17 +271,17 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
                 </Col>)}
               </Row>
               <div className='usuarios-index-botoes-modal'>
-                <Pagination total={UsuariosIndexState.usuariosApresentados.length} defaultCurrent={1} />
+                <Pagination total={mockedUsuarios.length} defaultCurrent={1} />
               </div>
             </> : <>{
-              UsuariosIndexState.usuariosApresentados.length > 0 ?
+              mockedUsuarios.length > 0 ?
               <DataTable
                 handleRowKey={(course: any) => course.id}
-                dataSource={UsuariosIndexState.usuariosApresentados}
+                dataSource={mockedUsuarios}
                 columns={columns}
                 getData={(_page: number | undefined, _perPage: number | undefined) => {}}
                 setDataResult={null}
-                totalCount={UsuariosIndexState.usuariosApresentados.length}
+                totalCount={mockedUsuarios.length}
                 pagination
                 isLoading={false}
                 /> :
