@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Ocupacao (
   I_Cod_Ocupacao INT PRIMARY KEY AUTO_INCREMENT,
   I_Cod_Usuario_Professor INT NOT NULL,
   I_Cod_Curso INT NOT NULL,
-  S_Dia_Semana VARCHAR(1),
+  S_Dia_Semana VARCHAR(3),
   D_Hora_Inicio DATETIME,
   D_Hora_Fim DATETIME,
   CONSTRAINT fk_Ocupacao_Cod_Usuario_Professor
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS Turma (
   I_Cod_Turma INT PRIMARY KEY AUTO_INCREMENT,
   I_Cod_Usuario_Professor INT NOT NULL,
   I_Cod_Curso INT NOT NULL,
-  S_Dia_Semana VARCHAR(1),
+  S_Dia_Semana VARCHAR(3),
   D_Hora_Inicio DATETIME,
   D_Hora_Fim DATETIME,
   I_Maximo_Alunos INT NOT NULL,
