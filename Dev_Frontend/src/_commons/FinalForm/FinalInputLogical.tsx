@@ -11,7 +11,7 @@ interface Props extends FieldRenderProps<any, HTMLElement> {
 export const FinalInputLogical: FunctionComponent<Props> = ({
   input: { name, onChange, onBlur, type, value },
   meta: { touched, active, initial, error, dirty, },
-  label,
+  label, disabled, checked,
   ...custom
 }: Props) => {
 
@@ -32,7 +32,8 @@ export const FinalInputLogical: FunctionComponent<Props> = ({
         <div className='half-padding'>
           <Switch
             id={name}
-            checked={value}
+            checked={checked}
+            disabled={disabled}
             style={inputStyles}
             onChange={handleChange}
           />

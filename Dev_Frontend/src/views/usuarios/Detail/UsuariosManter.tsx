@@ -98,7 +98,7 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                   name="c_Sexo"
                   required
                   component={FinalInputLiteral}
-                  Nome_do_Campo='Sexo'
+                  label='Sexo'
                   Opcoes={LitSexoMaker.TodosOptions}
                   Com_Selecione={true}
                 />
@@ -118,6 +118,8 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                 label="Ativo"
                 name="b_E_Ativo"
                 required
+                disabled={!props.eAlteracao}
+                checked={props.eAlteracao ? values.b_E_Ativo : true}
                 component={FinalInputLogical}
               />
               <div className="half-padding">

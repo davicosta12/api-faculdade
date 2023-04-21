@@ -5,7 +5,9 @@ import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from
 import { LiteralOption } from "../MaquiInterfaces/Maqui_Interfaces";
 
 interface Props extends FieldRenderProps<any, HTMLElement> {
-  Nome_do_Campo: string;
+}
+
+interface FinalInputLiteralProps {
   Opcoes: Array<LiteralOption>;
   Com_Selecione?: Boolean;
 }
@@ -13,11 +15,10 @@ interface Props extends FieldRenderProps<any, HTMLElement> {
 export const FinalInputLiteral: FunctionComponent<Props> = ({
   input: { name, onChange, onBlur, type, value },
   meta: { touched, active, initial, error, dirty, },
-  Nome_do_Campo,
-  Opcoes,
-  Com_Selecione,
+  label,
   ...custom
 }: Props) => {
+  const { Com_Selecione, Opcoes } = (custom as FinalInputLiteralProps);
   const selecione = { value: '', label: 'Selecione...' };
   const OpcoesSelect = Com_Selecione ? [ selecione, ...Opcoes ] : Opcoes;
 
@@ -34,7 +35,7 @@ export const FinalInputLiteral: FunctionComponent<Props> = ({
   return (
     <>
       {custom.required && <RequiredSpan>*</RequiredSpan>}
-      <Label htmlFor={name}> {Nome_do_Campo} </Label>
+      <Label htmlFor={name}> {label} </Label>
       <Select
         options={ OpcoesSelect }
         defaultValue={ OpcoesSelect[0].value }
