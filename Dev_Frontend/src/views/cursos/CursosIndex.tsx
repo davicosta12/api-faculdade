@@ -26,6 +26,9 @@ import { LitSexoMaker } from '../../model/literal/lit-sexo';
 import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
+import { useInterval } from '../../hooks/useInterval';
+
+const REFRESH_CURSOS_INTERVAL = 1000 * 30;
 
 function CursosIndex() {
 
@@ -42,7 +45,7 @@ function CursosIndex() {
   const handleChangeActivePanels = (nextIsShowingAdvanced: boolean) => {
     setEstaMostrandoFiltrosAvancados(nextIsShowingAdvanced);
     if (!nextIsShowingAdvanced) {
-      
+
       setFilterParams({
         ...filterParams,
         isAdvancedSearch: false,
@@ -68,9 +71,9 @@ function CursosIndex() {
 
   const courseService = new CourseService();
 
-  useEffect(() => {
+  useInterval(() => {
     getCourses();
-  }, []);
+  }, REFRESH_CURSOS_INTERVAL);
 
   const getCourses = async (_page: number = page, _perPage: number = perPage) => {
     setPage(_page);
@@ -200,7 +203,7 @@ function CursosIndex() {
               onChangeFilterParams={setFilterParams}
               filterParams={filterParams}
               selectMinWidth={160} />
-              {/*<Maqui_Filtro_Avancado_Data
+            {/*<Maqui_Filtro_Avancado_Data
                 selectedLabelNames={selectedFiltros}
                 labelName='Teste data'
                 inputNameBasis='testDate'
@@ -227,13 +230,13 @@ function CursosIndex() {
               selectMinWith={120} />*/}
           </>
         </Maqui_Filtro_Avancado_Wrapper>
-        
-          <Maqui_Ordenar_Por
-            allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.value, description: x.descricao }) )}
-            onChangeFilterParams={setFilterParams}
-            filterParams={filterParams}
-            selectMinWith={256}
-            />
+
+        <Maqui_Ordenar_Por
+          allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.value, description: x.descricao }))}
+          onChangeFilterParams={setFilterParams}
+          filterParams={filterParams}
+          selectMinWith={256}
+        />
         <div className='agrupar-horizontalmente'>
           <div className='half-padding'>
             <Button
@@ -259,45 +262,45 @@ function CursosIndex() {
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        
 
-        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */ 
+
+        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */
           <Row>
             {courseResult.result.map(xCurso => <Col span={12} className="half-padding">
               <Card title={<div className="cursos-index-botoes-modal">
-                  <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-                    <Button icon={<MoreOutlined />}></Button>
-                  </Dropdown>
-                </div>}
+                <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                  <Button icon={<MoreOutlined />}></Button>
+                </Dropdown>
+              </div>}
                 bodyStyle={{ padding: "6px" }}
                 headStyle={{ paddingRight: "12px" }}>
-                
+
                 <div className='half-padding'>
                   <span className='card-text-size'><strong>Nome</strong>: {xCurso.s_Nome}</span>
                 </div>
                 <div className='half-padding'>
                   <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.i_Qtd_Limite_Semestres}</span>
                 </div>
-                
+
               </Card>
-              
+
             </Col>)}
           </Row> : <>{
             courseResult?.result?.length ?
-            <DataTable
-              handleRowKey={(course: any) => course.i_Cod_Curso}
-              dataSource={courseResult.result}
-              columns={columns}
-              getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
-              setDataResult={setCourseResult}
-              totalCount={courseResult.paging?.totalCount}
-              pagination
-              isLoading={isLoading}
+              <DataTable
+                handleRowKey={(course: any) => course.i_Cod_Curso}
+                dataSource={courseResult.result}
+                columns={columns}
+                getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
+                setDataResult={setCourseResult}
+                totalCount={courseResult.paging?.totalCount}
+                pagination
+                isLoading={isLoading}
               /> :
               <Empty />
-            }</>
-          }
-        
+          }</>
+        }
+
         {windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length && <div className='usuarios-index-botoes-modal'>
           <Pagination total={courseResult.result.length} defaultCurrent={1} />
         </div>}

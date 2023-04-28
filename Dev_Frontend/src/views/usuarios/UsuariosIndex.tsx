@@ -3,7 +3,7 @@ import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination } from 'antd';
+import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Empty } from 'antd';
 import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
 import type { ColumnsType } from 'antd/es/table';
@@ -12,14 +12,72 @@ import { UsuariosIndexState } from '../../integrations/usuarios-index-state';
 import type { MenuProps } from 'antd';
 import { Constantes } from '../../model/constantes';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
+import GetUserDto from '../../services/UserService/dto/GetUserDto';
+import GenericPagingDto from '../../services/GenericDto/GenericPagingDto';
+import UserFilterParamsDto from '../../services/UserService/dto/UserFilterParamsDto';
+import DataTable from '../../_commons/DataTable/DataTable';
+import UserService from '../../services/UserService/UserService';
+import { useInterval } from '../../hooks/useInterval';
+import { toast } from 'react-toastify';
+import { toastError, toastOptions } from '../../misc/utils/utils';
+import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
+import Maqui_Filtro_Termos from '../../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
 
+const REFRESH_USERS_INTERVAL = 1000 * 30;
 
 function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
+
+  const [userResult, setUserResult] = useState({} as GenericPagingDto<GetUserDto>);
+  const [user, setUser] = useState({} as GetUserDto)
+  const [filterParams, setFilterParams] = useState<UserFilterParamsDto>(new UserFilterParamsDto());
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const litPerfil = LitPerfilMaker.PorSiglaOrNull(props.siglaPerfil);
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
-    
+  // const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { windowWidth } = useWindowDimensions();
-    
+
+  const userService = new UserService();
+
+  useInterval(() => {
+    getUsers();
+  }, REFRESH_USERS_INTERVAL);
+
+  const getUsers = async (_page: number = page, _perPage: number = perPage) => {
+    setPage(_page);
+    setPerPage(_perPage);
+    setIsLoading(true);
+    try {
+      const _userResult = await userService.getUsers(
+        { ...filterParams, perfil: litPerfil?.sigla || '' },
+        _page, _perPage
+      );
+      setUserResult(_userResult);
+    }
+    catch (err: any) {
+      toast.error(toastError(err), toastOptions(toast));
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleSearch = () => {
+    getUsers(1, 5);
+  }
+
+  const handleChange = (ev: any) => {
+    setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
+  }
+
+  let todosPossiveisFiltros = LitColunaUsuarioMaker.Todos;
+
+  if (props.siglaPerfil !== 'A') {
+    todosPossiveisFiltros = LitColunaUsuarioMaker.removerPropriedade('s_RA');
+  }
+
   // Filtros avançados
   let possiveisFiltros: string[] = []
   if (windowWidth <= Constantes.WidthMaximoMobile)
@@ -31,6 +89,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     if (windowWidth <= Constantes.WidthMaximoMobile)
       possiveisFiltros.push(LitColunaUsuarioMaker.EAtivo.descricao);
   }
+
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
   const handleChangeActivePanels = (activePanels: string | string[]) => {
     setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
@@ -41,14 +100,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       : selectedFiltros.filter((t) => t !== tag);
     setSelectedFiltros(nextSelectedTags);
   };
-    
-  // Ordenaçao
-  let possiveisOrdenacoes = [{ value: '', label: 'Nada' }];
-  for (let iPossivelFiltro of possiveisFiltros) {
-    possiveisOrdenacoes.push({ value: iPossivelFiltro + '--asc', label: iPossivelFiltro + " Crescente" });
-    possiveisOrdenacoes.push({ value: iPossivelFiltro + '--desc', label: iPossivelFiltro + " Decrescente" });
-  }
-    
+
   // Resultados e Paginaçao default
   const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
   const itensMais: MenuProps['items'] = [
@@ -99,20 +151,19 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       ),
     },
   ];
- 
+
   columns = columns.filter(x => x.title == '#' || possiveisFiltros.some(y => y == x.title ?? ''));
-    
+
   return (
     <NavigationWrapper>
       <div className="half-padding">
         <div className="half-padding">
           <Typography.Title level={3}>{litPerfil?.tituloH3Index}</Typography.Title>
         </div>
-        
+
         {/* Pesquisa */}
-        {!estaMostrandoFiltrosAvancados && <div className='half-padding'>
-          <Input placeholder="Termos" prefix={<SearchOutlined/>} />
-        </div>}
+        <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={handleChange} />
+        
         <div className='half-padding'>
           <Collapse onChange={handleChangeActivePanels} defaultActiveKey={estaMostrandoFiltrosAvancados ? ["filtros-avancados"] : []} >
             <Collapse.Panel header="Filtros Avançados" key="filtros-avancados">
@@ -146,7 +197,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
                         { value: '', label: 'Selecione...' },
                         { value: 'M', label: 'Masculino' },
                         { value: 'F', label: 'Feminino' },
-                      ]} 
+                      ]}
                     />
                   </div>
                 </div>}
@@ -165,34 +216,57 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
             </Collapse.Panel>
           </Collapse>
         </div>
-        
+
         {/* Ordenar por */}
         <div className="usuarios-index-filtro-avancado">
           <div className='half-padding'>
-            <Typography.Text>Ordenar por</Typography.Text>
-          </div>
-          <div className='half-padding'>
-            <Select
-              defaultValue=""
-              style={{ width: 256 }}
-              options={possiveisOrdenacoes}
+            <Maqui_Ordenar_Por
+              allColumns={todosPossiveisFiltros.map(x => ({ dbColumnName: x.nomePropriedade, description: x.descricao }))}
+              onChangeFilterParams={setFilterParams}
+              filterParams={filterParams}
+              selectMinWith={256}
             />
           </div>
         </div>
         <div className='agrupar-horizontalmente'>
           <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<SearchOutlined/>}>Pesquisar</Button>
+            <Button
+              type="primary"
+              shape="round"
+              icon={<SearchOutlined />}
+              onClick={handleSearch}
+            >
+              Pesquisar
+            </Button>
           </div>
           <div className='half-padding'>
-            <Button type="primary" shape="round" icon={<PlusOutlined/>}>Inserir...</Button>
+            <Button
+              type="primary"
+              shape="round"
+              icon={<PlusOutlined />}
+            >Inserir...
+            </Button>
           </div>
         </div>
-        
+
         {/* Resultados e Paginaçao default
                 atributos visiveis pra mobile: nome; sexo, ativo e mais
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
-        <Table dataSource={UsuariosIndexState.usuariosApresentados} columns={columns} />
-        
+        <>{
+          userResult?.result?.length ?
+            <DataTable
+              handleRowKey={(user: any) => user.I_Cod_Usuario}
+              dataSource={userResult.result}
+              columns={columns}
+              getData={(_page: number | undefined, _perPage: number | undefined) => getUsers(_page, _perPage)}
+              setDataResult={setUserResult}
+              totalCount={userResult.paging?.totalCount}
+              pagination
+              isLoading={isLoading}
+            /> :
+            <Empty />
+        }</>
+
       </div>
       <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
         <div className="half-padding">
@@ -201,10 +275,10 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
           </div>
           <div className="usuarios-index-botoes-modal">
             <div className="half-padding" >
-              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined/>}>Voltar</Button>
+              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined />}>Voltar</Button>
             </div>
             <div className="half-padding" >
-              <Button danger type="primary" shape="round" icon={<DeleteFilled/>}>Excluir</Button>
+              <Button danger type="primary" shape="round" icon={<DeleteFilled />}>Excluir</Button>
             </div>
           </div>
         </div>

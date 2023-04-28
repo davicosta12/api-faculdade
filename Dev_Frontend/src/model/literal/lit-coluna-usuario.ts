@@ -6,35 +6,35 @@ class LitColunaUsuario {
 class LitColunaUsuarioMaker {
     static get Nome(): LitColunaUsuario {
         return {
-            nomePropriedade: 'nome',
+            nomePropriedade: 's_Nome',
             descricao: 'Nome',
         }
     }
     static get RA(): LitColunaUsuario {
         return {
-            nomePropriedade: 'ra',
+            nomePropriedade: 's_RA',
             descricao: 'RA',
         }
     }
     static get Sexo(): LitColunaUsuario {
         return {
-            nomePropriedade: 'sexo',
+            nomePropriedade: 'c_Sexo',
             descricao: 'Sexo',
         }
     }
     static get NomeMae(): LitColunaUsuario {
         return {
-            nomePropriedade: 'nomeMae',
+            nomePropriedade: 's_Nome_Mae',
             descricao: 'Nome da mãe',
         }
     }
     static get EAtivo(): LitColunaUsuario {
         return {
-            nomePropriedade: 'eAtivo',
+            nomePropriedade: 'b_E_Ativo',
             descricao: 'Ativo',
         }
     }
-    
+
     static get Todos(): LitColunaUsuario[] {
         return [
             LitColunaUsuarioMaker.Nome,
@@ -46,6 +46,10 @@ class LitColunaUsuarioMaker {
     }
     static PorNomePropriedadeOrNull(nomePropriedade: string): LitColunaUsuario | undefined {
         return LitColunaUsuarioMaker.Todos.find(x => x.nomePropriedade == nomePropriedade);
+    }
+
+    static removerPropriedade(nomePropriedade: string): LitColunaUsuario[] {
+        return LitColunaUsuarioMaker.Todos.filter(x => x.nomePropriedade != nomePropriedade);
     }
 }
 

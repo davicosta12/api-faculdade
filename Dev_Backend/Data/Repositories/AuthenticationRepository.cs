@@ -92,7 +92,7 @@ namespace Dev_Backend.Data.Repositories
 
             int identityId = await ExecuteScalarAsync<int>(sql, new
             {
-                @C_Perfil = userRegister.C_Perfil.Trim(),
+                @C_Perfil = userRegister.C_Perfil.ToUpper().Trim(),
                 @S_Nome = userRegister.S_Nome.Trim(),
                 @S_CPF = userRegister.S_CPF.Trim(),
                 @S_RA = userRegister.S_RA.Trim(),
@@ -107,7 +107,7 @@ namespace Dev_Backend.Data.Repositories
             var createUser = new User()
             {
                 I_Cod_Usuario = identityId,
-                C_Perfil = userRegister.C_Perfil.Trim(),
+                C_Perfil = userRegister.C_Perfil.ToUpper().Trim(),
                 S_Nome = userRegister.S_Nome.Trim(),
                 S_CPF = userRegister.S_CPF.Trim(),
                 S_RA = userRegister.S_RA.Trim(),

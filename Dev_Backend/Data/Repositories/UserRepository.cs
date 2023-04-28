@@ -17,13 +17,14 @@ namespace Dev_Backend.Data.Repositories
         public async Task<GenericPaging<User>> GetUsers(GetUserFilterPaging filterParams, int? currentPageNumber, int? pageSize)
         {
             string where = "";
+            string perfil = filterParams.perfil.ToUpper().Trim();
             if (filterParams.isAdvancedSearch)
             {
                 where = UsersWherePredicate.GetUserFilterWhere(filterParams);
             }
             else
             {
-                switch (filterParams.perfil.ToUpper().Trim())
+                switch (perfil)
                 {
                     case "A":
                         where = FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new[] { "u.S_Nome", "u.S_RA", "u.C_Sexo", "u.S_Nome_Mae", "u.B_E_Ativo" });
@@ -61,7 +62,7 @@ namespace Dev_Backend.Data.Repositories
                 ["@gender"] = filterParams.gender,
                 ["@motherName"] = filterParams.motherName,
                 ["@isActive"] = filterParams.isActive,
-                ["@perfil"] = filterParams.perfil,
+                ["@perfil"] = perfil,
                 ["@_skip"] = skip,
                 ["@_take"] = take
             };

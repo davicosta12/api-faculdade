@@ -75,7 +75,7 @@ namespace api_faculdade.Controllers
 
                 var userFound = await userRepository.GetUserByCPF(userRegister.S_CPF);
 
-                if (userFound == null)
+                if (userFound != null)
                 {
                     res.isValid = false;
                     res.message = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.";
@@ -101,6 +101,7 @@ namespace api_faculdade.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<ActionResult<ResponseMessage>> UpdateUser(int id, [FromBody] PostUser user)
         {
@@ -144,6 +145,7 @@ namespace api_faculdade.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResponseMessage>> DeleteUser(int id)
         {
