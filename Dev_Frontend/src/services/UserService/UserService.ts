@@ -47,7 +47,7 @@ export default class UserService extends HttpService {
     })
   }
 
-  createCourse(user: PostUserDto): Promise<GenericResponseDto> {
+  createUser(user: PostUserDto): Promise<GenericResponseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().post(`/User`, user)
         .then(res => {
@@ -57,7 +57,7 @@ export default class UserService extends HttpService {
     })
   }
 
-  updateCourse(id: number, user: PostUserDto): Promise<GenericResponseDto> {
+  updateUser(id: number, user: PostUserDto): Promise<GenericResponseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().put(`/User/${id}`, user)
         .then(res => {
@@ -67,7 +67,7 @@ export default class UserService extends HttpService {
     })
   }
 
-  deleteCourse(id: number): Promise<GenericResponseDto> {
+  deleteUser(id: number): Promise<GenericResponseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().delete(`/User/${id}`)
         .then(res => {

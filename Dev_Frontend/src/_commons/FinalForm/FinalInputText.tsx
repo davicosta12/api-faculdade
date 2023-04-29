@@ -28,17 +28,29 @@ export const FinalInputText: FunctionComponent<Props> = ({
     <>
       {custom.required && <RequiredSpan>*</RequiredSpan>}
       <Label htmlFor={name}> {label} </Label>
-      <Input
-        id={name}
-        name={name}
-        value={value}
-        placeholder={custom?.placeholder}
-        maxLength={custom?.maxLength}
-        status={error && touched ? 'error' : ''}
-        style={inputStyles}
-        onChange={handleChange}
-        onBlur={(event) => onBlur(event)}
-      />
+      {custom.isPassword === false ?
+        <Input
+          id={name}
+          name={name}
+          value={value}
+          placeholder={custom?.placeholder}
+          maxLength={custom?.maxLength}
+          status={error && touched ? 'error' : ''}
+          style={inputStyles}
+          onChange={handleChange}
+          onBlur={(event) => onBlur(event)}
+        /> :
+        <Input.Password
+          id={name}
+          name={name}
+          value={value}
+          placeholder={custom?.placeholder}
+          maxLength={custom?.maxLength}
+          status={error && touched ? 'error' : ''}
+          style={inputStyles}
+          onChange={handleChange}
+          onBlur={(event) => onBlur(event)}
+        />}
       {error && touched && custom.required
         ?
         <ContainerFormMessageError>
@@ -47,3 +59,7 @@ export const FinalInputText: FunctionComponent<Props> = ({
     </>
   );
 };
+
+FinalInputText.defaultProps = {
+  isPassword: false
+}

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Table, Dropdown, Modal, InputNumber, Card, Col, Row, Pagination, Empty } from 'antd';
-import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Typography, Button, Dropdown, Card, Col, Row, Pagination, Empty } from 'antd';
+import { MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { MenuProps } from 'antd';
 import { LitColunaCursoMaker } from '../../model/literal/lit-coluna-curso';
@@ -19,10 +19,6 @@ import Maqui_Filtro_Termos from '../../_commons/MaquiTermsFilter/Maqui_Filtro_Te
 import Maqui_Filtro_Avancado_Wrapper from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
 import Maqui_Filtro_Avancado_Texto from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
 import Maqui_Filtro_Avancado_InteiroOuDecimal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_InteiroOuDecimal';
-import Maqui_Filtro_Avancado_Data from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Data';
-import Maqui_Filtro_Avancado_Logico from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
-import Maqui_Filtro_Avancado_Literal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
-import { LitSexoMaker } from '../../model/literal/lit-sexo';
 import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
@@ -185,7 +181,8 @@ function CursosIndex() {
           selectedLabelNames={selectedFiltros}
           onChangeSelectedLabelNames={setSelectedFiltros}
           show={estaMostrandoFiltrosAvancados}
-          onChangeShow={handleChangeActivePanels} >
+          onChangeShow={handleChangeActivePanels}
+        >
           <>
             <Maqui_Filtro_Avancado_Texto
               selectedLabelNames={selectedFiltros}

@@ -1,8 +1,7 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from "react";
-import { ArrowLeftOutlined, SaveFilled } from "@ant-design/icons";
-import { Card, Typography, Input, Button, Spin, Switch, Select } from "antd";
-import { useLocation, useParams } from "react-router-dom";
-import { UsuariosManterState } from "../../../integrations/usuarios-manter-state";
+import { FunctionComponent, MutableRefObject, useEffect, useRef, useState } from "react";
+import { SaveFilled } from "@ant-design/icons";
+import { Typography, Input, Switch, } from "antd";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavigationWrapper from "../../_navigation/NavigationWrapper";
 import { LitPerfilMaker, LitPerfilSigla } from "../../../model/literal/lit-perfil";
 import './UsuariosManter.css';
@@ -15,18 +14,33 @@ import { FinalInputMaskedText } from "../../../_commons/FinalForm/FinalInputMask
 import { FinalInputLiteral } from "../../../_commons/FinalForm/FinalInputLiteral";
 import { LitSexoMaker } from "../../../model/literal/lit-sexo";
 import { FinalInputLogical } from "../../../_commons/FinalForm/FinalInputLogical";
+import Maqui_Botao_Voltar from "../../../_commons/MaquiButton/Maqui_Botao_Voltar";
+import Maqui_Botao_Lento from "../../../_commons/MaquiButton/Maqui_Botao_Lento";
+import UserService from "../../../services/UserService/UserService";
+import { toast } from "react-toastify";
+import { toastError, toastOptions } from "../../../misc/utils/utils";
 
-function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolean, eMinhaConta?: boolean | undefined }) {
+interface Props {
+  eAlteracao: boolean;
+  siglaPerfil: LitPerfilSigla;
+  eMinhaConta?: boolean | undefined;
+}
+
+const UsuariosManter: FunctionComponent<Props> = (props) => {
+
+  const { eAlteracao, siglaPerfil } = props;
+
   const litPerfil = LitPerfilMaker.PorSiglaOrNull(props.siglaPerfil);
 
   const { id } = useParams();
-  
+
   const [eAlteracaoSenha, setEAlteracaoSenha] = useState(false);
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const getTituloH3 = (): string => {
     if (props.eMinhaConta !== undefined)
       return "Minha conta";
-    
+
     if (props.eAlteracao)
       return "Alteração de " + litPerfil?.tituloH3ManterUm;
     else
@@ -34,9 +48,12 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
   }
 
   const location = useLocation();
+  const navigate = useNavigate();
   let subscription = location?.state?.user as GetUserDto;
-  
+
   const formRef: MutableRefObject<FormApi<any, any>> = useRef<any>(null);
+
+  const userService = new UserService();
 
   useEffect(() => {
     if (subscription?.I_Cod_Usuario) {
@@ -46,13 +63,49 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
       formRef.current.reset({} as GetUserDto);
     }
   }, [subscription]);
-  
+
+  const handleCreate = async (values: GetUserDto) => {
+    setIsLoading(true);
+    try {
+      await userService.createUser(values);
+      toast.success(`Usuário - "${values.s_Nome}" criado com sucesso`, toastOptions(toast));
+    }
+    catch (err: any) {
+      toast.error(toastError(err), toastOptions(toast));
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleUpdate = async (values: GetUserDto) => {
+    setIsLoading(true);
+    try {
+      await userService.updateUser(values.I_Cod_Usuario, values);
+      toast.success(`Usuário - "${values.s_Nome}" atualizado com sucesso`, toastOptions(toast));
+    }
+    catch (err: any) {
+      toast.error(toastError(err), toastOptions(toast));
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleSubmit = (values: GetUserDto) => {
+    !eAlteracao ? handleCreate(values) : handleUpdate(values);
+  }
+
+  const handleGoBack = () => {
+    navigate(-1);
+  }
+
   return (
-      
+
     <NavigationWrapper>
       <Form
         onSubmit={() => { }}
-        validate={UserFormValidators}
+        validate={(values: GetUserDto) => UserFormValidators(values, siglaPerfil)}
         render={({ values, form }) => {
           formRef.current = form;
           return (
@@ -112,7 +165,14 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                 </div>
               </div>
               <div className="half-padding">
-                <Input placeholder="Nome da mãe" />
+                <Field
+                  label="Nome da mãe"
+                  name="s_Nome_Mae"
+                  required
+                  placeholder="Nome da mãe"
+                  maxLength={100}
+                  component={FinalInputText}
+                />
               </div>
               <Field
                 label="Ativo"
@@ -123,11 +183,18 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                 component={FinalInputLogical}
               />
               <div className="half-padding">
-                <Input placeholder="E-mail" />
+                <Field
+                  label="E-mail"
+                  name="s_Email"
+                  required
+                  placeholder="E-mail"
+                  maxLength={100}
+                  component={FinalInputText}
+                />
               </div>
               {props.eAlteracao && <div className="usuarios-manter-switch-senha">
                 <div className='half-padding'>
-                  <Switch checked={(eAlteracaoSenha || !props.eAlteracao) } onChange={(checked) => setEAlteracaoSenha(checked)} />
+                  <Switch checked={(eAlteracaoSenha || !props.eAlteracao)} onChange={(checked) => setEAlteracaoSenha(checked)} />
                 </div>
                 <div className='half-padding'>
                   <Typography.Text>Alterar a Senha</Typography.Text>
@@ -138,16 +205,16 @@ function UsuariosManter(props: { siglaPerfil: LitPerfilSigla, eAlteracao: boolea
                   <Input.Password placeholder="Nova Senha" />
                 </div>
                 <div className="half-padding">
-                  <Input.Password placeholder="Confirmar Senha"/>
+                  <Input.Password placeholder="Confirmar Senha" />
                 </div>
               </>}
               <div className="agrupar-horizontalmente">
-                <div className="half-padding" >
-                  <Button shape="round" icon={<ArrowLeftOutlined/>}>Voltar</Button>
-                </div>
-                <div className="half-padding" >
-                  {UsuariosManterState.AvancarEstaCarregando ? <Spin className="antd-top-padding" /> : <Button type="primary" shape="round" icon={<SaveFilled/>}>Confirmar</Button>}
-                </div>
+                <Maqui_Botao_Voltar Acao_Voltar={handleGoBack} />
+                <Maqui_Botao_Lento
+                  Rotulo_Botao="Confirmar"
+                  Icone={<SaveFilled />}
+                  Carregando={isLoading}
+                  Acao={() => handleSubmit(values as GetUserDto)} />
               </div>
             </div>
           )

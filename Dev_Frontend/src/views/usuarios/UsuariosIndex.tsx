@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './UsuariosIndex.css';
 import { LitPerfilMaker } from '../../model/literal/lit-perfil';
 import type { LitPerfilSigla } from '../../model/literal/lit-perfil';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
-import { Typography, Input, Collapse, Tag, Select, Button, Switch, Table, Dropdown, Modal, Pagination, Empty } from 'antd';
-import { ArrowLeftOutlined, DeleteFilled, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { LitColunaUsuario, LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
+import { Typography, Button, Switch, Dropdown, Empty } from 'antd';
+import { MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { LitColunaUsuarioMaker } from '../../model/literal/lit-coluna-usuario';
+import { LitSexoMaker } from '../../model/literal/lit-sexo';
 import type { ColumnsType } from 'antd/es/table';
-import { IResultadoUsuario } from '../../model/usuario-resultado';
-import { UsuariosIndexState } from '../../integrations/usuarios-index-state';
 import type { MenuProps } from 'antd';
 import { Constantes } from '../../model/constantes';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
@@ -22,6 +21,12 @@ import { toast } from 'react-toastify';
 import { toastError, toastOptions } from '../../misc/utils/utils';
 import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Ordenar_Por';
 import Maqui_Filtro_Termos from '../../_commons/MaquiTermsFilter/Maqui_Filtro_Termos';
+import Maqui_Filtro_Avancado_Texto from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Texto';
+import Maqui_Filtro_Avancado_Literal from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Literal';
+import Maqui_Filtro_Avancado_Logico from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Logico';
+import Maqui_Filtro_Avancado_Wrapper from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Wrapper';
+import ModalConfirm from '../../_commons/ModalConfirm/ModalConfirm';
+import { useNavigate } from 'react-router-dom';
 
 const REFRESH_USERS_INTERVAL = 1000 * 30;
 
@@ -37,6 +42,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   // const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
   const { windowWidth } = useWindowDimensions();
 
   const userService = new UserService();
@@ -64,12 +70,50 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
     }
   }
 
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      await userService.deleteUser(user.I_Cod_Usuario);
+      toast.success(`Usuário - "${user.s_Nome}" removido com sucesso`, toastOptions(toast));
+      getUsers();
+      setIsExcluirModalOpen(false);
+    }
+    catch (err: any) {
+      toast.error(toastError(err), toastOptions(toast));
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
   const handleSearch = () => {
     getUsers(1, 5);
   }
 
   const handleChange = (ev: any) => {
     setFilterParams({ ...filterParams, [ev.target.name]: ev.target.value });
+  }
+
+  const choiceUser = () => {
+    switch (props.siglaPerfil.toLocaleUpperCase().trim()) {
+      case 'A': return 'alunos';
+      case 'S': return 'secretarios';
+      default: return 'professors';
+    }
+  }
+
+  const handleAdd = () => {
+    setUser({} as GetUserDto);
+    navigate(`/${choiceUser()}/inserir`);
+  }
+
+  const handleEdit = (rowData: GetUserDto) => {
+    navigate(`/${choiceUser()}/alterar`, { state: { course: rowData } });
+  }
+
+  const handleRemove = (rowData: GetUserDto) => {
+    setUser(rowData);
+    setIsExcluirModalOpen(true);
   }
 
   let todosPossiveisFiltros = LitColunaUsuarioMaker.Todos;
@@ -91,29 +135,43 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
   }
 
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
-  const handleChangeActivePanels = (activePanels: string | string[]) => {
-    setEstaMostrandoFiltrosAvancados((_prev: boolean) => activePanels.length > 0);
+  const handleChangeActivePanels = (nextIsShowingAdvanced: boolean) => {
+    setEstaMostrandoFiltrosAvancados(nextIsShowingAdvanced);
+    if (!nextIsShowingAdvanced) {
+      setFilterParams(new UserFilterParamsDto());
+      setSelectedFiltros([]);
+    } else {
+      setFilterParams({ ...filterParams, isAdvancedSearch: true });
+    }
   }
-  const handleCheckAvancado = (tag: string, checked: boolean) => {
-    const nextSelectedTags = checked
-      ? [...selectedFiltros, tag]
-      : selectedFiltros.filter((t) => t !== tag);
-    setSelectedFiltros(nextSelectedTags);
-  };
+  // const handleCheckAvancado = (tag: string, checked: boolean) => {
+  //   const nextSelectedTags = checked
+  //     ? [...selectedFiltros, tag]
+  //     : selectedFiltros.filter((t) => t !== tag);
+  //   setSelectedFiltros(nextSelectedTags);
+  // };
 
   // Resultados e Paginaçao default
   const [isExcluirModalOpen, setIsExcluirModalOpen] = useState(false);
-  const itensMais: MenuProps['items'] = [
-    {
-      key: 'mais-alterar',
-      label: (<a target="_blank" rel="noopener noreferrer" href="#">Alterar</a>),
-    },
-    {
-      key: 'mais-excluir',
-      label: (<a rel="noopener noreferrer" onClick={() => setIsExcluirModalOpen(true)}>Excluir</a>),
-    },
-  ]
-  let columns: ColumnsType<IResultadoUsuario> = [
+
+  const renderItensMais = (rowData: GetUserDto) => {
+    const itensMais: MenuProps['items'] = [
+      {
+        key: 'mais-alterar',
+        label: (<a rel="noopener noreferrer">Alterar</a>),
+        onClick: () => handleEdit(rowData)
+      },
+      {
+        key: 'mais-excluir',
+        label: (<a rel="noopener noreferrer"
+          onClick={() => handleRemove(rowData)}>
+          Excluir</a>),
+      },
+    ];
+    return itensMais;
+  }
+
+  let columns: ColumnsType<GetUserDto> = [
     {
       title: LitColunaUsuarioMaker.Nome.descricao,
       dataIndex: LitColunaUsuarioMaker.Nome.nomePropriedade,
@@ -144,11 +202,13 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
       title: '#',
       key: 'mais',
       dataIndex: 'mais',
-      render: () => (
-        <Dropdown menu={{ items: itensMais }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-          <Button icon={<MoreOutlined />}></Button>
-        </Dropdown>
-      ),
+      render: (text, rowData: GetUserDto, index) => {
+        return (
+          <Dropdown menu={{ items: renderItensMais(rowData) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+            <Button icon={<MoreOutlined />}></Button>
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -163,59 +223,59 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
 
         {/* Pesquisa */}
         <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={handleChange} />
-        
-        <div className='half-padding'>
-          <Collapse onChange={handleChangeActivePanels} defaultActiveKey={estaMostrandoFiltrosAvancados ? ["filtros-avancados"] : []} >
-            <Collapse.Panel header="Filtros Avançados" key="filtros-avancados">
-              <div className="half-padding">
-                <div className="half-padding ">
-                  {possiveisFiltros.map((tag) => (
-                    <Tag.CheckableTag
-                      key={tag}
-                      checked={selectedFiltros.includes(tag)}
-                      onChange={(checked) => handleCheckAvancado(tag, checked)}
-                    >
-                      {tag}
-                    </Tag.CheckableTag>
-                  ))}
-                </div>
-                {selectedFiltros.includes('Nome') && <div className="half-padding">
-                  <Input placeholder="Nome" />
-                </div>}
-                {selectedFiltros.includes('RA') && <div className="half-padding">
-                  <Input placeholder="RA" />
-                </div>}
-                {selectedFiltros.includes('Sexo') && <div className="usuarios-index-filtro-avancado">
-                  <div className='half-padding'>
-                    <Typography.Text>Sexo</Typography.Text>
-                  </div>
-                  <div className='half-padding'>
-                    <Select
-                      defaultValue=""
-                      style={{ width: 120 }}
-                      options={[
-                        { value: '', label: 'Selecione...' },
-                        { value: 'M', label: 'Masculino' },
-                        { value: 'F', label: 'Feminino' },
-                      ]}
-                    />
-                  </div>
-                </div>}
-                {selectedFiltros.includes('Nome da mãe') && <div className="half-padding">
-                  <Input placeholder="Nome da mãe" />
-                </div>}
-                {selectedFiltros.includes('Ativo') && <div className="usuarios-index-filtro-avancado">
-                  <div className='half-padding'>
-                    <Switch />
-                  </div>
-                  <div className='half-padding'>
-                    <Typography.Text>Ativo</Typography.Text>
-                  </div>
-                </div>}
-              </div>
-            </Collapse.Panel>
-          </Collapse>
-        </div>
+
+        <Maqui_Filtro_Avancado_Wrapper
+          allLabelNames={[...(todosPossiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */ /*, 'Ativo' */ /*, 'Sexo' */]}
+          selectedLabelNames={selectedFiltros}
+          onChangeSelectedLabelNames={setSelectedFiltros}
+          show={estaMostrandoFiltrosAvancados}
+          onChangeShow={handleChangeActivePanels}
+        >
+          <>
+            {selectedFiltros.includes('Nome') &&
+              <Maqui_Filtro_Avancado_Texto
+                selectedLabelNames={selectedFiltros}
+                labelName={LitColunaUsuarioMaker.Nome.descricao}
+                inputName='userName'
+                onChange={handleChange}
+                value={filterParams.userName}
+              />}
+            {selectedFiltros.includes('RA') &&
+              <Maqui_Filtro_Avancado_Texto
+                selectedLabelNames={selectedFiltros}
+                labelName={LitColunaUsuarioMaker.RA.descricao}
+                inputName='studantRa'
+                onChange={handleChange}
+                value={filterParams.studantRa}
+              />}
+            {selectedFiltros.includes('Sexo') &&
+              <Maqui_Filtro_Avancado_Literal
+                selectedLabelNames={selectedFiltros}
+                labelName={LitColunaUsuarioMaker.Sexo.descricao}
+                literalOptions={LitSexoMaker.TodosOptions}
+                inputName='gender'
+                onChange={handleChange}
+                value={filterParams.gender ?? ''}
+                selectMinWith={120}
+              />}
+            {selectedFiltros.includes('Nome da mãe') &&
+              <Maqui_Filtro_Avancado_Texto
+                selectedLabelNames={selectedFiltros}
+                labelName={LitColunaUsuarioMaker.NomeMae.descricao}
+                inputName='motherName'
+                onChange={handleChange}
+                value={filterParams.motherName}
+              />}
+            {selectedFiltros.includes('Ativo') &&
+              <Maqui_Filtro_Avancado_Logico
+                selectedLabelNames={selectedFiltros}
+                labelName='Ativo'
+                inputName='isActive'
+                onChange={handleChange}
+                value={filterParams.isActive ?? false}
+              />}
+          </>
+        </Maqui_Filtro_Avancado_Wrapper>
 
         {/* Ordenar por */}
         <div className="usuarios-index-filtro-avancado">
@@ -244,6 +304,7 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
               type="primary"
               shape="round"
               icon={<PlusOutlined />}
+              onClick={handleAdd}
             >Inserir...
             </Button>
           </div>
@@ -267,23 +328,14 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
             <Empty />
         }</>
 
-      </div>
-      <Modal open={isExcluirModalOpen} footer={null} closable={true} onCancel={() => setIsExcluirModalOpen(false)}>
-        <div className="half-padding">
-          <div className="half-padding">
-            <Typography.Title level={5}>Deseja excluir o {litPerfil?.tituloH3ManterUm}? A ação não pode ser desfeita.</Typography.Title>
-          </div>
-          <div className="usuarios-index-botoes-modal">
-            <div className="half-padding" >
-              <Button shape="round" onClick={() => setIsExcluirModalOpen(false)} icon={<ArrowLeftOutlined />}>Voltar</Button>
-            </div>
-            <div className="half-padding" >
-              <Button danger type="primary" shape="round" icon={<DeleteFilled />}>Excluir</Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-    </NavigationWrapper>
+      </div >
+      <ModalConfirm
+        openConfirm={isExcluirModalOpen}
+        setOpenConfirm={setIsExcluirModalOpen}
+        loading={isLoading}
+        onAction={handleDelete}
+      />
+    </NavigationWrapper >
   )
 }
 
