@@ -24,10 +24,9 @@ var contact = VersionApi.GetVersion();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("Token", contact);
-
     c.SwaggerDoc("Course", contact);
-
     c.SwaggerDoc("User", contact);
+    c.SwaggerDoc("Configuration", contact);
 
     // Set the comments path for the Swagger JSON and UI.
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -105,6 +104,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/Token/swagger.json", "Token");
         c.SwaggerEndpoint("/swagger/Course/swagger.json", "Course");
         c.SwaggerEndpoint("/swagger/User/swagger.json", "User");
+        c.SwaggerEndpoint("/swagger/Configuration/swagger.json", "Configuration");
         c.DocumentTitle = "API - Documentation - Swagger";
     });
     app.UseDeveloperExceptionPage();

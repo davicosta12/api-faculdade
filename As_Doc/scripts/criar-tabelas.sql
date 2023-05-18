@@ -1,15 +1,28 @@
 USE db_Faculdade;
 
+CREATE TABLE IF NOT EXISTS Configuracao (
+  I_Cod_Configuracao INT PRIMARY KEY AUTO_INCREMENT,
+  I_Minimo_Alunos INT,
+  I_Maximo_Alunos INT,
+  I_Duracao_Meses_Temporada INT
+);
+INSERT INTO Configuracao (I_Minimo_Alunos, I_Maximo_Alunos, I_Duracao_Meses_Temporada)
+  VALUES (5, 20, 6);
+CREATE TABLE IF NOT EXISTS Configuracao_De_Periodo (
+  I_Cod_Configuracao_De_Periodo INT PRIMARY KEY AUTO_INCREMENT,
+  S_Nome VARCHAR(100),
+  C_Sigla VARCHAR(1),
+  D_Hora_Inicio DATETIME,
+  D_Hora_Fim DATETIME,
+  B_E_Hora_Fim_No_Dia_Seguinte TINYINT
+);
+
 CREATE TABLE IF NOT EXISTS Usuario (
   I_Cod_Usuario INT PRIMARY KEY AUTO_INCREMENT,
   C_Perfil VARCHAR(1),
-  S_Nome VARCHAR(100),
   S_CPF VARCHAR(11),
-  S_RA VARCHAR(8),
-  C_Sexo VARCHAR(1),
-  S_Nome_Mae VARCHAR(100),
-  B_E_Ativo TINYINT,
   S_Email VARCHAR(80),
+  S_Nome VARCHAR(100),
   S_Senha VARCHAR(512),
   B_Tem_Senha_Temporaria TINYINT
 );
