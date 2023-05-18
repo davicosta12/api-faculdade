@@ -11,6 +11,7 @@ import Login from './views/login/Login';
 import NovaSenha from './views/login/NovaSenha';
 import UsuariosIndex from './views/usuarios/UsuariosIndex';
 import UsuariosManter from './views/usuarios/Detail/UsuariosManter';
+import ConfiguracaoManter from './views/configuration/ConfiguracaoManter';
 
 interface Props {
 }
@@ -47,6 +48,9 @@ const NavigationRoutes: FunctionComponent<Props> = (props) => {
       { path: '/inscricoes', element: <InscricoesIndex /> },
       { path: '/inscricoes/inserir', element: <InscricoesManter eAlteracao={false} /> },
       { path: '/inscricoes/alterar', element: <InscricoesManter eAlteracao={true} /> },
+
+      /* Sprint final > Configuraçao de Sistema */
+      { path: '/configuracao', element: <ConfiguracaoManter/> },
 
     ])
   );

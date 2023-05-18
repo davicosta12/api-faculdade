@@ -1,5 +1,5 @@
 import { DatePicker, InputNumber, Select } from "antd";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useLayoutEffect } from "react";
 import { FieldRenderProps } from 'react-final-form';
 import { ContainerFormMessageError, FormMessageError, Label, RequiredSpan } from "../../layout/general";
 import { LiteralOption } from "../MaquiInterfaces/Maqui_Interfaces";
@@ -40,7 +40,7 @@ export const FinalInputLiteral: FunctionComponent<Props> = ({
         options={ OpcoesSelect }
         defaultValue={ OpcoesSelect[0].value }
         id={name}
-        value={value}
+        value={value + ''}
         status={error && touched ? 'error' : ''}
         style={inputStyles}
         onChange={handleChange}

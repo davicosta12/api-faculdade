@@ -3,8 +3,8 @@ export default class GetPeriodConfigurationDto {
       public i_Cod_Configuracao_De_Periodo: number = 0,
       public s_Nome: string = '',
       public c_Sigla: string = '',
-      public d_Hora_Inicio: Date = new Date(),
-      public d_Hora_Fim: Date = new Date(),
+      public d_Hora_Inicio: Date | null = null,
+      public d_Hora_Fim: Date | null = null,
       public b_E_Hora_Fim_No_Dia_Seguinte: boolean = false,
     ) { }
   }
