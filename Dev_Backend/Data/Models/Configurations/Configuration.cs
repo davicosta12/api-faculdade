@@ -23,11 +23,8 @@ namespace Dev_Backend.Data.Models.Configurations
 
     public class PutConfiguration
     {
-        [Required]
         public int I_Minimo_Alunos { get; set; }
-        [Required]
         public int I_Maximo_Alunos { get; set; }
-        [Required]
         public int I_Duracao_Meses_Temporada { get; set; }
 
         public List<PeriodConfiguration> PeriodConfigurations { get; set; } = new();
