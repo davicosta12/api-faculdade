@@ -334,6 +334,9 @@ function UsuariosIndex(props: { siglaPerfil: LitPerfilSigla }) {
         setOpenConfirm={setIsExcluirModalOpen}
         loading={isLoading}
         onAction={handleDelete}
+        isAllowed={true}
+        isAllowedLabel="Deseja excluir o Usuário? A ação não pode ser desfeita"
+        isNotAllowedLabel=""
       />
     </NavigationWrapper >
   )

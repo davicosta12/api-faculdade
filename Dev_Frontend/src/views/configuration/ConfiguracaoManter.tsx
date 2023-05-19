@@ -1,6 +1,6 @@
 import { FunctionComponent, MutableRefObject, useEffect, useRef, useState } from "react";
-import { SaveFilled } from "@ant-design/icons";
-import { Typography, Input, Switch, } from "antd";
+import { HomeOutlined, SaveFilled } from "@ant-design/icons";
+import { Typography, Input, Switch, Table, Breadcrumb } from "antd";
 import { useNavigate } from "react-router-dom";
 import NavigationWrapper from "../_navigation/NavigationWrapper";
 import { FormApi } from "final-form";
@@ -20,6 +20,9 @@ import ConfigurationService from "../../services/ConfigurationService/Configurat
 import PutConfigurationDto from "../../services/ConfigurationService/dto/PutConfigurationDto";
 import { FinalInputNumber } from "../../_commons/FinalForm/FinalInputNumber";
 import { LitDuracaoMesesMaker } from "../../model/literal/lit-duracoes-meses";
+import GetPeriodConfigurationDto from "../../services/ConfigurationService/dto/GetPeriodConfigurationDto";
+import PeriodConfiguration from "../../model/configuration/PeriodConfiguration";
+import ConfiguracoesDePeriodoLista from "./ConfiguracoesDePeriodoLista";
 
 interface Props {
 }
@@ -49,13 +52,55 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
     startView();
   }, []);
 
-
+  const getPeriodsTable = (): PeriodConfiguration[] => {
+    return formRef.current.getState().values.periodConfigurations;
+  }
+  const setPeriodsTable = (next: PeriodConfiguration[]) => {
+    formRef.current.change('periodConfigurations', next.map(x => x.AsDto()));
+  }
   useEffect(() => {
     if (subscription != null) {
       const parsed = PutConfigurationDto.FromGet(subscription);
       formRef.current.initialize(parsed);
+      const parsedPeriods = subscription.periodConfigurations.map(x => PeriodConfiguration.FromGet(x));
+      setPeriodsTable(parsedPeriods);
     }
   }, [subscription]);
+
+  const [breadcrumbNodes, setBreadcrumbNodes] = useState(['Configuração']);
+  const handleBreadcrumbClick = (event: any, node: string) => {
+    event.preventDefault();
+    switch (node) {
+      case 'Configuração':
+        handleGoBackSubItem();
+        break;
+      default:
+        break;
+    }
+  }
+
+  const [initialBreadcrumbNodes, setInitialBreadcrumbNodes] = useState(breadcrumbNodes);
+  const [selectedPeriod, setSelectedPeriod] = useState({} as PeriodConfiguration);
+  const handleOpenEditSubItem = (period: PeriodConfiguration) => {
+    setSelectedPeriod(period);
+    setBreadcrumbNodes(breadcrumbNodes.concat(['Alterar Período']));
+  }
+  const handleOpenAddSubItem = () => {
+    setSelectedPeriod(new PeriodConfiguration());
+    setBreadcrumbNodes(breadcrumbNodes.concat(['Inserir Período']));
+  }
+  const handleGoBackSubItem = () => {
+    setBreadcrumbNodes(initialBreadcrumbNodes);
+  }
+  const handleSubmitSubItem = (period: PeriodConfiguration) => {
+    const found = getPeriodsTable().find(x => x.rowKey === period.rowKey);
+    if (!found) {
+      setPeriodsTable(getPeriodsTable().concat([period]));
+    } else {
+      setPeriodsTable(getPeriodsTable().map(x => x.rowKey !== period.rowKey ? x : period));
+    }
+    handleGoBackSubItem();
+  }
 
   const handleSubmit = async (values: PutConfigurationDto) => {
     setIsLoading(true);
@@ -89,6 +134,12 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
                 <Typography.Title level={3}>Configurações do Sistema</Typography.Title>
               </div>
               <div className="half-padding">
+                <Breadcrumb separator=">" >
+                  <Breadcrumb.Item><HomeOutlined/></Breadcrumb.Item>
+                  {breadcrumbNodes.map(x => <Breadcrumb.Item href=''  onClick={(event) => handleBreadcrumbClick(event, x)}>{x}</Breadcrumb.Item>) }
+                </Breadcrumb>
+              </div>
+              <div className="half-padding">
                 <Field
                   label="Mínimo de alunos da turma presencial"
                   name="i_Minimo_Alunos"
@@ -118,7 +169,13 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
                   Com_Selecione={false}
                 />
               </div>
-
+              <ConfiguracoesDePeriodoLista
+                periodsTable={getPeriodsTable()}
+                onChangePeriodsTable={setPeriodsTable}
+                parentIsLoading={isLoading}
+                onOpenEdit={handleOpenEditSubItem}
+                onOpenAdd={handleOpenAddSubItem}
+              />
              
               <div className="agrupar-horizontalmente">
                 <Maqui_Botao_Voltar Acao_Voltar={handleGoBack} />

@@ -309,6 +309,9 @@ function CursosIndex() {
         setOpenConfirm={setIsExcluirModalOpen}
         loading={isLoading}
         onAction={handleDelete}
+        isAllowed={true}
+        isAllowedLabel="Deseja excluir o Curso? A ação não pode ser desfeita"
+        isNotAllowedLabel=""
       />
 
     </NavigationWrapper>

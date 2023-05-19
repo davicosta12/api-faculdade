@@ -7,6 +7,9 @@ interface Props {
   setOpenConfirm: (value: boolean) => void;
   onAction: any;
   loading: boolean;
+  isAllowed: boolean;
+  isAllowedLabel: string;
+  isNotAllowedLabel: string;
 }
 
 const ModalConfirm: FunctionComponent<Props> = (props) => {
@@ -15,7 +18,10 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
     openConfirm,
     setOpenConfirm,
     onAction,
-    loading
+    loading,
+    isAllowed,
+    isAllowedLabel,
+    isNotAllowedLabel,
   } = props;
 
   const handleAction = () => {
@@ -31,7 +37,7 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
     >
       <div className="half-padding">
         <div className="half-padding">
-          <Typography.Title level={5}>Deseja excluir o Curso? A ação não pode ser desfeita.</Typography.Title>
+          <Typography.Title level={5}>{isAllowed ? isAllowedLabel : isNotAllowedLabel}</Typography.Title>
         </div>
         <div className="cursos-index-botoes-modal">
           <div className="half-padding" >
@@ -42,7 +48,7 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
             >Voltar
             </Button>
           </div>
-          <div className="half-padding" >
+          {isAllowed && <div className="half-padding" >
             <Button
               danger
               type="primary"
@@ -53,7 +59,7 @@ const ModalConfirm: FunctionComponent<Props> = (props) => {
             >
               Excluir
             </Button>
-          </div>
+          </div>}
         </div>
       </div>
     </Modal>
