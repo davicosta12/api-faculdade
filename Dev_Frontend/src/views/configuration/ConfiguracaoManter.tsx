@@ -23,6 +23,7 @@ import { LitDuracaoMesesMaker } from "../../model/literal/lit-duracoes-meses";
 import GetPeriodConfigurationDto from "../../services/ConfigurationService/dto/GetPeriodConfigurationDto";
 import PeriodConfiguration from "../../model/configuration/PeriodConfiguration";
 import ConfiguracoesDePeriodoLista from "./ConfiguracoesDePeriodoLista";
+import ConfiguracaoDePeriodoManter from "./period/ConfiguracaoDePeriodoManter";
 
 interface Props {
 }
@@ -52,10 +53,12 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
     startView();
   }, []);
 
+  const [_periodsTable, _setPeriodsTable] = useState([] as PeriodConfiguration[]);
   const getPeriodsTable = (): PeriodConfiguration[] => {
-    return formRef.current.getState().values.periodConfigurations;
+    return _periodsTable;
   }
   const setPeriodsTable = (next: PeriodConfiguration[]) => {
+    _setPeriodsTable(next);
     formRef.current.change('periodConfigurations', next.map(x => x.AsDto()));
   }
   useEffect(() => {
@@ -139,52 +142,62 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
                   {breadcrumbNodes.map(x => <Breadcrumb.Item href=''  onClick={(event) => handleBreadcrumbClick(event, x)}>{x}</Breadcrumb.Item>) }
                 </Breadcrumb>
               </div>
-              <div className="half-padding">
-                <Field
-                  label="Mínimo de alunos da turma presencial"
-                  name="i_Minimo_Alunos"
-                  required
-                  placeholder=""
-                  component={FinalInputNumber}
-                  isDecimal={false}
+              {(breadcrumbNodes[breadcrumbNodes.length - 1] === 'Configuração') && <>
+                <div className="half-padding">
+                  <Field
+                    label="Mínimo de alunos da turma presencial"
+                    name="i_Minimo_Alunos"
+                    required
+                    placeholder=""
+                    component={FinalInputNumber}
+                    isDecimal={false}
+                  />
+                </div>
+                <div className="half-padding">
+                  <Field
+                    label="Máximo de alunos da turma presencial"
+                    name="i_Maximo_Alunos"
+                    required
+                    placeholder=""
+                    component={FinalInputNumber}
+                    isDecimal={false}
+                  />
+                </div>
+                <div className="half-padding">
+                  <Field
+                    name="i_Duracao_Meses_Temporada"
+                    required
+                    component={FinalInputLiteral}
+                    label='Dividir o ano'
+                    Opcoes={LitDuracaoMesesMaker.TodosOptions}
+                    Com_Selecione={false}
+                  />
+                </div>
+                <ConfiguracoesDePeriodoLista
+                  periodsTable={getPeriodsTable()}
+                  onChangePeriodsTable={setPeriodsTable}
+                  parentIsLoading={isLoading}
+                  onOpenEdit={handleOpenEditSubItem}
+                  onOpenAdd={handleOpenAddSubItem}
                 />
-              </div>
-              <div className="half-padding">
-                <Field
-                  label="Máximo de alunos da turma presencial"
-                  name="i_Maximo_Alunos"
-                  required
-                  placeholder=""
-                  component={FinalInputNumber}
-                  isDecimal={false}
+              
+                <div className="agrupar-horizontalmente">
+                  <Maqui_Botao_Voltar Acao_Voltar={handleGoBack} />
+                  <Maqui_Botao_Lento
+                    Rotulo_Botao="Confirmar"
+                    Icone={<SaveFilled />}
+                    Carregando={isLoading}
+                    Acao={() => handleSubmit(values as PutConfigurationDto)} />
+                </div>
+
+              </>}
+              {(breadcrumbNodes[breadcrumbNodes.length - 1] === 'Alterar Período' || breadcrumbNodes[breadcrumbNodes.length - 1] === 'Inserir Período') && <>
+                <ConfiguracaoDePeriodoManter
+                  selectedPeriod={selectedPeriod}
+                  onGoBackSubItem={handleGoBackSubItem}
+                  onSubmitSubItem={handleSubmitSubItem}
                 />
-              </div>
-              <div className="half-padding">
-                <Field
-                  name="i_Duracao_Meses_Temporada"
-                  required
-                  component={FinalInputLiteral}
-                  label='Dividir o ano'
-                  Opcoes={LitDuracaoMesesMaker.TodosOptions}
-                  Com_Selecione={false}
-                />
-              </div>
-              <ConfiguracoesDePeriodoLista
-                periodsTable={getPeriodsTable()}
-                onChangePeriodsTable={setPeriodsTable}
-                parentIsLoading={isLoading}
-                onOpenEdit={handleOpenEditSubItem}
-                onOpenAdd={handleOpenAddSubItem}
-              />
-             
-              <div className="agrupar-horizontalmente">
-                <Maqui_Botao_Voltar Acao_Voltar={handleGoBack} />
-                <Maqui_Botao_Lento
-                  Rotulo_Botao="Confirmar"
-                  Icone={<SaveFilled />}
-                  Carregando={isLoading}
-                  Acao={() => handleSubmit(values as PutConfigurationDto)} />
-              </div>
+              </>}
             </div>
           )
         }}
