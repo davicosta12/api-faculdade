@@ -1,5 +1,4 @@
 import { AxiosResponse } from "axios";
-import { prepareDateToAPI } from "../../misc/utils/utils";
 import GenericPagingDto from "../GenericDto/GenericPagingDto";
 import HttpService from "../HttpService";
 import CourseFilterParamsDto from "./dto/CourseFilterParamsDto";

@@ -24,6 +24,7 @@ import GetPeriodConfigurationDto from "../../services/ConfigurationService/dto/G
 import PeriodConfiguration from "../../model/configuration/PeriodConfiguration";
 import ConfiguracoesDePeriodoLista from "./ConfiguracoesDePeriodoLista";
 import ConfiguracaoDePeriodoManter from "./period/ConfiguracaoDePeriodoManter";
+import { TimeRange } from "../../_commons/FinalForm/FinalInputTimeRange";
 
 interface Props {
 }
@@ -96,11 +97,21 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
     setBreadcrumbNodes(initialBreadcrumbNodes);
   }
   const handleSubmitSubItem = (period: PeriodConfiguration) => {
-    const found = getPeriodsTable().find(x => x.rowKey === period.rowKey);
+    const restoredPeriod = new PeriodConfiguration(
+      period.i_Cod_Configuracao_De_Periodo,
+      period.s_Nome,
+      period.c_Sigla,
+      period.timeRange.startTime,
+      period.timeRange.endTime,
+      period.timeRange.endsOnNextDay,
+      period.rowKey
+    );
+    
+    const found = getPeriodsTable().find(x => x.rowKey === restoredPeriod.rowKey);
     if (!found) {
-      setPeriodsTable(getPeriodsTable().concat([period]));
+      setPeriodsTable(getPeriodsTable().concat([restoredPeriod]));
     } else {
-      setPeriodsTable(getPeriodsTable().map(x => x.rowKey !== period.rowKey ? x : period));
+      setPeriodsTable(getPeriodsTable().map(x => x.rowKey !== restoredPeriod.rowKey ? x : restoredPeriod));
     }
     handleGoBackSubItem();
   }
@@ -139,7 +150,7 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
               <div className="half-padding">
                 <Breadcrumb separator=">" >
                   <Breadcrumb.Item><HomeOutlined/></Breadcrumb.Item>
-                  {breadcrumbNodes.map(x => <Breadcrumb.Item href=''  onClick={(event) => handleBreadcrumbClick(event, x)}>{x}</Breadcrumb.Item>) }
+                  {breadcrumbNodes.map(x => <Breadcrumb.Item href=''  onClick={(event) => handleBreadcrumbClick(event, x)} key={x}>{x}</Breadcrumb.Item>) }
                 </Breadcrumb>
               </div>
               {(breadcrumbNodes[breadcrumbNodes.length - 1] === 'Configuração') && <>

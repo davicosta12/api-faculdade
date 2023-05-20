@@ -33,7 +33,15 @@ export const toUTCDateString = (date: Date): string => {
     + ':' + (date.getUTCSeconds() + '').padStart(2, '0');
 }
 
-export const prepareDateToAPI = (date: Date): string => {
+export const getNullDateFromAPI = (date: Date | null): Date | null => {
+  return date == null ? null : getDateFromAPI(date);
+}
+
+export const getDateFromAPI = (date: Date): Date => {
+  return new Date(date + '.000-00:00');
+}
+
+export const prepareDateToAPIUrl = (date: Date): string => {
   return encodeURI(
     date.getUTCFullYear()
       + '-' + ((date.getUTCMonth() + 1) + '').padStart(2, '0')

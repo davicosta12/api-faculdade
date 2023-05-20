@@ -1,28 +1,15 @@
 import { FunctionComponent, MutableRefObject, useEffect, useRef, useState } from "react";
 import { HomeOutlined, SaveFilled } from "@ant-design/icons";
-import { Typography, Input, Switch, Table, Breadcrumb } from "antd";
-import { useNavigate } from "react-router-dom";
 import { FormApi } from "final-form";
 import { Field, Form } from "react-final-form";
 import { ConfigurationFormValidators } from "../validators";
 import { FinalInputText } from "../../../_commons/FinalForm/FinalInputText";
-import { FinalInputMaskedText } from "../../../_commons/FinalForm/FinalInputMaskedText";
-import { FinalInputLiteral } from "../../../_commons/FinalForm/FinalInputLiteral";
-import { LitSexoMaker } from "../../../model/literal/lit-sexo";
-import { FinalInputLogical } from "../../../_commons/FinalForm/FinalInputLogical";
 import Maqui_Botao_Voltar from "../../../_commons/MaquiButton/Maqui_Botao_Voltar";
 import Maqui_Botao_Lento from "../../../_commons/MaquiButton/Maqui_Botao_Lento";
-import { toast } from "react-toastify";
-import { toastError, toastOptions } from "../../../misc/utils/utils";
-import GetConfigurationDto from "../../../services/ConfigurationService/dto/GetConfigurationDto";
-import ConfigurationService from "../../../services/ConfigurationService/ConfigurationService";
-import PutConfigurationDto from "../../../services/ConfigurationService/dto/PutConfigurationDto";
-import { FinalInputNumber } from "../../../_commons/FinalForm/FinalInputNumber";
-import { LitDuracaoMesesMaker } from "../../../model/literal/lit-duracoes-meses";
-import GetPeriodConfigurationDto from "../../../services/ConfigurationService/dto/GetPeriodConfigurationDto";
 import PeriodConfiguration from "../../../model/configuration/PeriodConfiguration";
 import ConfiguracoesDePeriodoLista from "../ConfiguracoesDePeriodoLista";
 import { PeriodConfigurationFormValidators } from "./validators";
+import { FinalInputTimeRange, TimeRange } from "../../../_commons/FinalForm/FinalInputTimeRange";
 
 interface Props {
     selectedPeriod: PeriodConfiguration
@@ -44,7 +31,7 @@ const ConfiguracaoDePeriodoManter: FunctionComponent<Props> = ({
   useEffect(() => {
     startView();
   }, []);
-
+  
   return (
 
       <Form
@@ -74,22 +61,12 @@ const ConfiguracaoDePeriodoManter: FunctionComponent<Props> = ({
               </div>
               <div className="half-padding">
                 <Field
-                  label="Máximo de alunos da turma presencial"
-                  name="i_Maximo_Alunos"
+                  startInputName="d_Hora_Inicio"
+                  endInputName="d_Hora_Fim"
                   required
-                  placeholder=""
-                  component={FinalInputNumber}
-                  isDecimal={false}
-                />
-              </div>
-              <div className="half-padding">
-                <Field
-                  name="i_Duracao_Meses_Temporada"
-                  required
-                  component={FinalInputLiteral}
-                  label='Dividir o ano'
-                  Opcoes={LitDuracaoMesesMaker.TodosOptions}
-                  Com_Selecione={false}
+                  component={FinalInputTimeRange}
+                  label='Horário'
+                  name='timeRange'
                 />
               </div>
              
