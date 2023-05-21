@@ -1,5 +1,5 @@
+import LoggedUserDto from "../../services/AuthService/dto/LoggedUserDto";
 import GetCourseDto from "../../services/CourseService/dto/GetCourseDto";
-import GetUserDto from "../../services/UserService/dto/GetUserDto";
 
 export type ActionMap<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -18,12 +18,12 @@ export enum Types {
 }
 
 export type ParamsType = {
-  activeUser: GetUserDto,
+  activeUser: LoggedUserDto,
   courses: GetCourseDto[]
 }
 
 export type ParamsPayload = {
-  [Types.SET_ACTIVE_USER]: GetUserDto,
+  [Types.SET_ACTIVE_USER]: LoggedUserDto,
   [Types.SET_COURSES_GROUP]: GetCourseDto[]
 }
 
