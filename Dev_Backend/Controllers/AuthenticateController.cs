@@ -58,51 +58,6 @@ namespace Dev_Backend.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("cadastrar")]
-        [AllowAnonymous]
-        public async Task<ActionResult<ResponseMessage>> UserRegister([FromBody] SignUpUser userRegister)
-        {
-            var res = new ResponseMessage()
-            {
-                isValid = true,
-                message = $"Usuário '{userRegister.S_CPF}' criado com sucesso.",
-                requestBody = userRegister
-            };
-
-            try
-            {
-                var authenticationRepository = new AuthenticationRepository(_dbContext);
-                var userRepository = new UserRepository(_dbContext);
-
-                var userFound = await userRepository.GetUserByCPF(userRegister.S_CPF);
-
-                if (userFound == null)
-                {
-                    res.isValid = false;
-                    res.message = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.";
-                    res.errorMessage = $"Já existe uma conta com esse CPF '{userRegister.S_CPF}', por favor digite outro CPF.";
-                    return BadRequest(res);
-                }
-
-                var createUser = await authenticationRepository.UserRegister(userRegister);
-                res.responseBody = createUser;
-
-                return Ok(res);
-            }
-            catch (Exception e)
-            {
-                var retorno = new ResponseMessage();
-
-                retorno.isValid = false;
-                retorno.errorMessage = $"{e.Message}";
-                retorno.message = $"{e.Message}";
-                retorno.stackTrace = e.StackTrace;
-
-                return BadRequest(retorno);
-            }
-        }
-
         /// <summary>
         /// Criar uma nova senha para o usuário.
         ///

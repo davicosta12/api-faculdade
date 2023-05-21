@@ -5,7 +5,7 @@ namespace Dev_Backend.Data.Models.Authentication
 {
     public class AuthenticationModel
     {
-        public User user { get; set; }
+        public LoggedUser user { get; set; }
         public string token { get; set; }
     }
 

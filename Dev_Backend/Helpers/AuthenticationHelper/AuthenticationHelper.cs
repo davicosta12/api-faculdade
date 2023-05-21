@@ -39,6 +39,11 @@ namespace Dev_Backend.Helpers
             return tokenHandler.WriteToken(token);
         }
 
+        public static string GenerateToken(LoggedUser user)
+        {
+            return GenerateToken(new User { S_Nome = user.Nome, C_Perfil = user.Perfil });
+        }
+
         public static class Settings
         {
             public static string Secret = "fedaf7d8863b48e197b9287d492b708e";

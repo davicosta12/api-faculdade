@@ -28,7 +28,6 @@ namespace api_faculdade.Controllers
             _dbContext = dbContext;
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Configuration>> GetConfiguration()
         {
@@ -65,7 +64,6 @@ namespace api_faculdade.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPut()]
         public async Task<ActionResult<ResponseMessage>> UpdateConfiguration([FromBody] PutConfiguration nextConfiguration)
         {

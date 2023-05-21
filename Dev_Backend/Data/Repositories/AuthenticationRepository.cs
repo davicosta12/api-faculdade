@@ -14,18 +14,13 @@ namespace Dev_Backend.Data.Repositories
         public async Task<AuthenticationModel?> Authenticate(SignInUser userLogin)
         {
             string sqlHash = @"SELECT SHA2(@S_Senha, 512)";
-            string sql = @" SELECT I_Cod_Usuario,
-                            C_Perfil,    
-                            S_Nome, 
-                            S_CPF, 
-                            S_RA, 
-                            C_Sexo,
-                            S_Nome_Mae, 
-                            B_E_Ativo, 
-                            S_Email, 
-                            S_Senha, 
-                            B_Tem_Senha_Temporaria
-                            FROM Usuario
+            string sqlAluno = @" SELECT I_Cod_Aluno As Cod,
+                            'A' as Perfil,    
+                            S_CPF as CPF, 
+                            S_Email as Email, 
+                            S_Nome as Nome,
+                            S_Senha
+                            FROM Aluno
                             WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash;";
 
             userLogin.S_CPF = userLogin.S_CPF.Trim();
@@ -36,24 +31,26 @@ namespace Dev_Backend.Data.Repositories
                 @S_Senha = userLogin.S_Senha
             })).FirstOrDefault();
 
-            var userFound = await QueryFirstOrDefaultAsync<User>(sql, new
+            var userFoundAluno = await QueryFirstOrDefaultAsync<LoggedUser>(sqlAluno, new
             {
                 @CPF = userLogin.S_CPF,
                 @Senha_Hash = passwordHash
             });
 
-            if (userFound != null)
+            if (userFoundAluno != null)
             {
-                var token = AuthenticationHelper.GenerateToken(userFound);
+                var token = AuthenticationHelper.GenerateToken(userFoundAluno);
 
                 var authenticationModel = new AuthenticationModel()
                 {
-                    user = userFound,
+                    user = userFoundAluno,
                     token = token
                 };
 
                 return authenticationModel;
             }
+            
+            // var userFoundProfessor = await QueryFirstOrDefaultAsync<User>(sqlProfessor, new...
 
             return null;
         }

@@ -18,6 +18,15 @@ namespace Dev_Backend.Data.Models.Users
         public bool B_Tem_Senha_Temporaria { get; set; }
     }
 
+    public class LoggedUser
+    {
+        public int Cod { get; set; }
+        public string Perfil { get; set; }
+        public string CPF { get; set; }
+        public string Email { get; set; }
+        public string Nome { get; set; }
+    }
+
     public class PostUser
     {
        [Required]
