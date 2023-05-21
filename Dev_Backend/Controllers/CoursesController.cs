@@ -30,28 +30,21 @@ namespace my_api.Controllers
         ///
         /// isDesc: se deixarmos como true o campo, o fieldOrderLabel será ordem decrescente caso contrário crescente.
         /// </remarks>
-        /// <param name="fieldOrderLabel">nome do campo</param>
+        /// <param name="alonePageSize">registros para exibir</param>
         /// <returns>A string status</returns>
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<GenericPaging<Course>>> GetCourses(
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourses(
             [FromQuery] GetCourseFilterPaging filterParams,
-           int? currentPageNumber = 0, 
-           int? pageSize = 5
+            int? alonePageSize = 50
         )
         {
-            // System.Console.WriteLine("testDateExact:");
-            // System.Console.WriteLine((filterParams.testDateExact?.ToShortDateString() ?? "") + " T " + (filterParams.testDateExact?.ToShortTimeString()));
-            // System.Console.WriteLine("testDateDe:");
-            // System.Console.WriteLine((filterParams.testDateDe?.ToShortDateString() ?? "") + " T " + (filterParams.testDateDe?.ToShortTimeString()));
-            // System.Console.WriteLine("testDateAte:");
-            // System.Console.WriteLine((filterParams.testDateAte?.ToShortDateString() ?? "") + " T " + (filterParams.testDateAte?.ToShortTimeString()));
             try
             {
                 var courseRepository = new CourseRepository(_dbContext);
 
-                var courses = await courseRepository.GetCourses(filterParams, currentPageNumber, pageSize);
+                var courses = await courseRepository.GetCourses(filterParams, alonePageSize);
 
                 return Ok(courses);
             }

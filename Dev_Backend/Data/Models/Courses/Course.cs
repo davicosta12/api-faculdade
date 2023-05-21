@@ -6,7 +6,7 @@ namespace Dev_Backend.Data.Models.Courses
         public string S_Sequencial { get; set; }
         public string S_Nome { get; set; }
         public double F_Valor { get; set; }
-        public DateTime? DataInicioUltimaTurma { get; set; }
+        public DateTime? DataInicioProximaTurma { get; set; }
     }
 
     public class Course

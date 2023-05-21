@@ -14,56 +14,69 @@ namespace Dev_Backend.Data.Repositories
 
         }
 
-        public async Task<GenericPaging<Course>> GetCourses(GetCourseFilterPaging filterParams, int? currentPageNumber, int? pageSize)
+        public async Task<IEnumerable<GetCourse>> GetCourses(GetCourseFilterPaging filterParams, int? alonePageSize)
         {
             string where = "";
+            string calculateNextDate = @"
+                (
+                    select
+                        t.D_Data_Inicio
+                    from Turma t
+                    where t.I_Cod_Curso = c.I_Cod_Curso
+                    order by t.D_Data_Inicio desc
+                    limit 1
+                )
+            ".Replace(Environment.NewLine, "");
             if (filterParams.isAdvancedSearch)
             {
                 where = CoursesWherePredicate.GetCoursesFilterWhere(filterParams);
             }
             else
             {
-                where = FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new [] { "c.s_Nome", "c.i_Qtd_Limite_Semestres" });
-            }
-            string orderBy = "";
-
-            if (String.IsNullOrEmpty(filterParams.fieldOrderLabel) == false && filterParams.isDesc != null)
-            {
-                orderBy = filterParams.isDesc == false ? $"ORDER BY c.{filterParams.fieldOrderLabel} ASC" : $"ORDER BY c.{filterParams.fieldOrderLabel} DESC";
+                where = FilterByTerms.GetWhereOfTerms(filterParams.termsInput, new [] { "c.S_Sequencial", "c.S_Nome", "c.F_Valor", calculateNextDate });
             }
 
+            int minPageSize = 5;
             int maxPageSize = 50;
+            if (alonePageSize < minPageSize)
+            {
+                alonePageSize = minPageSize;
+            }
+            if (alonePageSize > maxPageSize)
+            {
+                alonePageSize = maxPageSize;
+            }
 
-            pageSize = pageSize < maxPageSize ? pageSize : maxPageSize;
-            var skip = currentPageNumber * pageSize;
-            var take = pageSize;
-
-            string sql = @$"SELECT COUNT(DISTINCT(c.i_Cod_Curso)) FROM Curso c WHERE 1=1 {where};
-                            
-                            SELECT * FROM Curso c 
-                            WHERE 1=1 {where}
-                            {orderBy} 
-                            LIMIT @_skip, @_take";
+            string sql = @$"
+                SELECT
+                    c.I_Cod_Curso,
+                    c.S_Sequencial,
+                    c.S_Nome,
+                    c.F_Valor,
+                    {calculateNextDate} AS DataInicioProximaTurma
+                FROM Curso c
+                WHERE 1=1 {where}
+                ORDER BY {calculateNextDate}
+                LIMIT @_skip
+            ";
             
             var sqlParams = new Dictionary<string, object?>
             {
-                ["@courseName"] = filterParams.courseName,
-                ["@semesterLimitQtdeExact"] = filterParams.semesterLimitQtdeExact,
-                ["@semesterLimitQtdeDe"] = filterParams.semesterLimitQtdeDe,
-                ["@semesterLimitQtdeAte"] = filterParams.semesterLimitQtdeAte,
-                ["@_skip"] = skip,
-                ["@_take"] = take
+                ["@serial"] = filterParams.serial,
+                ["@name"] = filterParams.name,
+                ["@priceExact"] = filterParams.priceExact,
+                ["@priceDe"] = filterParams.priceDe,
+                ["@priceAte"] = filterParams.priceAte,
+                ["@nextClassroomStartDateExact"] = filterParams.nextClassroomStartDateExact,
+                ["@nextClassroomStartDateDe"] = filterParams.nextClassroomStartDateDe,
+                ["@nextClassroomStartDateAte"] = filterParams.nextClassroomStartDateAte,
+                ["@_skip"] = alonePageSize,
             };
             if (!filterParams.isAdvancedSearch)
             {
                 FilterByTerms.AddTerms(sqlParams, filterParams.termsInput);
             }
-            var reader = await QueryMultipleAsync(sql, sqlParams.AsExpandoObject());
-
-            int totalCount = reader.Read<int>().FirstOrDefault();
-            var courses = reader.Read<Course>().ToList();
-
-            var result = new GenericPaging<Course>(courses, totalCount, currentPageNumber, pageSize);
+            var result = await QueryAsync<GetCourse>(sql, sqlParams.AsExpandoObject());
 
             return result;
         }
@@ -91,14 +104,12 @@ namespace Dev_Backend.Data.Repositories
             identityId = await ExecuteScalarAsync<int>(sql, new
             {
                 @S_Nome = course.S_Nome,
-                @I_Qtd_Limite_Semestres = course.I_Qtd_Limite_Semestres
             });
 
             var courseCreated = new Course()
             {
                 I_Cod_Curso = identityId,
                 S_Nome = course.S_Nome,
-                I_Qtd_Limite_Semestres = course.I_Qtd_Limite_Semestres
             };
 
             return courseCreated;
@@ -113,14 +124,12 @@ namespace Dev_Backend.Data.Repositories
             {
                 @I_Cod_Curso = idCourse,
                 @S_Nome = course.S_Nome,
-                @I_Qtd_Limite_Semestres = course.I_Qtd_Limite_Semestres
             });
 
             var courseUpdated = new Course()
             {
                 I_Cod_Curso = idCourse,
                 S_Nome = course.S_Nome,
-                I_Qtd_Limite_Semestres = course.I_Qtd_Limite_Semestres
             };
 
             return courseUpdated;

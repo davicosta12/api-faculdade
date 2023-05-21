@@ -12,6 +12,16 @@ namespace Dev_Backend.Utils.WherePredicate
                 Type type = typeof(T);
 
                 var itens = type.GetProperties();
+                string calculateNextDate = @"
+                    (
+                        select
+                            t.D_Data_Inicio
+                        from Turma t
+                        where t.I_Cod_Curso = c.I_Cod_Curso
+                        order by t.D_Data_Inicio desc
+                        limit 1
+                    )
+                ".Replace(Environment.NewLine, "");
 
                 foreach (var property in itens)
                 {
@@ -33,29 +43,42 @@ namespace Dev_Backend.Utils.WherePredicate
 
                         switch (property.Name)
                         {
-                            case "courseName":
-                                sb.Append($" AND c.{columnName} LIKE CONCAT('%',@{property.Name},'%') ");
+                            case "serial":
+                                sb.Append($" AND c.{columnName} LIKE GROUP_CONCAT('%',@{property.Name},'%') ");
                                 break;
 
-                            case "semesterLimitQtdeExact":
+                            case "name":
+                                sb.Append($" AND c.{columnName} LIKE GROUP_CONCAT('%',@{property.Name},'%') ");
+                                break;
+
+                            case "priceExact":
                                 sb.Append($" AND c.{columnName} = @{property.Name} ");
                                 break;
 
-                            case "semesterLimitQtdeDe":
+                            case "priceDe":
                                 sb.Append($" AND c.{columnName} >= @{property.Name} ");
                                 break;
 
-                            case "semesterLimitQtdeAte":
+                            case "priceAte":
                                 sb.Append($" AND c.{columnName} <= @{property.Name} ");
                                 break;
 
-                            case "fieldOrderLabel":
+                            case "nextClassroomStartDateExact":
+                                sb.Append($" AND {calculateNextDate} IS NOT NULL AND {calculateNextDate} = @{property.Name} ");
                                 break;
 
-                            case "isDesc":
+                            case "nextClassroomStartDateDe":
+                                sb.Append($" AND {calculateNextDate} IS NOT NULL AND {calculateNextDate} >= @{property.Name} ");
+                                break;
+
+                            case "nextClassroomStartDateAte":
+                                sb.Append($" AND {calculateNextDate} IS NOT NULL AND {calculateNextDate} <= @{property.Name} ");
                                 break;
 
                             case "isAdvancedSearch":
+                                break;
+
+                            case "termsInput":
                                 break;
 
                             // case "branchPlatformId":
