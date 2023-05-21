@@ -22,7 +22,7 @@ namespace Dev_Backend.Data.Repositories
                     select
                         t.D_Data_Inicio
                     from Turma t
-                    where t.I_Cod_Curso = c.I_Cod_Curso
+                    where t.I_Cod_Curso = c.I_Cod_Curso and t.D_Data_Inicio >= curdate()
                     order by t.D_Data_Inicio desc
                     limit 1
                 )

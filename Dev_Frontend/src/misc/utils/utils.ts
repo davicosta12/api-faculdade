@@ -33,6 +33,15 @@ export const toUTCDateString = (date: Date): string => {
     + ':' + (date.getUTCSeconds() + '').padStart(2, '0');
 }
 
+export const toNullUTCLocaleDateString = (date: Date | null) : string | null => {
+  return date == null ? null : toUTCLocaleDateString(date);
+}
+
+export const toUTCLocaleDateString = (date: Date) : string => {
+  const shiftedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+  return shiftedDate.toLocaleDateString();
+}
+
 export const getNullDateFromAPI = (date: Date | null): Date | null => {
   return date == null ? null : getDateFromAPI(date);
 }

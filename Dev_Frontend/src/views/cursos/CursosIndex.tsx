@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './CursosIndex.css';
 import NavigationWrapper from '../_navigation/NavigationWrapper';
 import { Typography, Button, Dropdown, Card, Col, Row, Pagination, Empty } from 'antd';
@@ -11,7 +11,7 @@ import CourseFilterParamsDto from '../../services/CourseService/dto/CourseFilter
 import GetCourseDto from '../../services/CourseService/dto/GetCourseDto';
 import GenericPagingDto from '../../services/GenericDto/GenericPagingDto';
 import { toast } from 'react-toastify';
-import { toastError, toastOptions } from '../../misc/utils/utils';
+import { toNullUTCLocaleDateString, toastError, toastOptions } from '../../misc/utils/utils';
 import DataTable from '../../_commons/DataTable/DataTable';
 import { useNavigate } from 'react-router-dom';
 import ModalConfirm from '../../_commons/ModalConfirm/ModalConfirm';
@@ -23,21 +23,20 @@ import Maqui_Ordenar_Por from '../../_commons/MaquiExhibitionOptions/Maqui_Orden
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
 import { useInterval } from '../../hooks/useInterval';
+import Maqui_Filtro_Avancado_Data from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Data';
 
 const REFRESH_CURSOS_INTERVAL = 1000 * 30;
+const PER_PAGE = 50;
 
 function CursosIndex() {
 
-  const [courseResult, setCourseResult] = useState({} as GenericPagingDto<GetCourseDto>);
+  const [courseResult, setCourseResult] = useState([] as GetCourseDto[]);
   const [course, setCourse] = useState({} as GetCourseDto)
   const [filterParams, setFilterParams] = useState<CourseFilterParamsDto>(new CourseFilterParamsDto());
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(5);
   const [selectedFiltros, setSelectedFiltros] = useState<string[]>([]);
-  const possiveisFiltros = LitColunaCursoMaker.Todos;
   const [estaMostrandoFiltrosAvancados, setEstaMostrandoFiltrosAvancados] = useState(false);
-  const [semesterLimitQtdeType, setSemesterLimitQtdeType] = useState('exact');
-  // const [testDateType, setTestDateType] = useState('exact');
+  const [priceType, setPriceType] = useState('exact');
+  const [nextClassroomStartDateType, setNextClassroomStartDateType] = useState('exact');
   const handleChangeActivePanels = (nextIsShowingAdvanced: boolean) => {
     setEstaMostrandoFiltrosAvancados(nextIsShowingAdvanced);
     if (!nextIsShowingAdvanced) {
@@ -45,12 +44,16 @@ function CursosIndex() {
       setFilterParams({
         ...filterParams,
         isAdvancedSearch: false,
-        courseName: '',
-        semesterLimitQtdeAte: null,
-        semesterLimitQtdeDe: null,
-        semesterLimitQtdeExact: null
+        serial: '',
+        name: '',
+        priceAte: null,
+        priceDe: null,
+        priceExact: null,
+        nextClassroomStartDateAte: null,
+        nextClassroomStartDateDe: null,
+        nextClassroomStartDateExact: null,
       });
-      setSemesterLimitQtdeType('exact');
+      setPriceType('exact');
       setSelectedFiltros([]);
     } else {
       setFilterParams({ ...filterParams, isAdvancedSearch: true });
@@ -71,12 +74,14 @@ function CursosIndex() {
     getCourses();
   }, REFRESH_CURSOS_INTERVAL);
 
-  const getCourses = async (_page: number = page, _perPage: number = perPage) => {
-    setPage(_page);
-    setPerPage(_perPage);
+  useEffect(() => {
+    getCourses();
+  }, [])
+
+  const getCourses = async (_perPage: number = PER_PAGE) => {
     setIsLoading(true);
     try {
-      const _courseResult = await courseService.getCourses(filterParams, _page, _perPage);
+      const _courseResult = await courseService.getCourses(filterParams, _perPage);
       setCourseResult(_courseResult);
     }
     catch (err: any) {
@@ -104,7 +109,7 @@ function CursosIndex() {
   }
 
   const handleSearch = () => {
-    getCourses(1, 5);
+    getCourses();
   }
 
   const handleChange = (ev: any) => {
@@ -146,14 +151,31 @@ function CursosIndex() {
 
   let columns: ColumnsType<GetCourseDto> = [
     {
+      title: 'Sequencial',
+      dataIndex: 's_Sequencial',
+      key: 's_Sequencial',
+    },
+    {
       title: 'Nome',
       dataIndex: 's_Nome',
       key: 's_Nome',
     },
     {
-      title: 'Limite de Semestres',
-      dataIndex: 'i_Qtd_Limite_Semestres',
-      key: 'i_Qtd_Limite_Semestres',
+      title: 'Valor',
+      dataIndex: 'f_Valor',
+      key: 'f_Valor',
+    },
+    {
+      title: 'Próxima Turma',
+      key: 'dataInicioProximaTurma',
+      dataIndex: 'dataInicioProximaTurma',
+      render: (text, rowData: GetCourseDto, index) => {
+        return (
+          <span>
+            {toNullUTCLocaleDateString(rowData.dataInicioProximaTurma) ?? 'Não Disp.'}
+          </span>
+        );
+      },
     },
     {
       title: '#',
@@ -177,7 +199,7 @@ function CursosIndex() {
         </div>
         <Maqui_Filtro_Termos show={!estaMostrandoFiltrosAvancados} onChange={handleChange} />
         <Maqui_Filtro_Avancado_Wrapper
-          allLabelNames={[...(possiveisFiltros.map(x => x.descricao)) /*, 'Teste data' */ /*, 'Ativo' */ /*, 'Sexo' */]}
+          allLabelNames={[...(LitColunaCursoMaker.Todos.map(x => x.descricao))]}
           selectedLabelNames={selectedFiltros}
           onChangeSelectedLabelNames={setSelectedFiltros}
           show={estaMostrandoFiltrosAvancados}
@@ -186,54 +208,38 @@ function CursosIndex() {
           <>
             <Maqui_Filtro_Avancado_Texto
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaCursoMaker.Nome.descricao}
-              inputName='courseName'
+              labelName={LitColunaCursoMaker.Sequencial.descricao}
+              inputName='serial'
               onChange={handleChange}
-              value={filterParams.courseName} />
-            <Maqui_Filtro_Avancado_InteiroOuDecimal
-              eTipoInteiro={true}
+              value={filterParams.serial} />
+            <Maqui_Filtro_Avancado_Texto
               selectedLabelNames={selectedFiltros}
-              labelName={LitColunaCursoMaker.QtdLimiteSemestres.descricao}
-              inputNameBasis='semesterLimitQtde'
-              onChangeType={setSemesterLimitQtdeType}
-              typeValue={semesterLimitQtdeType}
+              labelName={LitColunaCursoMaker.Nome.descricao}
+              inputName='name'
+              onChange={handleChange}
+              value={filterParams.name} />
+            <Maqui_Filtro_Avancado_InteiroOuDecimal
+              eTipoInteiro={false}
+              selectedLabelNames={selectedFiltros}
+              labelName={LitColunaCursoMaker.Valor.descricao}
+              inputNameBasis='price'
+              onChangeType={setPriceType}
+              typeValue={priceType}
               onChangeFilterParams={setFilterParams}
               filterParams={filterParams}
               selectMinWidth={160} />
-            {/*<Maqui_Filtro_Avancado_Data
-                selectedLabelNames={selectedFiltros}
-                labelName='Teste data'
-                inputNameBasis='testDate'
-                onChangeType={setTestDateType}
-                typeValue={testDateType}
-                onChangeFilterParams={setFilterParams}
-                filterParams={filterParams}
-                selectMinWidth={160}
-                
-/>*/}
-            {/*<Maqui_Filtro_Avancado_Logico
+            <Maqui_Filtro_Avancado_Data
               selectedLabelNames={selectedFiltros}
-              labelName='Ativo'
-              inputName='isActive'
-              onChange={handleChange}
-              value={filterParams.isActive ?? false} />*/}
-            {/*<Maqui_Filtro_Avancado_Literal
-              selectedLabelNames={selectedFiltros}
-              labelName='Sexo'
-              literalOptions={LitSexoMaker.TodosOptions}
-              inputName='genderAbbr'
-              onChange={handleChange}
-              value={filterParams.genderAbbr ?? ''}
-              selectMinWith={120} />*/}
+              labelName={LitColunaCursoMaker.ProximaTurma.descricao}
+              inputNameBasis='nextClassroomStartDate'
+              onChangeType={setNextClassroomStartDateType}
+              typeValue={nextClassroomStartDateType}
+              onChangeFilterParams={setFilterParams}
+              filterParams={filterParams}
+              selectMinWidth={200} />
           </>
         </Maqui_Filtro_Avancado_Wrapper>
 
-        <Maqui_Ordenar_Por
-          allColumns={possiveisFiltros.map(x => ({ dbColumnName: x.value, description: x.descricao }))}
-          onChangeFilterParams={setFilterParams}
-          filterParams={filterParams}
-          selectMinWith={256}
-        />
         <div className='agrupar-horizontalmente'>
           <div className='half-padding'>
             <Button
@@ -261,45 +267,43 @@ function CursosIndex() {
                 atributos visiveis pra desktop: nome; cpf; sexo; nome da mae; ativo; e mais */}
 
 
-        {(windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length) ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */
-          <Row>
-            {courseResult.result.map(xCurso => <Col span={12} className="half-padding">
-              <Card title={<div className="cursos-index-botoes-modal">
-                <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
-                  <Button icon={<MoreOutlined />}></Button>
-                </Dropdown>
-              </div>}
-                bodyStyle={{ padding: "6px" }}
-                headStyle={{ paddingRight: "12px" }}>
+        {courseResult?.length ?
+          <>
+            { windowWidth <= Constantes.WidthMaximoMobile ? /* Caso nao houver nenhum resultado e estiver no mobile, mostrar o mesmo "No Data" da versão pra PC */
+              <Row>
+                {courseResult.map(xCurso => <Col span={12} className="half-padding">
+                  <Card title={<div className="cursos-index-botoes-modal">
+                    <Dropdown menu={{ items: renderItensMais(xCurso) }} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+                      <Button icon={<MoreOutlined />}></Button>
+                    </Dropdown>
+                  </div>}
+                    bodyStyle={{ padding: "6px" }}
+                    headStyle={{ paddingRight: "12px" }}>
 
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>Nome</strong>: {xCurso.s_Nome}</span>
-                </div>
-                <div className='half-padding'>
-                  <span className='card-text-size'><strong>Limite de Semestres</strong>: {xCurso.i_Qtd_Limite_Semestres}</span>
-                </div>
+                    <div className='half-padding'>
+                      <span className='card-text-size'><strong>Nome</strong>: {xCurso.s_Nome}</span>
+                    </div>
+                  </Card>
 
-              </Card>
-
-            </Col>)}
-          </Row> : <>{
-            courseResult?.result?.length ?
-              <DataTable
-                handleRowKey={(course: any) => course.i_Cod_Curso}
-                dataSource={courseResult.result}
-                columns={columns}
-                getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_page, _perPage)}
-                setDataResult={setCourseResult}
-                totalCount={courseResult.paging?.totalCount}
-                pagination
-                isLoading={isLoading}
-              /> :
-              <Empty />
-          }</>
+                </Col>)}
+              </Row> :
+                <DataTable
+                  handleRowKey={(course: any) => course.i_Cod_Curso}
+                  dataSource={courseResult}
+                  columns={columns}
+                  getData={(_page: number | undefined, _perPage: number | undefined) => getCourses(_perPage)}
+                  setDataResult={setCourseResult}
+                  totalCount={courseResult.length}
+                  pagination
+                  isLoading={isLoading}
+                />
+            }
+          </> :
+          <Empty />
         }
 
-        {windowWidth <= Constantes.WidthMaximoMobile && courseResult?.result?.length && <div className='usuarios-index-botoes-modal'>
-          <Pagination total={courseResult.result.length} defaultCurrent={1} />
+        {windowWidth <= Constantes.WidthMaximoMobile && courseResult?.length && <div className='usuarios-index-botoes-modal'>
+          <Pagination total={courseResult.length} defaultCurrent={1} />
         </div>}
 
       </div>

@@ -3,44 +3,32 @@ import GenericPagingDto from "../GenericDto/GenericPagingDto";
 import HttpService from "../HttpService";
 import CourseFilterParamsDto from "./dto/CourseFilterParamsDto";
 import GetCourseDto from "./dto/GetCourseDto";
+import { getNullDateFromAPI, prepareDateToAPIUrl } from "../../misc/utils/utils";
 
 export default class CourseService extends HttpService {
 
-  getCourses(filterParams: CourseFilterParamsDto, currentPageNumber: number = 1, pageSize: number = 5): Promise<GenericPagingDto<GetCourseDto>> {
+  getCourses(filterParams: CourseFilterParamsDto, alonePageSize: number = 50): Promise<GetCourseDto[]> {
     let query: string = '';
 
-    if (filterParams?.courseName) query += `courseName=${encodeURI(filterParams.courseName)}&`;
-    if (filterParams?.semesterLimitQtdeExact) query += `semesterLimitQtdeExact=${filterParams.semesterLimitQtdeExact}&`;
-    if (filterParams?.semesterLimitQtdeDe) query += `semesterLimitQtdeDe=${filterParams.semesterLimitQtdeDe}&`;
-    if (filterParams?.semesterLimitQtdeAte) query += `semesterLimitQtdeAte=${filterParams.semesterLimitQtdeAte}&`;
-    // if (filterParams?.testDateExact) query += `testDateExact=${prepareDateToAPI(filterParams.testDateExact)}&`;
-    // if (filterParams?.testDateDe) query += `testDateDe=${prepareDateToAPI(filterParams.testDateDe)}&`;
-    // if (filterParams?.testDateAte) query += `testDateAte=${prepareDateToAPI(filterParams.testDateAte)}&`;
+    if (filterParams?.serial) query += `serial=${encodeURI(filterParams.serial)}&`;
+    if (filterParams?.name) query += `name=${encodeURI(filterParams.name)}&`;
+    if (filterParams?.priceExact) query += `priceExact=${encodeURI(filterParams.priceExact + '')}&`;
+    if (filterParams?.priceDe) query += `priceDe=${encodeURI(filterParams.priceDe + '')}&`;
+    if (filterParams?.priceAte) query += `priceAte=${encodeURI(filterParams.priceAte + '')}&`;
+    if (filterParams?.nextClassroomStartDateExact) query += `nextClassroomStartDateExact=${prepareDateToAPIUrl(filterParams.nextClassroomStartDateExact)}&`;
+    if (filterParams?.nextClassroomStartDateDe) query += `nextClassroomStartDateDe=${prepareDateToAPIUrl(filterParams.nextClassroomStartDateDe)}&`;
+    if (filterParams?.nextClassroomStartDateAte) query += `nextClassroomStartDateAte=${prepareDateToAPIUrl(filterParams.nextClassroomStartDateAte)}&`;
     if (filterParams?.termsInput) query += `termsInput=${encodeURI(filterParams.termsInput)}&`;
     if (filterParams?.isAdvancedSearch !== undefined) query += `isAdvancedSearch=${filterParams.isAdvancedSearch}&`;
-    if (filterParams?.fieldOrderLabel) {
-      const split = filterParams?.fieldOrderLabel.split('--');
-      const _value = split[0].trim();
-      const _orderBy = split[1].trim();
-
-      switch (_orderBy) {
-        case 'asc':
-          query += `fieldOrderLabel=${_value}&isDesc=${false}&`
-          break;
-        case 'desc':
-          query += `fieldOrderLabel=${_value}&isDesc=${true}&`
-          break;
-        default: break;
-      }
-    }
-
-    query += `currentPageNumber=${currentPageNumber - 1}&`;
-    query += `pageSize=${pageSize}`;
+    query += `alonePageSize=${alonePageSize}`;
 
     return new Promise((resolve, reject) => {
       this.getApi().get(`/Course?${query}`)
         .then(res => {
-          resolve(res.data);
+          const data = res.data as GetCourseDto[];
+          data.forEach(x => x.dataInicioProximaTurma = getNullDateFromAPI(x.dataInicioProximaTurma));
+          console.log(data);
+          resolve(data);
         })
         .catch((err: AxiosResponse<any>) => reject(err))
     })

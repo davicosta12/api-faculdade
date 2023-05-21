@@ -1,29 +1,40 @@
 class LitColunaCurso {
     nomePropriedade = '';
     descricao = '';
-    value = '';
 }
 
 class LitColunaCursoMaker {
+    static get Sequencial(): LitColunaCurso {
+        return {
+            nomePropriedade: 'sequencial',
+            descricao: 'Sequencial',
+        }
+    }
     static get Nome(): LitColunaCurso {
         return {
             nomePropriedade: 'nome',
             descricao: 'Nome',
-            value: 's_Nome'
         }
     }
-    static get QtdLimiteSemestres(): LitColunaCurso {
+    static get Valor(): LitColunaCurso {
         return {
-            nomePropriedade: 'qtdLimiteSemestres',
-            descricao: 'Limite de Semestres',
-            value: 'i_Qtd_Limite_Semestres'
+            nomePropriedade: 'valor',
+            descricao: 'Valor',
+        }
+    }
+    static get ProximaTurma(): LitColunaCurso {
+        return {
+            nomePropriedade: 'dataProximaTurma',
+            descricao: 'Próxima Turma',
         }
     }
 
     static get Todos(): LitColunaCurso[] {
         return [
+            LitColunaCursoMaker.Sequencial,
             LitColunaCursoMaker.Nome,
-            LitColunaCursoMaker.QtdLimiteSemestres,
+            LitColunaCursoMaker.Valor,
+            LitColunaCursoMaker.ProximaTurma,
         ];
     }
     static PorNomePropriedadeOrNull(nomePropriedade: string): LitColunaCurso | undefined {

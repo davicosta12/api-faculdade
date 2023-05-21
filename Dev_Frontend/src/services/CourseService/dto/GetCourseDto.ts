@@ -1,5 +1,7 @@
 export default interface GetCourseDto {
     i_Cod_Curso: number,
+    s_Sequencial: string,
     s_Nome: string,
-    i_Qtd_Limite_Semestres: number
+    f_Valor: number,
+    dataInicioProximaTurma: Date | null,
 }
