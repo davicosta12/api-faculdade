@@ -1,8 +1,8 @@
+import LoggedUserDto from "../../services/AuthService/dto/LoggedUserDto";
 import GetCourseDto from "../../services/CourseService/dto/GetCourseDto";
-import GetUserDto from "../../services/UserService/dto/GetUserDto";
 
 export type ParamsStateType = {
-    activeUser: GetUserDto,
+    activeUser: LoggedUserDto,
     courses: GetCourseDto[]
 }
 

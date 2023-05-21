@@ -6,17 +6,11 @@ import { AppProviderProps, InitialStateType } from './params/types';
 const initialState: InitialStateType = {
   params: {
     activeUser: {
-      I_Cod_Usuario: 0,
-      c_Perfil: '',
-      s_Nome: '',
-      s_CPF: '',
-      s_RA: '',
-      c_Sexo: '',
-      s_Nome_Mae: '',
-      b_E_Ativo: false,
-      s_Email: '',
-      s_Senha: '',
-      b_Tem_Senha_Temporaria: false
+      Cod: 0,
+      Perfil: '',
+      CPF: '',
+      Email: '',
+      Nome: ''
     },
     courses: [],
   },

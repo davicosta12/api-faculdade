@@ -63,7 +63,7 @@ const Login: FunctionComponent<Props> = (props) => {
             <Input.Password
               value={userPassword}
               placeholder="Senha"
-              maxLength={8}
+              maxLength={40}
               status={!userPassword ? "error" : ""}
               onChange={(ev: any) => setUserPassword(ev.target.value)}
             />

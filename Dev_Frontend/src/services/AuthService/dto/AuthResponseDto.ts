@@ -1,6 +1,6 @@
-import GetUserDto from "../../UserService/dto/GetUserDto";
+import LoggedUserDto from "./LoggedUserDto";
 
 export default interface AuthResponseDto {
-    user: GetUserDto,
+    user: LoggedUserDto,
     token: string,
 }
