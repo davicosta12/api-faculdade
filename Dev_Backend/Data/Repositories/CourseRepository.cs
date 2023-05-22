@@ -595,6 +595,15 @@ namespace Dev_Backend.Data.Repositories
             sql += UpdateCourseQuery(idCourse, nextCourse, sqlParams);
 
             await ExecuteAsync(sql, sqlParams.AsExpandoObject());
+
+            var sqlRetrieveSQLKeysParams = new Dictionary<string, object?>();
+            var sqlRetrieveSQLKeys = guidHelper.RetrieveSQLKeysQuery(sqlRetrieveSQLKeysParams);
+            var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams);
+            guidHelper.ReadRetrieveSQLKeys(readerRetrieveSQLKeysParams);
+
+            var sqlSynchronizeListenersParams = new Dictionary<string, object?>();
+            var sqlSynchronizeListeners = guidHelper.SynchronizeListenersQuery(sqlSynchronizeListenersParams);
+            await ExecuteAsync(sqlSynchronizeListeners, sqlSynchronizeListenersParams.AsExpandoObject());
         }
 
         public async Task<Course> CreateCourse(PostCourse course)
