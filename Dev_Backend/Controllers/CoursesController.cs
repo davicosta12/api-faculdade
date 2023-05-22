@@ -153,8 +153,7 @@ namespace my_api.Controllers
                     return NotFound(res);
                 }
 
-                var courseUpdated = await courseRepository.UpdateCourse(id, course);
-                res.responseBody = courseUpdated;
+                await courseRepository.UpdateCourse(id, course);
 
                 return Ok(res);
             }

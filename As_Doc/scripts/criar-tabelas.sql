@@ -17,53 +17,60 @@ CREATE TABLE IF NOT EXISTS Configuracao_De_Periodo (
   B_E_Hora_Fim_No_Dia_Seguinte TINYINT
 );
 
-CREATE TABLE IF NOT EXISTS Curso {
+CREATE TABLE IF NOT EXISTS Curso (
   I_Cod_Curso INT PRIMARY KEY AUTO_INCREMENT,
   S_Sequencial VARCHAR(2),
   S_Nome VARCHAR(100),
-  F_Valor DECIMAL(10,2)
-};
-CREATE TABLE IF NOT EXISTS Turma {
+  F_Valor DECIMAL(10,2),
+  S_Pre_Cod VARCHAR(36)
+);
+CREATE TABLE IF NOT EXISTS Turma (
   I_Cod_Turma INT PRIMARY KEY AUTO_INCREMENT,
-  I_Cod_Curso INT NOT NULL,
+  I_Cod_Curso INT,
   S_Sequencial VARCHAR(4),
   I_Modalidade INT,
+  I_Cod_Configuracao_De_Periodo INT NOT NULL,
   B_Esta_Pendente TINYINT,
   D_Data_Inicio DATETIME,
   D_Data_Fim DATETIME,
+  S_Pre_Cod VARCHAR(36),
+  S_Pre_Cod_Curso VARCHAR(36),
   CONSTRAINT fk_Turma_Cod_Curso
     FOREIGN KEY(I_Cod_Curso)
-    REFERENCES Curso (I_Cod_Curso)
-};
-CREATE TABLE IF NOT EXISTS Horario {
-  I_Cod_Horario INT PRIMARY KEY AUTO_INCREMENT,
-  I_Cod_Turma INT NOT NULL,
-  I_Cod_Configuracao_De_Periodo INT NOT NULL,
-  I_Dia_Da_Semana INT,
-  D_Hora_Inicio DATETIME,
-  D_Hora_Fim DATETIME,
-  B_E_Hora_Fim_No_Dia_Seguinte TINYINT,
-  CONSTRAINT fk_Horario_Cod_Turma
-    FOREIGN KEY(I_Cod_Turma)
-    REFERENCES Turma (I_Cod_Turma),
+    REFERENCES Curso (I_Cod_Curso),
   CONSTRAINT fk_Horario_Cod_Configuracao_De_Periodo
     FOREIGN KEY(I_Cod_Configuracao_De_Periodo)
     REFERENCES Configuracao_De_Periodo
       (I_Cod_Configuracao_De_Periodo)
-};
+);
+CREATE TABLE IF NOT EXISTS Horario (
+  I_Cod_Horario INT PRIMARY KEY AUTO_INCREMENT,
+  I_Cod_Turma INT,
+  I_Dia_Da_Semana INT,
+  D_Hora_Inicio DATETIME,
+  D_Hora_Fim DATETIME,
+  B_E_Hora_Fim_No_Dia_Seguinte TINYINT,
+  S_Pre_Cod_Turma VARCHAR(36),
+  CONSTRAINT fk_Horario_Cod_Turma
+    FOREIGN KEY(I_Cod_Turma)
+    REFERENCES Turma (I_Cod_Turma)
+);
 CREATE TABLE IF NOT EXISTS Aluno (
   I_Cod_Aluno INT PRIMARY KEY AUTO_INCREMENT,
   S_CPF VARCHAR(11),
   S_Email VARCHAR(80),
   S_Nome VARCHAR(100),
   S_Senha VARCHAR(512),
-  B_Tem_Senha_Temporaria TINYINT
+  B_Tem_Senha_Temporaria TINYINT,
+  S_Pre_Cod VARCHAR(36)
 );
 CREATE TABLE IF NOT EXISTS Matricula (
   I_Cod_Matricula INT PRIMARY KEY AUTO_INCREMENT,
-  I_Cod_Turma INT NOT NULL,
-  I_Cod_Aluno INT NOT NULL,
+  I_Cod_Turma INT,
+  I_Cod_Aluno INT,
   S_Sequencial_RA VARCHAR(10),
+  S_Pre_Cod_Turma VARCHAR(36),
+  S_Pre_Cod_Aluno VARCHAR(36),
   CONSTRAINT fk_Matricula_Cod_Turma
     FOREIGN KEY(I_Cod_Turma)
     REFERENCES Turma (I_Cod_Turma),
