@@ -212,7 +212,7 @@ namespace Dev_Backend.Data.Repositories
                             D_Data_Inicio, D_Data_Fim, S_Pre_Cod
                         ) VALUES (
                             @I_Cod_Curso, @Sequencial_{indexNew}_NEWCLASSROOM, CONCAT(
-                                @Sequencial_{indexNew}_NEWCLASSROOM, (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{cod}_NEWCLASSROOM)
+                                @Sequencial_{indexNew}_NEWCLASSROOM, IIF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{cod}_NEWCLASSROOM))
                             ),
                             @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM, 1, @Data_Inicio_{indexNew}_NEWCLASSROOM, @Data_Fim_{indexNew}_NEWCLASSROOM,
                             @Pre_Cod_{indexNew}_NEWCLASSROOM
