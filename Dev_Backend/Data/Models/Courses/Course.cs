@@ -74,5 +74,6 @@ namespace Dev_Backend.Data.Models.Courses
         public string S_Nome { get; set; }
         public double F_Valor { get; set; }
         public List<Classroom> Classrooms { get; set; } = new();
+        public string? S_Pre_Cod { get; set; }
     }
 }

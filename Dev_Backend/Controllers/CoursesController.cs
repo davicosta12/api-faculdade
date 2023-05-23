@@ -111,8 +111,7 @@ namespace my_api.Controllers
             {
                 var courseRepository = new CourseRepository(_dbContext);
 
-                var courseCreated = await courseRepository.CreateCourse(course);
-                res.responseBody = courseCreated;
+                await courseRepository.CreateCourse(course);
 
                 return Ok(res);
             }

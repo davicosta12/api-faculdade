@@ -82,7 +82,7 @@ namespace Dev_Backend.Data.Repositories
             return result;
         }
 
-        private string CourseDetailQuery(int idCourse, Dictionary<string, object?> sqlParams)
+        private string CourseDetailQuery(int idCourse, Dictionary<string, object?> sqlParams, bool shouldGetAllStudents = false)
         {
             string sql = @$"
                 SELECT
@@ -128,20 +128,38 @@ namespace Dev_Backend.Data.Repositories
                 FROM Turma t
                     INNER JOIN Matricula m ON m.I_Cod_Turma = t.I_Cod_Turma
                 WHERE t.I_Cod_Curso = @I_Cod_Curso;
-                    
-                SELECT DISTINCT
-                    a.I_Cod_Aluno,
-                    a.S_CPF,
-                    a.S_Email,
-                    a.S_Nome,
-                    '' as S_Senha,
-                    0 as B_Tem_Senha_Temporaria,
-                    a.S_Pre_Cod
-                FROM Turma t
-                    INNER JOIN Matricula m ON m.I_Cod_Turma = t.I_Cod_Turma
-                    INNER JOIN Aluno a ON a.I_Cod_Aluno = m.I_Cod_Aluno
-                WHERE t.I_Cod_Curso = @I_Cod_Curso;
             ";
+            if (shouldGetAllStudents)
+            {
+                sql += @$"
+                    SELECT
+                        a.I_Cod_Aluno,
+                        a.S_CPF,
+                        a.S_Email,
+                        a.S_Nome,
+                        '' as S_Senha,
+                        0 as B_Tem_Senha_Temporaria,
+                        a.S_Pre_Cod
+                    FROM Aluno a;
+                ";
+            }
+            else
+            {
+                sql += @$"
+                    SELECT DISTINCT
+                        a.I_Cod_Aluno,
+                        a.S_CPF,
+                        a.S_Email,
+                        a.S_Nome,
+                        '' as S_Senha,
+                        0 as B_Tem_Senha_Temporaria,
+                        a.S_Pre_Cod
+                    FROM Turma t
+                        INNER JOIN Matricula m ON m.I_Cod_Turma = t.I_Cod_Turma
+                        INNER JOIN Aluno a ON a.I_Cod_Aluno = m.I_Cod_Aluno
+                    WHERE t.I_Cod_Curso = @I_Cod_Curso;
+                ";
+            }
             sqlParams.Add("@I_Cod_Curso", idCourse);
 
             return sql;
@@ -176,7 +194,6 @@ namespace Dev_Backend.Data.Repositories
             return result;
         }
 
-
         private string UpdateCourseQuery(int idCourse, PostCourse nextCourse, Dictionary<string, object?> sqlParams)
         {
             string sql = @$"
@@ -192,7 +209,6 @@ namespace Dev_Backend.Data.Repositories
         }
 
         private string UpdateClassroomsQuery(
-            int idCourse,
             List<Classroom> nextClassrooms,
             List<Classroom> classrooms,
             Dictionary<string, object?> sqlParams
@@ -211,16 +227,16 @@ namespace Dev_Backend.Data.Repositories
                             I_Cod_Curso, S_Sequencial, I_Modalidade, I_Cod_Configuracao_De_Periodo, B_Esta_Pendente,
                             D_Data_Inicio, D_Data_Fim, S_Pre_Cod
                         ) VALUES (
-                            @I_Cod_Curso, @Sequencial_{indexNew}_NEWCLASSROOM, CONCAT(
+                            @I_Cod_Curso, CONCAT(
                                 @Sequencial_{indexNew}_NEWCLASSROOM, IIF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{cod}_NEWCLASSROOM))
                             ),
-                            @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM, 1, @Data_Inicio_{indexNew}_NEWCLASSROOM, @Data_Fim_{indexNew}_NEWCLASSROOM,
+                            @Modalidade_{indexNew}_NEWCLASSROOM, @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM, 1, @Data_Inicio_{indexNew}_NEWCLASSROOM, @Data_Fim_{indexNew}_NEWCLASSROOM,
                             @Pre_Cod_{indexNew}_NEWCLASSROOM
                         );
                     ";
                     sqlParams.Add($"@Sequencial_{indexNew}_NEWCLASSROOM", iNextClassroom.S_Sequencial);
                     sqlParams.Add($"@Modalidade_{indexNew}_NEWCLASSROOM", iNextClassroom.I_Modalidade);
-                    sqlParams.Add($"@Cod_Configuracao_De_Periodo_{cod}_NEWCLASSROOM", iNextClassroom.I_Cod_Configuracao_De_Periodo);
+                    sqlParams.Add($"@Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM", iNextClassroom.I_Cod_Configuracao_De_Periodo);
                     sqlParams.Add($"@Data_Inicio_{indexNew}_NEWCLASSROOM", iNextClassroom.D_Data_Inicio);
                     sqlParams.Add($"@Data_Fim_{indexNew}_NEWCLASSROOM", iNextClassroom.D_Data_Fim);
                     sqlParams.Add($"@Pre_Cod_{indexNew}_NEWCLASSROOM", iNextClassroom.S_Pre_Cod);
@@ -271,15 +287,16 @@ namespace Dev_Backend.Data.Repositories
                     {
                         sql += @$"
                             INSERT INTO Horario (
-                                I_Dia_Da_Semana, D_Hora_Inicio, D_Hora_Fim, S_Pre_Cod_Turma
+                                I_Dia_Da_Semana, D_Hora_Inicio, D_Hora_Fim, B_E_Hora_Fim_No_Dia_Seguinte, S_Pre_Cod_Turma
                             ) VALUES (
-                                @Dia_Da_Semana_{indexNew}_NEWTIME,
-                                @Hora_Inicio_{indexNew}_NEWTIME, @Hora_Fim_{indexNew}_NEWTIME, @Pre_Cod_Turma_{indexNew}_NEWTIME
+                                @Dia_Da_Semana_{indexNew}_NEWTIME, @Hora_Inicio_{indexNew}_NEWTIME, @Hora_Fim_{indexNew}_NEWTIME,
+                                @B_E_Hora_Fim_No_Dia_Seguinte_{indexNew}_NEWTIME, @Pre_Cod_Turma_{indexNew}_NEWTIME
                             );
                         ";
                         sqlParams.Add($"@Dia_Da_Semana_{indexNew}_NEWTIME", iNextTime.I_Dia_Da_Semana);
                         sqlParams.Add($"@Hora_Inicio_{indexNew}_NEWTIME", iNextTime.D_Hora_Inicio);
                         sqlParams.Add($"@Hora_Fim_{indexNew}_NEWTIME", iNextTime.D_Hora_Fim);
+                        sqlParams.Add($"@B_E_Hora_Fim_No_Dia_Seguinte_{indexNew}_NEWTIME", iNextTime.B_E_Hora_Fim_No_Dia_Seguinte);
                         sqlParams.Add($"@Pre_Cod_Turma_{indexNew}_NEWTIME", iNextTime.S_Pre_Cod_Turma);
                         indexNew++;
                         continue;
@@ -288,15 +305,16 @@ namespace Dev_Backend.Data.Repositories
                     {
                         sql += @$"
                             INSERT INTO Horario (
-                                I_Cod_Turma, I_Dia_Da_Semana, D_Hora_Inicio, D_Hora_Fim
+                                I_Cod_Turma, I_Dia_Da_Semana, D_Hora_Inicio, D_Hora_Fim, B_E_Hora_Fim_No_Dia_Seguinte
                             ) VALUES (
                                 @Cod_Turma, @Dia_Da_Semana_{indexNew}_NEWTIME,
-                                @Hora_Inicio_{indexNew}_NEWTIME, @Hora_Fim_{indexNew}_NEWTIME
+                                @Hora_Inicio_{indexNew}_NEWTIME, @Hora_Fim_{indexNew}_NEWTIME, @B_E_Hora_Fim_No_Dia_Seguinte_{indexNew}_NEWTIME
                             );
                         ";
                         sqlParams.Add($"@Cod_Turma_{indexNew}_NEWTIME", iNextTime.I_Cod_Turma);
                         sqlParams.Add($"@Dia_Da_Semana_{indexNew}_NEWTIME", iNextTime.I_Dia_Da_Semana);
                         sqlParams.Add($"@Hora_Inicio_{indexNew}_NEWTIME", iNextTime.D_Hora_Inicio);
+                        sqlParams.Add($"@B_E_Hora_Fim_No_Dia_Seguinte_{indexNew}_NEWTIME", iNextTime.B_E_Hora_Fim_No_Dia_Seguinte);
                         sqlParams.Add($"@Hora_Fim_{indexNew}_NEWTIME", iNextTime.D_Hora_Fim);
                         indexNew++;
                         continue;
@@ -310,11 +328,13 @@ namespace Dev_Backend.Data.Repositories
                         I_Dia_Da_Semana = @Dia_Da_Semana_{cod}_TIME,
                         D_Hora_Inicio = @Hora_Inicio_{cod}_TIME,
                         D_Hora_Fim = @Hora_Fim_{cod}_TIME,
+                        B_E_Hora_Fim_No_Dia_Seguinte = @B_E_Hora_Fim_No_Dia_Seguinte_{cod}_TIME
                     WHERE I_Cod_Horario = {cod};
                 ";
                 sqlParams.Add($"@Dia_Da_Semana_{cod}_TIME", iNextTime.I_Dia_Da_Semana);
                 sqlParams.Add($"@Hora_Inicio{cod}_TIME", iNextTime.D_Hora_Inicio);
                 sqlParams.Add($"@Hora_Fim{cod}_TIME", iNextTime.D_Hora_Fim);
+                sqlParams.Add($"@B_E_Hora_Fim_No_Dia_Seguinte_{indexNew}_TIME", iNextTime.B_E_Hora_Fim_No_Dia_Seguinte);
             }
 
             if (notUpdated.Any())
@@ -505,7 +525,7 @@ namespace Dev_Backend.Data.Repositories
         public async Task UpdateCourse(int idCourse, PostCourse nextCourse)
         {
             var sqlDetailsParams = new Dictionary<string, object?>();
-            string sqlDetails = CourseDetailQuery(idCourse, sqlDetailsParams);
+            string sqlDetails = CourseDetailQuery(idCourse, sqlDetailsParams, true);
 
             var reader = await QueryMultipleAsync(sqlDetails, sqlDetailsParams);
 
@@ -525,8 +545,8 @@ namespace Dev_Backend.Data.Repositories
                 {
                     continue;
                 }
-                guidHelper.Units.Add(new GuidUnit { Guid = iClassroom.S_Pre_Cod, HelpedTable = "Turma" });
                 iClassroom.S_Pre_Cod = Guid.NewGuid().ToString();
+                guidHelper.Units.Add(new GuidUnit { Guid = iClassroom.S_Pre_Cod, HelpedTable = "Turma" });
                 if (iClassroom.Times.Count > 0)
                 {
                     guidHelper.Listeners.Add(new GuidColumnListener { GuidListened = iClassroom.S_Pre_Cod, HelpedTable = "Horario" });
@@ -575,14 +595,9 @@ namespace Dev_Backend.Data.Repositories
                 }
             }
 
-            var configurationRepository = new ConfigurationRepository(dbContext);
-            var periods = (await configurationRepository.GetConfiguration()).PeriodConfigurations;
             foreach (var iClassroom in nextCourse.Classrooms)
             {
-                string periodCode = iClassroom.I_Modalidade == 1 ?
-                    periods.FirstOrDefault(x => x.I_Cod_Configuracao_De_Periodo == iClassroom.I_Cod_Configuracao_De_Periodo).C_Sigla
-                    : "";
-                iClassroom.S_Sequencial = $"{courseResult.S_Sequencial}{iClassroom.I_Modalidade}{periodCode}";
+                iClassroom.S_Sequencial = $"{courseResult.S_Sequencial}{iClassroom.I_Modalidade}";
             }
 
             string sql = "";
@@ -591,7 +606,7 @@ namespace Dev_Backend.Data.Repositories
             sql += UpdateEnrollmentsQuery(nextEnrollments, enrollments, nextCourse.Classrooms, courseResult.Classrooms, sqlParams);
             sql += UpdateStudentsQuery(nextStudents, students, sqlParams);
             sql += UpdateTimesQuery(nextTimes, times, sqlParams);
-            sql += UpdateClassroomsQuery(idCourse, nextCourse.Classrooms, courseResult.Classrooms, sqlParams);
+            sql += UpdateClassroomsQuery(nextCourse.Classrooms, courseResult.Classrooms, sqlParams);
             sql += UpdateCourseQuery(idCourse, nextCourse, sqlParams);
 
             await ExecuteAsync(sql, sqlParams.AsExpandoObject());
@@ -606,26 +621,161 @@ namespace Dev_Backend.Data.Repositories
             await ExecuteAsync(sqlSynchronizeListeners, sqlSynchronizeListenersParams.AsExpandoObject());
         }
 
-        public async Task<Course> CreateCourse(PostCourse course)
+        private string InsertCourseQuery(PostCourse nextCourse, Dictionary<string, object?> sqlParams)
         {
-            string sql;
-            int identityId;
+            string sql = @$"
+                insert into Curso (S_Nome, F_Valor, Pre_Cod)
+                values (@Nome, @Valor, @Pre_Cod_Curso);
+            ";
+            sqlParams.Add("@Nome", nextCourse.S_Nome);
+            sqlParams.Add("@Valor", nextCourse.F_Valor);
+            sqlParams.Add("@Pre_Cod_Curso", nextCourse.S_Pre_Cod);
+            return sql;
+        }
 
-            sql = @"INSERT INTO Curso ( S_Nome, I_Qtd_Limite_Semestres ) VALUES ( @S_Nome, @I_Qtd_Limite_Semestres );
-                           SELECT LAST_INSERT_ID();";
-
-            identityId = await ExecuteScalarAsync<int>(sql, new
+        private string InsertClassroomsQuery(
+            List<Classroom> nextClassrooms,
+            Dictionary<string, object?> sqlParams
+        )
+        {
+            string sql = "";
+            int indexNew = 1;
+            foreach (var iNextClassroom in nextClassrooms)
             {
-                @S_Nome = course.S_Nome,
-            });
+                sql += @$"
+                    INSERT INTO Turma (
+                        S_Sequencial, I_Modalidade, I_Cod_Configuracao_De_Periodo, B_Esta_Pendente,
+                        D_Data_Inicio, D_Data_Fim, S_Pre_Cod, S_Pre_Cod_Curso
+                    ) VALUES (
+                        CONCAT(
+                            @Sequencial_{indexNew}_NEWCLASSROOM, IIF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM))
+                        ),
+                        @Modalidade_{indexNew}_NEWCLASSROOM, @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM, 1, @Data_Inicio_{indexNew}_NEWCLASSROOM, @Data_Fim_{indexNew}_NEWCLASSROOM,
+                        @Pre_Cod_{indexNew}_NEWCLASSROOM, @Pre_Cod_Curso
+                    );
+                ";
+                sqlParams.Add($"@Sequencial_{indexNew}_NEWCLASSROOM", iNextClassroom.S_Sequencial);
+                sqlParams.Add($"@Modalidade_{indexNew}_NEWCLASSROOM", iNextClassroom.I_Modalidade);
+                sqlParams.Add($"@Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM", iNextClassroom.I_Cod_Configuracao_De_Periodo);
+                sqlParams.Add($"@Data_Inicio_{indexNew}_NEWCLASSROOM", iNextClassroom.D_Data_Inicio);
+                sqlParams.Add($"@Data_Fim_{indexNew}_NEWCLASSROOM", iNextClassroom.D_Data_Fim);
+                sqlParams.Add($"@Pre_Cod_{indexNew}_NEWCLASSROOM", iNextClassroom.S_Pre_Cod);
+                indexNew++;
+                continue;
+            }
+            
+            return sql;
+        }
 
-            var courseCreated = new Course()
+        public async Task CreateCourse(PostCourse course)
+        {
+            string sqlStudentsAndCourseSerial = @$"
+                SELECT
+                    a.I_Cod_Aluno,
+                    a.S_CPF,
+                    a.S_Email,
+                    a.S_Nome,
+                    '' as S_Senha,
+                    0 as B_Tem_Senha_Temporaria,
+                    a.S_Pre_Cod
+                FROM Aluno a;
+
+                SELECT S_Sequencial FROM Curso;
+            ";
+            var reader = await QueryMultipleAsync(sqlStudentsAndCourseSerial);
+
+            var students = reader.Read<Student>().ToList();
+            int lastCourseSerial = reader.Read<string>().ToList().Select(x => int.Parse(x)).Max();
+
+            var guidHelper = new GuidHelper();
+            if (course.Classrooms.Count > 0)
             {
-                I_Cod_Curso = identityId,
-                S_Nome = course.S_Nome,
-            };
+                course.S_Pre_Cod = Guid.NewGuid().ToString();
+                guidHelper.Units.Add(new GuidUnit { Guid = course.S_Pre_Cod, HelpedTable = "Curso" });
+                guidHelper.Listeners.Add(new GuidColumnListener { GuidListened = course.S_Pre_Cod, HelpedTable = "Turma" });
+                foreach (var iClassroom in course.Classrooms)
+                {
+                    iClassroom.S_Pre_Cod_Curso = course.S_Pre_Cod;
+                    if (iClassroom.Times.Count == 0 && iClassroom.Enrollments.Count == 0)
+                    {
+                        continue;
+                    }
+                    iClassroom.S_Pre_Cod = Guid.NewGuid().ToString();
+                    guidHelper.Units.Add(new GuidUnit { Guid = iClassroom.S_Pre_Cod, HelpedTable = "Turma" });
+                    if (iClassroom.Times.Count > 0)
+                    {
+                        guidHelper.Listeners.Add(new GuidColumnListener { GuidListened = iClassroom.S_Pre_Cod, HelpedTable = "Horario" });
+                        foreach (var iTime in iClassroom.Times)
+                        {
+                            iTime.S_Pre_Cod_Turma = iClassroom.S_Pre_Cod;
+                        }
+                    }
+                    if (iClassroom.Enrollments.Count > 0)
+                    {
+                        guidHelper.Listeners.Add(new GuidColumnListener { GuidListened = iClassroom.S_Pre_Cod, HelpedTable = "Matricula" });
+                        foreach (var iEnrollment in iClassroom.Enrollments)
+                        {
+                            iEnrollment.S_Pre_Cod_Turma = iClassroom.S_Pre_Cod;
+                        }
+                    }
+                }
+                foreach (var iClassroom in course.Classrooms)
+                {
+                    foreach (var iEnrollment in iClassroom.Enrollments)
+                    {
+                        if (iEnrollment.I_Cod_Aluno == 0)
+                        {
+                            var studentGuid = Guid.NewGuid().ToString();
+                            iEnrollment.Student.S_Pre_Cod = studentGuid;
+                            guidHelper.Units.Add(new GuidUnit { Guid = studentGuid, HelpedTable = "Aluno" });
+                            iEnrollment.S_Pre_Cod_Aluno = studentGuid;
+                            guidHelper.Listeners.Add(new GuidColumnListener { GuidListened = studentGuid, HelpedTable = "Matricula" });
+                        }
+                    }
+                }
+            }
 
-            return courseCreated;
+            var nextTimes = course.Classrooms.SelectMany(x => x.Times).ToList();
+            var nextEnrollments = course.Classrooms.SelectMany(x => x.Enrollments).ToList();
+            var nextStudentsRepeated = course.Classrooms
+                .SelectMany(clas => clas.Enrollments.Select(en => en.Student))
+                .ToList();
+            var nextStudents = new List<Student>();
+            var studentIds = new HashSet<int>();
+            foreach (var iNextStudent in nextStudentsRepeated)
+            {
+                if (iNextStudent.I_Cod_Aluno == 0 || !studentIds.Contains(iNextStudent.I_Cod_Aluno))
+                {
+                    studentIds.Add(iNextStudent.I_Cod_Aluno);
+                    nextStudents.Add(iNextStudent);
+                }
+            }
+
+            var configurationRepository = new ConfigurationRepository(dbContext);
+            foreach (var iClassroom in course.Classrooms)
+            {
+                iClassroom.S_Sequencial = $"{lastCourseSerial.ToString().PadLeft(2, '0')}{iClassroom.I_Modalidade}";
+            }
+
+            string sql = "";
+            var sqlParams = new Dictionary<string, object?>();
+
+            sql += UpdateEnrollmentsQuery(nextEnrollments, new List<Enrollment>(), course.Classrooms, new List<Classroom>(), sqlParams);
+            sql += UpdateStudentsQuery(nextStudents, students, sqlParams);
+            sql += UpdateTimesQuery(nextTimes, new List<Time>(), sqlParams);
+            sql += InsertClassroomsQuery(course.Classrooms, sqlParams);
+            sql += InsertCourseQuery(course, sqlParams);
+
+            await ExecuteAsync(sql, sqlParams.AsExpandoObject());
+
+            var sqlRetrieveSQLKeysParams = new Dictionary<string, object?>();
+            var sqlRetrieveSQLKeys = guidHelper.RetrieveSQLKeysQuery(sqlRetrieveSQLKeysParams);
+            var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams);
+            guidHelper.ReadRetrieveSQLKeys(readerRetrieveSQLKeysParams);
+
+            var sqlSynchronizeListenersParams = new Dictionary<string, object?>();
+            var sqlSynchronizeListeners = guidHelper.SynchronizeListenersQuery(sqlSynchronizeListenersParams);
+            await ExecuteAsync(sqlSynchronizeListeners, sqlSynchronizeListenersParams.AsExpandoObject());
         }
 
         public async Task DeleteCourse(int idCourse)
