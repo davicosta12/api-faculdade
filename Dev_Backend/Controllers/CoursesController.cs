@@ -35,7 +35,7 @@ namespace my_api.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourses(
+        public async Task<ActionResult<IEnumerable<GetCourse>>> GetCourses(
             [FromQuery] GetCourseFilterPaging filterParams,
             int? alonePageSize = 50
         )

@@ -621,12 +621,13 @@ namespace Dev_Backend.Data.Repositories
             await ExecuteAsync(sqlSynchronizeListeners, sqlSynchronizeListenersParams.AsExpandoObject());
         }
 
-        private string InsertCourseQuery(PostCourse nextCourse, Dictionary<string, object?> sqlParams)
+        private string InsertCourseQuery(int courseSerial, PostCourse nextCourse, Dictionary<string, object?> sqlParams)
         {
             string sql = @$"
-                insert into Curso (S_Nome, F_Valor, Pre_Cod)
-                values (@Nome, @Valor, @Pre_Cod_Curso);
+                insert into Curso (S_Sequencial, S_Nome, F_Valor, Pre_Cod)
+                values (@Sequencial, @Nome, @Valor, @Pre_Cod_Curso);
             ";
+            sqlParams.Add("@Nome", nextCourse.S_Nome);
             sqlParams.Add("@Nome", nextCourse.S_Nome);
             sqlParams.Add("@Valor", nextCourse.F_Valor);
             sqlParams.Add("@Pre_Cod_Curso", nextCourse.S_Pre_Cod);
@@ -751,6 +752,7 @@ namespace Dev_Backend.Data.Repositories
                 }
             }
 
+            lastCourseSerial++;
             var configurationRepository = new ConfigurationRepository(dbContext);
             foreach (var iClassroom in course.Classrooms)
             {
@@ -764,7 +766,7 @@ namespace Dev_Backend.Data.Repositories
             sql += UpdateStudentsQuery(nextStudents, students, sqlParams);
             sql += UpdateTimesQuery(nextTimes, new List<Time>(), sqlParams);
             sql += InsertClassroomsQuery(course.Classrooms, sqlParams);
-            sql += InsertCourseQuery(course, sqlParams);
+            sql += InsertCourseQuery(lastCourseSerial, course, sqlParams);
 
             await ExecuteAsync(sql, sqlParams.AsExpandoObject());
 
