@@ -4,6 +4,9 @@ import HttpService from "../HttpService";
 import CourseFilterParamsDto from "./dto/CourseFilterParamsDto";
 import GetCourseDto from "./dto/GetCourseDto";
 import { getNullDateFromAPI, prepareDateToAPIUrl } from "../../misc/utils/utils";
+import DetailedCourseDto from "./dto/DetailedCourseDto";
+import { GenericResponseDto } from "../GenericDto/GenericResponseDto";
+import PostCourseDto from "./dto/PostCourseDto";
 
 export default class CourseService extends HttpService {
 
@@ -34,7 +37,7 @@ export default class CourseService extends HttpService {
     })
   }
 
-  getCourseById(id: number): Promise<GetCourseDto> {
+  getCourseById(id: number): Promise<DetailedCourseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().get(`/Course/${id}`)
         .then(res => {
@@ -44,7 +47,7 @@ export default class CourseService extends HttpService {
     })
   }
 
-  createCourse(course: GetCourseDto): Promise<GetCourseDto> {
+  createCourse(course: PostCourseDto): Promise<GenericResponseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().post(`/Course`, course)
         .then(res => {
@@ -54,7 +57,7 @@ export default class CourseService extends HttpService {
     })
   }
 
-  updateCourse(id: number, course: GetCourseDto): Promise<GetCourseDto> {
+  updateCourse(id: number, course: PostCourseDto): Promise<GenericResponseDto> {
     return new Promise((resolve, reject) => {
       this.getApi().put(`/Course/${id}`, course)
         .then(res => {
