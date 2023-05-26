@@ -14,6 +14,8 @@ import Maqui_Botao_Lento from "../../../_commons/MaquiButton/Maqui_Botao_Lento";
 import Maqui_Botao_Voltar from "../../../_commons/MaquiButton/Maqui_Botao_Voltar";
 import NavigationWrapper from "../../_navigation/NavigationWrapper";
 import { CourseFormValidators } from "./validators";
+import PostCourseDto from "../../../services/CourseService/dto/PostCourseDto";
+import DetailedCourseDto from "../../../services/CourseService/dto/DetailedCourseDto";
 
 interface Props {
   eAlteracao: boolean;
@@ -25,7 +27,7 @@ const CursosManter: FunctionComponent<Props> = (props) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  let course = location?.state?.course as GetCourseDto;
+  let course = location?.state?.course as DetailedCourseDto;
 
   const formRef: MutableRefObject<FormApi<any, any>> = useRef<any>(null);
 
@@ -38,11 +40,11 @@ const CursosManter: FunctionComponent<Props> = (props) => {
       formRef.current.initialize(course);
     }
     else {
-      formRef.current.reset({} as GetCourseDto);
+      formRef.current.reset({} as PostCourseDto);
     }
   }, [course]);
 
-  const handleCreate = async (values: GetCourseDto) => {
+  const handleCreate = async (values: PostCourseDto) => {
     setIsLoading(true);
     try {
       await courseService.createCourse(values);
@@ -56,10 +58,10 @@ const CursosManter: FunctionComponent<Props> = (props) => {
     }
   }
 
-  const handleUpdate = async (values: GetCourseDto) => {
+  const handleUpdate = async (values: PostCourseDto) => {
     setIsLoading(true);
     try {
-      await courseService.updateCourse(values.i_Cod_Curso, values);
+      await courseService.updateCourse(course.i_Cod_Curso, values);
       toast.success(`Curso - "${values.s_Nome}" atualizado com sucesso`, toastOptions(toast));
     }
     catch (err: any) {
@@ -70,7 +72,7 @@ const CursosManter: FunctionComponent<Props> = (props) => {
     }
   }
 
-  const handleSubmit = (values: GetCourseDto) => {
+  const handleSubmit = (values: PostCourseDto) => {
     !eAlteracao ? handleCreate(values) : handleUpdate(values);
   }
 
@@ -118,7 +120,7 @@ const CursosManter: FunctionComponent<Props> = (props) => {
                   Rotulo_Botao="Confirmar"
                   Icone={<SaveFilled/>}
                   Carregando={isLoading}
-                  Acao={() => handleSubmit(values as GetCourseDto)} />
+                  Acao={() => handleSubmit(values as PostCourseDto)} />
                 
               </div>
             </div>

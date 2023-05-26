@@ -24,6 +24,7 @@ import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
 import { useInterval } from '../../hooks/useInterval';
 import Maqui_Filtro_Avancado_Data from '../../_commons/MaquiAdvancedFilter/Maqui_Filtro_Avancado_Data';
+import PostCourseDto from '../../services/CourseService/dto/PostCourseDto';
 
 const REFRESH_CURSOS_INTERVAL = 1000 * 30;
 const PER_PAGE = 50;
@@ -121,8 +122,17 @@ function CursosIndex() {
     navigate('/cursos/inserir');
   }
 
-  const handleEdit = (rowData: GetCourseDto) => {
-    navigate('/cursos/alterar', { state: { course: rowData } });
+  const handleEdit = async (rowData: GetCourseDto) => {
+    setIsLoading(true);
+    try {
+      const detailedRow = await courseService.getCourseById(course.i_Cod_Curso);
+      setIsLoading(false);
+      navigate('/cursos/alterar', { state: { course: detailedRow } });
+    }
+    catch (err: any) {
+      setIsLoading(false);
+      toast.error(toastError(err), toastOptions(toast));
+    }
   }
 
   const handleRemove = (rowData: GetCourseDto) => {
