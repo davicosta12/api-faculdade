@@ -12,6 +12,7 @@ namespace Dev_Backend.Maqui.Data.CodeLiteral
         public static IEnumerable<QueryCodeLiteral> GetAll()
         {
             return new QueryCodeLiteral[] {
+                CoursesQueryCodeLiteralMaker.GetSelectPeriodos(),
                 SubscriptionsQueryCodeLiteralMaker.GetSelectAlunos(),
                 SubscriptionsQueryCodeLiteralMaker.GetSelectCursos(),
             };

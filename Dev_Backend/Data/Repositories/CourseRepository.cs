@@ -493,30 +493,29 @@ namespace Dev_Backend.Data.Repositories
                     sqlParams.Add($"@Senha_{indexNew}_NEWSTUDENT", iNextStudent.S_Senha);
                     sqlParams.Add($"@Pre_Cod_{indexNew}_NEWSTUDENT", iNextStudent.S_Pre_Cod);
                     indexNew++;
-                    continue;
                 }
 
-                string sqlSetPass = iNextStudent.S_Senha == "" ? "" : @$"
-                    ,
-                    S_Senha = @Senha_{cod}_STUDENT,
-                    B_Tem_Senha_Temporaria = 1
-                ";
+                // string sqlSetPass = iNextStudent.S_Senha == "" ? "" : @$"
+                //     ,
+                //     S_Senha = @Senha_{cod}_STUDENT,
+                //     B_Tem_Senha_Temporaria = 1
+                // ";
 
-                sql += @$"
-                    UPDATE Aluno SET
-                        S_CPF = @CPF_{cod}_STUDENT,
-                        S_Email = @Email_{cod}_STUDENT,
-                        S_Nome = @Nome_{cod}_STUDENT
-                        {sqlSetPass}
-                    WHERE I_Cod_Aluno = {cod};
-                ";
-                sqlParams.Add($"@CPF_{cod}_STUDENT", iNextStudent.S_CPF);
-                sqlParams.Add($"@Email_{cod}_STUDENT", iNextStudent.S_Email);
-                sqlParams.Add($"@Nome_{cod}_STUDENT", iNextStudent.S_Nome);
-                if (iNextStudent.S_Senha != "")
-                {
-                    sqlParams.Add($"@Senha_{cod}_STUDENT", iNextStudent.S_Senha);
-                }
+                // sql += @$"
+                //     UPDATE Aluno SET
+                //         S_CPF = @CPF_{cod}_STUDENT,
+                //         S_Email = @Email_{cod}_STUDENT,
+                //         S_Nome = @Nome_{cod}_STUDENT
+                //         {sqlSetPass}
+                //     WHERE I_Cod_Aluno = {cod};
+                // ";
+                // sqlParams.Add($"@CPF_{cod}_STUDENT", iNextStudent.S_CPF);
+                // sqlParams.Add($"@Email_{cod}_STUDENT", iNextStudent.S_Email);
+                // sqlParams.Add($"@Nome_{cod}_STUDENT", iNextStudent.S_Nome);
+                // if (iNextStudent.S_Senha != "")
+                // {
+                //     sqlParams.Add($"@Senha_{cod}_STUDENT", iNextStudent.S_Senha);
+                // }
             }
 
             return sql;

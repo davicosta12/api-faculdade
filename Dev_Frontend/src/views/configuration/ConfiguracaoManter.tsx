@@ -153,7 +153,7 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
                   {breadcrumbNodes.map(x => <Breadcrumb.Item href=''  onClick={(event) => handleBreadcrumbClick(event, x)} key={x}>{x}</Breadcrumb.Item>) }
                 </Breadcrumb>
               </div>
-              {(breadcrumbNodes[breadcrumbNodes.length - 1] === 'Configuração') && <>
+              {breadcrumbNodes.length == 1 && <>
                 <div className="half-padding">
                   <Field
                     label="Mínimo de alunos da turma presencial"
@@ -202,7 +202,7 @@ const ConfiguracaoManter: FunctionComponent<Props> = (props) => {
                 </div>
 
               </>}
-              {(breadcrumbNodes[breadcrumbNodes.length - 1] === 'Alterar Período' || breadcrumbNodes[breadcrumbNodes.length - 1] === 'Inserir Período') && <>
+              {breadcrumbNodes.length >= 2 && <>
                 <ConfiguracaoDePeriodoManter
                   selectedPeriod={selectedPeriod}
                   onGoBackSubItem={handleGoBackSubItem}
