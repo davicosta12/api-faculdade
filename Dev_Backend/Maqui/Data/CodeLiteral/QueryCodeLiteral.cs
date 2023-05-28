@@ -13,6 +13,7 @@ namespace Dev_Backend.Maqui.Data.CodeLiteral
         {
             return new QueryCodeLiteral[] {
                 CoursesQueryCodeLiteralMaker.GetSelectPeriodos(),
+                CoursesQueryCodeLiteralMaker.GetSelectAlunos(),
                 SubscriptionsQueryCodeLiteralMaker.GetSelectAlunos(),
                 SubscriptionsQueryCodeLiteralMaker.GetSelectCursos(),
             };

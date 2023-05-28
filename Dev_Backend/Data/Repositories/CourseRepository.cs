@@ -228,7 +228,7 @@ namespace Dev_Backend.Data.Repositories
                             D_Data_Inicio, D_Data_Fim, S_Pre_Cod
                         ) VALUES (
                             @I_Cod_Curso, CONCAT(
-                                @Sequencial_{indexNew}_NEWCLASSROOM, IIF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{cod}_NEWCLASSROOM))
+                                @Sequencial_{indexNew}_NEWCLASSROOM, IF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM))
                             ),
                             @Modalidade_{indexNew}_NEWCLASSROOM, @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM, 1, @Data_Inicio_{indexNew}_NEWCLASSROOM, @Data_Fim_{indexNew}_NEWCLASSROOM,
                             @Pre_Cod_{indexNew}_NEWCLASSROOM
@@ -406,9 +406,9 @@ namespace Dev_Backend.Data.Repositories
                         sqlStudentParamComma = $", {sqlStudentParam}";
                         sql += @$"
                             INSERT INTO Matricula (
-                                S_Sequencial, S_Pre_Cod_Turma {sqlStudentColumn}
+                                S_Sequencial_RA, S_Pre_Cod_Turma {sqlStudentColumn}
                             ) VALUES (
-                                @Sequencial, @Pre_Cod_Turma_{indexNew}_NEWENROLLMENT {sqlStudentParamComma}
+                                @Sequencial_{indexNew}_NEWENROLLMENT, @Pre_Cod_Turma_{indexNew}_NEWENROLLMENT {sqlStudentParamComma}
                             );
                         ";
                         sqlParams.Add($"@Sequencial_{indexNew}_NEWENROLLMENT", findClassroomSerial + findOwnSerial.ToString().PadLeft(4, '0'));
@@ -428,9 +428,9 @@ namespace Dev_Backend.Data.Repositories
                         }
                         sql += @$"
                             INSERT INTO Matricula (
-                                I_Cod_Turma, S_Sequencial {sqlStudentColumn}
+                                I_Cod_Turma, S_Sequencial_RA {sqlStudentColumn}
                             ) VALUES (
-                                @Cod_Turma, @Sequencial {sqlStudentParamComma}
+                                @Cod_Turma, @Sequencial_{indexNew}_NEWENROLLMENT {sqlStudentParamComma}
                             );
                         ";
                         sqlParams.Add($"@Cod_Turma_{indexNew}_NEWENROLLMENT", iNextEnrollment.I_Cod_Turma);
@@ -612,7 +612,7 @@ namespace Dev_Backend.Data.Repositories
 
             var sqlRetrieveSQLKeysParams = new Dictionary<string, object?>();
             var sqlRetrieveSQLKeys = guidHelper.RetrieveSQLKeysQuery(sqlRetrieveSQLKeysParams);
-            var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams);
+            var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams.AsExpandoObject());
             guidHelper.ReadRetrieveSQLKeys(readerRetrieveSQLKeysParams);
 
             var sqlSynchronizeListenersParams = new Dictionary<string, object?>();
@@ -626,7 +626,7 @@ namespace Dev_Backend.Data.Repositories
                 insert into Curso (S_Sequencial, S_Nome, F_Valor, Pre_Cod)
                 values (@Sequencial, @Nome, @Valor, @Pre_Cod_Curso);
             ";
-            sqlParams.Add("@Nome", nextCourse.S_Nome);
+            sqlParams.Add("@Sequencial", courseSerial.ToString().PadLeft(2, '0'));
             sqlParams.Add("@Nome", nextCourse.S_Nome);
             sqlParams.Add("@Valor", nextCourse.F_Valor);
             sqlParams.Add("@Pre_Cod_Curso", nextCourse.S_Pre_Cod);
@@ -648,7 +648,7 @@ namespace Dev_Backend.Data.Repositories
                         D_Data_Inicio, D_Data_Fim, S_Pre_Cod, S_Pre_Cod_Curso
                     ) VALUES (
                         CONCAT(
-                            @Sequencial_{indexNew}_NEWCLASSROOM, IIF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM))
+                            @Sequencial_{indexNew}_NEWCLASSROOM, IF(@Modalidade_{indexNew}_NEWCLASSROOM = 2, '', (SELECT C_Sigla FROM Configuracao_De_Periodo WHERE I_Cod_Configuracao_De_Periodo = @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM))
                         ),
                         @Modalidade_{indexNew}_NEWCLASSROOM, @Cod_Configuracao_De_Periodo_{indexNew}_NEWCLASSROOM, 1, @Data_Inicio_{indexNew}_NEWCLASSROOM, @Data_Fim_{indexNew}_NEWCLASSROOM,
                         @Pre_Cod_{indexNew}_NEWCLASSROOM, @Pre_Cod_Curso
@@ -771,7 +771,7 @@ namespace Dev_Backend.Data.Repositories
 
             var sqlRetrieveSQLKeysParams = new Dictionary<string, object?>();
             var sqlRetrieveSQLKeys = guidHelper.RetrieveSQLKeysQuery(sqlRetrieveSQLKeysParams);
-            var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams);
+            var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams.AsExpandoObject());
             guidHelper.ReadRetrieveSQLKeys(readerRetrieveSQLKeysParams);
 
             var sqlSynchronizeListenersParams = new Dictionary<string, object?>();

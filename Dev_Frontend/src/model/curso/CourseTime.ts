@@ -40,7 +40,7 @@ export default class CourseTime extends CourseTimeDto {
         const parsed = new CourseTimeDto(
             this.i_Cod_Horario,
             this.i_Cod_Turma,
-            this.i_Dia_Da_Semana,
+            this.i_Dia_Da_Semana ?? 0,
             this.d_Hora_Inicio,
             this.d_Hora_Fim,
             this.b_E_Hora_Fim_No_Dia_Seguinte

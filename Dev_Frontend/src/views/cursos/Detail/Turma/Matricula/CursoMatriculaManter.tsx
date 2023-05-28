@@ -44,7 +44,8 @@ const CursoMatriculaManter: FunctionComponent<Props> = ({
               <div className="half-padding">
                 <Field
                   label="Novo aluno"
-                  name="eNovoAluno"
+                  name="eAlunoNovo"
+                  checked={values.eAlunoNovo}
                   component={FinalInputLogical}
                 />
               </div>
@@ -52,7 +53,7 @@ const CursoMatriculaManter: FunctionComponent<Props> = ({
                 <div className="half-padding">
                   <Field
                     label="CPF"
-                    name="s_CPF"
+                    name="studentCPF"
                     mask="000.000.000-00"
                     required
                     placeholder=""
@@ -63,7 +64,7 @@ const CursoMatriculaManter: FunctionComponent<Props> = ({
                 <div className="half-padding">
                   <Field
                     label="E-mail"
-                    name="s_Email"
+                    name="studentEmail"
                     required
                     placeholder=""
                     maxLength={80}
@@ -73,7 +74,7 @@ const CursoMatriculaManter: FunctionComponent<Props> = ({
                 <div className="half-padding">
                   <Field
                     label="Nome"
-                    name="s_Nome"
+                    name="studentName"
                     required
                     placeholder=""
                     maxLength={100}

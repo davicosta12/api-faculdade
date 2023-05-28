@@ -12,7 +12,7 @@ export default class CourseEnrollment extends CourseEnrollmentDto {
     ) {
         super(i_Cod_Matricula, i_Cod_Turma, i_Cod_Aluno, s_Sequencial_RA, student);
         this.rowKey = rowKey;
-        this.eAlunoNovo = this.i_Cod_Aluno == 0;
+        this.eAlunoNovo = this.i_Cod_Aluno == 0 || this.i_Cod_Aluno == null;
 
         this.studentCPF = this.student?.s_CPF ?? '';
         this.studentEmail = this.student?.s_Email ?? '';
@@ -36,18 +36,18 @@ export default class CourseEnrollment extends CourseEnrollmentDto {
     }
 
     public AsDto(): CourseEnrollmentDto {
-        if (this.i_Cod_Aluno == 0) {
+        if (this.i_Cod_Aluno == 0 || this.i_Cod_Aluno == null) {
             this.student = new CourseStudent(0, this.studentCPF, this.studentEmail, this.studentName);
         } else {
             this.student = new CourseStudent(this.i_Cod_Aluno);
         }
 
         const parsed = new CourseEnrollmentDto(
-            this.i_Cod_Matricula,
-            this.i_Cod_Turma,
-            this.i_Cod_Aluno,
+            this.i_Cod_Matricula ?? 0,
+            this.i_Cod_Turma ?? 0,
+            this.i_Cod_Aluno ?? 0,
             this.s_Sequencial_RA,
-            this.student?.AsDto()
+            (this.student ?? new CourseStudent()).AsDto()
         );
         return parsed;
     }

@@ -15,7 +15,7 @@ namespace Dev_Backend.Helpers
             sqlParams = new Dictionary<string, object?>();
             foreach (var iUnit in Units)
             {
-                sql += $"select I_Cod_{iUnit.HelpedTable} from {iUnit.HelpedTable} r where r.S_Pre_Cod = @cod_{codN};";
+                sql += $"select I_Cod_{iUnit.HelpedTable} from {iUnit.HelpedTable} r where r.S_Pre_Cod = @cod{codN};";
                 sqlParams.Add($"@cod{codN}", iUnit.Guid);
                 codN++;
             }

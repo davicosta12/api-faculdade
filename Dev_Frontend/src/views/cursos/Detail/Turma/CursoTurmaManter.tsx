@@ -17,6 +17,8 @@ import CursoHorarioManter from "./Horario/CursoHorarioManter";
 import CursoMatriculaManter from "./Matricula/CursoMatriculaManter";
 import HorariosDeCursoLista from "./HorariosDeCursoLista";
 import MatriculasDeCursoLista from "./MatriculasDeCursoLista";
+import MaquiService from "../../../../_commons/services/MaquiService";
+import CourseStudent from "../../../../model/curso/CourseStudent";
 
 interface Props {
     selectedClassroom: CourseClassroom
@@ -37,11 +39,27 @@ const CursoTurmaManter: FunctionComponent<Props> = ({
 
   const formRef: MutableRefObject<FormApi<any, any>> = useRef<any>(null);
 
-  const [timesTable, setTimesTable] = useState(selectedClassroom.times);
+  const maquiService = new MaquiService();
+
+  const [_timesTable, _setTimesTable] = useState(selectedClassroom.times);
+  const getTimesTable = (): CourseTime[] => {
+    return _timesTable;
+  }
+  const setTimesTable = (next: CourseTime[]): void => {
+    _setTimesTable(next);
+    formRef.current.change('times', next);
+  }
   useEffect(() => {
     setTimesTable(selectedClassroom.times);
   }, [selectedClassroom]);
-  const [enrollmentsTable, setEnrollmentsTable] = useState(selectedClassroom.enrollments);
+  const [_enrollmentsTable, _setEnrollmentsTable] = useState(selectedClassroom.enrollments);
+  const getEnrollmentsTable = (): CourseEnrollment[] => {
+    return _enrollmentsTable;
+  }
+  const setEnrollmentsTable = (next: CourseEnrollment[]): void => {
+    _setEnrollmentsTable(next);
+    formRef.current.change('enrollments', next);
+  }
   useEffect(() => {
     setEnrollmentsTable(selectedClassroom.enrollments);
   }, [selectedClassroom]);
@@ -79,11 +97,11 @@ const CursoTurmaManter: FunctionComponent<Props> = ({
       time.rowKey
     );
     
-    const found = timesTable.find(x => x.rowKey === restoredTime.rowKey);
+    const found = getTimesTable().find(x => x.rowKey === restoredTime.rowKey);
     if (!found) {
-      setTimesTable(timesTable.concat([restoredTime]));
+      setTimesTable(getTimesTable().concat([restoredTime]));
     } else {
-      setTimesTable(timesTable.map(x => x.rowKey !== restoredTime.rowKey ? x : restoredTime));
+      setTimesTable(getTimesTable().map(x => x.rowKey !== restoredTime.rowKey ? x : restoredTime));
     }
     handleGoBackSub();
   }
@@ -100,21 +118,33 @@ const CursoTurmaManter: FunctionComponent<Props> = ({
     setEAlteracaoInMemoryMatricula(false);
     onChangeBreadcrumbNodes(breadcrumbNodes.concat(['Inserir Matrícula']));
   }
-  const handleSubmitSubEnrollment = (enrollment: CourseEnrollment) => {
+  const handleSubmitSubEnrollment = async (enrollment: CourseEnrollment) => {
+    if (!enrollment.eAlunoNovo) {
+      if (enrollment.student == null) {
+        enrollment.student = new CourseStudent(enrollment.i_Cod_Aluno);
+      }
+      const studentFromApi = await maquiService.getOptionByCod(enrollment.i_Cod_Aluno ?? 0, 'S_Nome', 'selectAlunosNoCurso.sql');
+      enrollment.studentName = studentFromApi.description;
+    }
     const restoredEnrollment = new CourseEnrollment(
       enrollment.i_Cod_Matricula,
       enrollment.i_Cod_Turma,
       enrollment.i_Cod_Aluno,
       enrollment.s_Sequencial_RA,
-      enrollment.student,
+      new CourseStudent(
+        enrollment.i_Cod_Aluno,
+        enrollment.studentCPF,
+        enrollment.studentEmail,
+        enrollment.studentName
+      ),
       enrollment.rowKey
-    )
+    );
     
-    const found = enrollmentsTable.find(x => x.rowKey === restoredEnrollment.rowKey);
+    const found = getEnrollmentsTable().find(x => x.rowKey === restoredEnrollment.rowKey);
     if (!found) {
-      setEnrollmentsTable(enrollmentsTable.concat([restoredEnrollment]));
+      setEnrollmentsTable(getEnrollmentsTable().concat([restoredEnrollment]));
     } else {
-      setEnrollmentsTable(enrollmentsTable.map(x => x.rowKey !== restoredEnrollment.rowKey ? x : restoredEnrollment));
+      setEnrollmentsTable(getEnrollmentsTable().map(x => x.rowKey !== restoredEnrollment.rowKey ? x : restoredEnrollment));
     }
     handleGoBackSub();
   }
@@ -147,7 +177,7 @@ const CursoTurmaManter: FunctionComponent<Props> = ({
                   name="i_Cod_Configuracao_De_Periodo"
                   required
                   descriptionColumn="s_Nome"
-                  queryName="selectPeriodos.sql"
+                  queryName="selectPeriodosNoCurso.sql"
                   queryParameterName="Input_Nome"
                   comSelecione={!eAlteracaoInMemory}
                   component={FinalInputFK}
@@ -173,14 +203,14 @@ const CursoTurmaManter: FunctionComponent<Props> = ({
               </div>
              
                 <HorariosDeCursoLista
-                  timesTable={timesTable}
+                  timesTable={getTimesTable()}
                   onChangeTimesTable={setTimesTable}
                   parentIsLoading={false}
                   onOpenEdit={handleOpenEditSubTime}
                   onOpenAdd={handleOpenAddSubTime}
                 />
                 <MatriculasDeCursoLista
-                  enrollmentsTable={enrollmentsTable}
+                  enrollmentsTable={getEnrollmentsTable()}
                   onChangeEnrollmentsTable={setEnrollmentsTable}
                   parentIsLoading={false}
                   onOpenEdit={handleOpenEditSubEnrollment}

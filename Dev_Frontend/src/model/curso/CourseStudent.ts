@@ -28,12 +28,12 @@ export default class CourseStudent extends CourseStudentDto {
 
     public AsDto(): CourseStudentDto {
         const parsed = new CourseStudentDto(
-            this.i_Cod_Aluno,
+            this.i_Cod_Aluno ?? 0,
             this.s_CPF,
             this.s_Email,
             this.s_Nome,
-            this.i_Cod_Aluno == 0 ? this.s_Email : this.s_Senha,
-            this.i_Cod_Aluno == 0 ? true : this.b_Tem_Senha_Temporaria
+            (this.i_Cod_Aluno ?? 0) ? this.s_Email : this.s_Senha,
+            (this.i_Cod_Aluno ?? 0) ? true : this.b_Tem_Senha_Temporaria
         );
         return parsed;
     }

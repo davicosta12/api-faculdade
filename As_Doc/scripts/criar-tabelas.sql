@@ -81,4 +81,4 @@ CREATE TABLE IF NOT EXISTS Matricula (
 INSERT INTO Aluno (S_CPF, S_Email, S_Nome, S_Senha,
   B_Tem_Senha_Temporaria)
   VALUES ('00000000191', 'leandro@accelerateschool.edu',
-    'Leandro Alves', SHA2('LeandroSiga++1'), 0);
+    'Leandro Alves', SHA2('LeandroSiga++1', 512), 0);

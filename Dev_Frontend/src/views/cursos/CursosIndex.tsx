@@ -125,7 +125,7 @@ function CursosIndex() {
   const handleEdit = async (rowData: GetCourseDto) => {
     setIsLoading(true);
     try {
-      const detailedRow = await courseService.getCourseById(course.i_Cod_Curso);
+      const detailedRow = await courseService.getCourseById(rowData.i_Cod_Curso);
       setIsLoading(false);
       navigate('/cursos/alterar', { state: { course: detailedRow } });
     }

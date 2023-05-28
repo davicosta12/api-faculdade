@@ -78,7 +78,7 @@ const MatriculasDeCursoLista: FunctionComponent<Props> = ({
     return (
         <>
             <div className="half-padding">
-                <Typography.Title level={5}>Horários</Typography.Title>
+                <Typography.Title level={5}>Matrículas</Typography.Title>
             </div>
             <div className='half-padding'>
                 <Button

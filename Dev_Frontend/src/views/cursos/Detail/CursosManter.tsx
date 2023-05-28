@@ -153,7 +153,6 @@ const CursosManter: FunctionComponent<Props> = (props) => {
           formRef.current = form;
           return (
             <div className="half-padding">
-              {course.s_Sequencial && <Typography.Title level={5}>[Código: {course.s_Sequencial}]</Typography.Title>}
               <div className="half-padding">
                 <Typography.Title level={3}>{eAlteracao ? "Alteração de Curso" : "Inserção de Curso"}</Typography.Title>
               </div>
@@ -164,6 +163,7 @@ const CursosManter: FunctionComponent<Props> = (props) => {
                 </Breadcrumb>
               </div>
               {breadcrumbNodes.length == 1 && <>
+              {course.s_Sequencial && <Typography.Title level={5}>[Código: {course.s_Sequencial}]</Typography.Title>}
               <div className="half-padding">
                 <Field
                   label="Nome"
