@@ -3,6 +3,7 @@ import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
 import { CalendarOutlined, FormOutlined, SettingOutlined } from '@ant-design/icons';
 import NavigationState from '../../integrations/navigation-state';
+import { useNavigate } from 'react-router-dom';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -23,6 +24,7 @@ const getItem = (
 }    
 const itemsSecretario: MenuProps['items'] = [
   getItem('Segurança', 'sub1', <SettingOutlined />, [
+    getItem('Sistema', 'configuracoes-sistema'),
     getItem('Minha conta', 'usuario-conta'),
     getItem('Alunos', 'usuarios-alunos'),
     getItem('Professores', 'usuarios-professores-disciplinas-dos-professores'),
@@ -85,8 +87,20 @@ const getItems = () => {
 }
 
 function NavigationItems() {
+  const navigate = useNavigate();
+
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e.key);
+    switch (e.key) {
+      case 'configuracoes-sistema':
+        navigate('/configuracao');
+        break;
+      case 'cursos-disciplinas-dos-cursos':
+        navigate('/cursos');
+        break;
+      default:
+        console.log('click ', e.key);
+        break;
+    }
   };
 
   return (

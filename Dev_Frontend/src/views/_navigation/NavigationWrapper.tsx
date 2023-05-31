@@ -1,18 +1,28 @@
 
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './NavigationWrapper.css';
 
 import { CloseOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Typography } from 'antd';
 import NavigationItems from './NavigationItems';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
 import NavigationState from '../../integrations/navigation-state';
+import { AppContext } from '../../contexts/context';
 
 function NavigationWrapper(props: { children: React.ReactNode }) {
   const [menuEstaAberto, setMenuEstaAberto] = useState(false);
     
+  const { state, dispatch } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state.params.activeUser.Cod == 0) {
+      navigate('/login');
+    }
+  }, []);
+  
   const { windowWidth } = useWindowDimensions();
     
   if (windowWidth <= Constantes.WidthMaximoTablet) {
@@ -30,7 +40,7 @@ function NavigationWrapper(props: { children: React.ReactNode }) {
                 <UserOutlined/>
               </div>
               <div className='half-padding'>
-                <Typography.Text>{NavigationState.NomeUsuario}</Typography.Text>
+                <Typography.Text>{state.params.activeUser.Nome}</Typography.Text>
               </div>
               <div className='half-padding'>
                 <Button icon={menuEstaAberto ? <CloseOutlined /> : <MenuOutlined/>} onClick={ () => setMenuEstaAberto(!menuEstaAberto) } ></Button>
@@ -59,7 +69,7 @@ function NavigationWrapper(props: { children: React.ReactNode }) {
               <UserOutlined/>
             </div>
             <div className='half-padding'>
-              <Typography.Text>{NavigationState.NomeUsuario}</Typography.Text>
+              <Typography.Text>{state.params.activeUser.Nome}</Typography.Text>
             </div>
           </div>
           <div className='half-padding'>

@@ -10,6 +10,7 @@ import { toastError, toastOptions } from '../../misc/utils/utils';
 import { AppContext } from '../../contexts/context';
 import { Types } from '../../reducers/params/types';
 import MaskedInput from 'antd-mask-input';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
 
@@ -23,12 +24,15 @@ const Login: FunctionComponent<Props> = (props) => {
 
   const { state, dispatch } = useContext(AppContext);
 
+  const navigate = useNavigate();
+
   const authService = new AuthService();
 
   const handleSignIn = async (userLogin: AuthRequestDto) => {
     setIsLoading(true);
     try {
       const authResponse = await authService.getAuthToken(userLogin);
+      console.log(authResponse);
       const activeUser = JSON.stringify(authResponse.user);
       // saveActiveUser(activeUser);
       dispatch({
@@ -36,7 +40,8 @@ const Login: FunctionComponent<Props> = (props) => {
         payload: { ...authResponse.user }
       });
 
-      console.log(state.params.activeUser)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      navigate('/');
     }
     catch (err: any) {
       toast.error(toastError(err), toastOptions(toast));

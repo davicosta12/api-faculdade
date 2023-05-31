@@ -1,5 +1,6 @@
 USE db_Faculdade;
 
+
 CREATE TABLE IF NOT EXISTS Configuracao (
   I_Cod_Configuracao INT PRIMARY KEY AUTO_INCREMENT,
   I_Minimo_Alunos INT,
@@ -16,6 +17,7 @@ CREATE TABLE IF NOT EXISTS Configuracao_De_Periodo (
   D_Hora_Fim DATETIME,
   B_E_Hora_Fim_No_Dia_Seguinte TINYINT
 );
+
 
 CREATE TABLE IF NOT EXISTS Curso (
   I_Cod_Curso INT PRIMARY KEY AUTO_INCREMENT,
@@ -78,7 +80,31 @@ CREATE TABLE IF NOT EXISTS Matricula (
     FOREIGN KEY(I_Cod_Aluno)
     REFERENCES Aluno (I_Cod_Aluno)
 );
+
+
+CREATE TABLE IF NOT EXISTS Professor (
+  I_Cod_Professor INT PRIMARY KEY AUTO_INCREMENT,
+  S_CPF VARCHAR(11),
+  S_Email VARCHAR(80),
+  S_Nome VARCHAR(100),
+  S_Senha VARCHAR(512),
+  B_Tem_Senha_Temporaria TINYINT,
+  S_Pre_Cod VARCHAR(36)
+);
+CREATE TABLE IF NOT EXISTS Secretario (
+  I_Cod_Secretario INT PRIMARY KEY AUTO_INCREMENT,
+  S_CPF VARCHAR(11),
+  S_Email VARCHAR(80),
+  S_Nome VARCHAR(100),
+  S_Senha VARCHAR(512),
+  B_Tem_Senha_Temporaria TINYINT,
+  S_Pre_Cod VARCHAR(36)
+);
+INSERT INTO Secretario (S_CPF, S_Email, S_Nome, S_Senha,
+  B_Tem_Senha_Temporaria)
+  VALUES ('00000000191', 'adminaccelera@accelerateschool.edu',
+    'Administrador Master', SHA2('Organ@PQR770', 512), 0);
 INSERT INTO Aluno (S_CPF, S_Email, S_Nome, S_Senha,
   B_Tem_Senha_Temporaria)
-  VALUES ('00000000191', 'leandro@accelerateschool.edu',
+  VALUES ('00000000353', 'leandro@accelerateschool.edu',
     'Leandro Alves', SHA2('LeandroSiga++1', 512), 0);

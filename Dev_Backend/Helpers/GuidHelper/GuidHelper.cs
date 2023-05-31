@@ -18,16 +18,6 @@ namespace Dev_Backend.Helpers
                 sqlParams.Add($"@cod{codN}", iUnit.Guid);
                 codN++;
             }
-            Console.WriteLine("sql");
-            Console.WriteLine(sql);
-            foreach (var keybal in sqlParams)
-            {
-                Console.WriteLine("ket");
-                Console.WriteLine(keybal.Key);
-
-            Console.WriteLine("val");
-            Console.WriteLine(keybal.Value);
-            }
             return sql;
         }
         public void ReadRetrieveSQLKeys(GridReader reader)

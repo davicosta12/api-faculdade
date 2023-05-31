@@ -14,14 +14,37 @@ namespace Dev_Backend.Data.Repositories
         public async Task<AuthenticationModel?> Authenticate(SignInUser userLogin)
         {
             string sqlHash = @"SELECT SHA2(@S_Senha, 512)";
-            string sqlAluno = @" SELECT I_Cod_Aluno As Cod,
-                            'A' as Perfil,    
-                            S_CPF as CPF, 
-                            S_Email as Email, 
-                            S_Nome as Nome,
-                            S_Senha
-                            FROM Aluno
-                            WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash;";
+            string sqlAluno = @"
+                    SELECT
+                        I_Cod_Aluno As Cod,
+                        'A' as Perfil,    
+                        S_CPF as CPF, 
+                        S_Email as Email, 
+                        S_Nome as Nome,
+                        S_Senha
+                    FROM Aluno
+                    WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash
+                UNION ALL
+                    SELECT
+                        I_Cod_Professor As Cod,
+                        'P' as Perfil,    
+                        S_CPF as CPF, 
+                        S_Email as Email, 
+                        S_Nome as Nome,
+                        S_Senha
+                    FROM Professor
+                    WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash
+                UNION ALL
+                    SELECT
+                        I_Cod_Secretario As Cod,
+                        'S' as Perfil,    
+                        S_CPF as CPF, 
+                        S_Email as Email, 
+                        S_Nome as Nome,
+                        S_Senha
+                    FROM Secretario
+                    WHERE S_CPF = @CPF AND S_Senha = @Senha_Hash
+                ";
 
             userLogin.S_CPF = userLogin.S_CPF.Trim();
             userLogin.S_Senha = userLogin.S_Senha.Trim();
