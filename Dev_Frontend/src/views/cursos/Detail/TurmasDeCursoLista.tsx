@@ -7,6 +7,7 @@ import type { MenuProps } from 'antd';
 import ModalConfirm from "../../../_commons/ModalConfirm/ModalConfirm";
 import CourseClassroom from "../../../model/curso/CourseClassroom";
 import { LitModalidadeMaker } from "../../../model/literal/lit-modalidade";
+import { toNullUTCLocaleDateString } from "../../../misc/utils/utils";
 
 interface Props {
     classroomsTable: CourseClassroom[]
@@ -56,13 +57,27 @@ const TurmasDeCursoLista: FunctionComponent<Props> = ({
   let columns: ColumnsType<CourseClassroom> = [
     {
       title: 'Data Início',
-      dataIndex: 'd_Data_Inicio',
       key: 'd_Data_Inicio',
+      dataIndex: 'd_Data_Inicio',
+      render: (text, rowData: CourseClassroom, index) => {
+        return (
+          <span>
+            {toNullUTCLocaleDateString(rowData.d_Data_Inicio) ?? 'Não Disp.'}
+          </span>
+        );
+      },
     },
     {
       title: 'Data Fim',
-      dataIndex: 'd_Data_Fim',
       key: 'd_Data_Fim',
+      dataIndex: 'd_Data_Fim',
+      render: (text, rowData: CourseClassroom, index) => {
+        return (
+          <span>
+            {toNullUTCLocaleDateString(rowData.d_Data_Fim) ?? 'Não Disp.'}
+          </span>
+        );
+      },
     },
     {
         title: 'Modalidade',

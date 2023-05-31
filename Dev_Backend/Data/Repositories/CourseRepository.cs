@@ -249,8 +249,8 @@ namespace Dev_Backend.Data.Repositories
                 sql += @$"
                     UPDATE Turma SET
                         I_Modalidade = @Modalidade_{cod}_CLASSROOM,
-                        D_Data_Inicio = @Data_Inicio{cod}_CLASSROOM,
-                        D_Data_Fim = @Data_Fim_{cod}_CLASSROOM,
+                        D_Data_Inicio = @Data_Inicio_{cod}_CLASSROOM,
+                        D_Data_Fim = @Data_Fim_{cod}_CLASSROOM
                     WHERE I_Cod_Turma = {cod};
                 ";
                 sqlParams.Add($"@Modalidade_{cod}_CLASSROOM", iNextClassroom.I_Modalidade);
@@ -332,8 +332,8 @@ namespace Dev_Backend.Data.Repositories
                     WHERE I_Cod_Horario = {cod};
                 ";
                 sqlParams.Add($"@Dia_Da_Semana_{cod}_TIME", iNextTime.I_Dia_Da_Semana);
-                sqlParams.Add($"@Hora_Inicio{cod}_TIME", iNextTime.D_Hora_Inicio);
-                sqlParams.Add($"@Hora_Fim{cod}_TIME", iNextTime.D_Hora_Fim);
+                sqlParams.Add($"@Hora_Inicio_{cod}_TIME", iNextTime.D_Hora_Inicio);
+                sqlParams.Add($"@Hora_Fim_{cod}_TIME", iNextTime.D_Hora_Fim);
                 sqlParams.Add($"@B_E_Hora_Fim_No_Dia_Seguinte_{indexNew}_TIME", iNextTime.B_E_Hora_Fim_No_Dia_Seguinte);
             }
 
@@ -612,6 +612,10 @@ namespace Dev_Backend.Data.Repositories
 
             var sqlRetrieveSQLKeysParams = new Dictionary<string, object?>();
             var sqlRetrieveSQLKeys = guidHelper.RetrieveSQLKeysQuery(sqlRetrieveSQLKeysParams);
+            if (string.IsNullOrEmpty(sqlRetrieveSQLKeys))
+            {
+                return;
+            }
             var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams.AsExpandoObject());
             guidHelper.ReadRetrieveSQLKeys(readerRetrieveSQLKeysParams);
 

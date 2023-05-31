@@ -12,12 +12,21 @@ namespace Dev_Backend.Helpers
         {
             string sql = "";
             int codN = 1;
-            sqlParams = new Dictionary<string, object?>();
             foreach (var iUnit in Units)
             {
                 sql += $"select I_Cod_{iUnit.HelpedTable} from {iUnit.HelpedTable} r where r.S_Pre_Cod = @cod{codN};";
                 sqlParams.Add($"@cod{codN}", iUnit.Guid);
                 codN++;
+            }
+            Console.WriteLine("sql");
+            Console.WriteLine(sql);
+            foreach (var keybal in sqlParams)
+            {
+                Console.WriteLine("ket");
+                Console.WriteLine(keybal.Key);
+
+            Console.WriteLine("val");
+            Console.WriteLine(keybal.Value);
             }
             return sql;
         }
@@ -32,7 +41,6 @@ namespace Dev_Backend.Helpers
         {
             string sql = "";
             int codN = 1;
-            sqlParams = new Dictionary<string, object?>();
             foreach (var iListener in Listeners)
             {
                 var unit = Units.FirstOrDefault(x => x.Guid == iListener.GuidListened && x.SQLKey != null);
