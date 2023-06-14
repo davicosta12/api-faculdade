@@ -56,6 +56,7 @@ const CursosManter: FunctionComponent<Props> = (props) => {
     }
     else {
       formRef.current.reset({} as PostCourseDto);
+      setClassroomsTable([]);
     }
   }, [course]);
 
@@ -163,7 +164,7 @@ const CursosManter: FunctionComponent<Props> = (props) => {
                 </Breadcrumb>
               </div>
               {breadcrumbNodes.length == 1 && <>
-              {course.s_Sequencial && <Typography.Title level={5}>[Código: {course.s_Sequencial}]</Typography.Title>}
+              {course?.s_Sequencial && <Typography.Title level={5}>[Código: {course.s_Sequencial}]</Typography.Title>}
               <div className="half-padding">
                 <Field
                   label="Nome"

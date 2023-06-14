@@ -627,7 +627,7 @@ namespace Dev_Backend.Data.Repositories
         private string InsertCourseQuery(int courseSerial, PostCourse nextCourse, Dictionary<string, object?> sqlParams)
         {
             string sql = @$"
-                insert into Curso (S_Sequencial, S_Nome, F_Valor, Pre_Cod)
+                insert into Curso (S_Sequencial, S_Nome, F_Valor, S_Pre_Cod)
                 values (@Sequencial, @Nome, @Valor, @Pre_Cod_Curso);
             ";
             sqlParams.Add("@Sequencial", courseSerial.ToString().PadLeft(2, '0'));
@@ -775,6 +775,10 @@ namespace Dev_Backend.Data.Repositories
 
             var sqlRetrieveSQLKeysParams = new Dictionary<string, object?>();
             var sqlRetrieveSQLKeys = guidHelper.RetrieveSQLKeysQuery(sqlRetrieveSQLKeysParams);
+            if (string.IsNullOrEmpty(sqlRetrieveSQLKeys))
+            {
+                return;
+            }
             var readerRetrieveSQLKeysParams = await QueryMultipleAsync(sqlRetrieveSQLKeys, sqlRetrieveSQLKeysParams.AsExpandoObject());
             guidHelper.ReadRetrieveSQLKeys(readerRetrieveSQLKeysParams);
 
