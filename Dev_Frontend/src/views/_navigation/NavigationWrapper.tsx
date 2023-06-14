@@ -25,8 +25,6 @@ function NavigationWrapper(props: { children: React.ReactNode }) {
     if (state.params.activeUser.cod == 0) {
       navigate('/login');
     }
-    console.log('active user');
-    console.log(state.params.activeUser);
   }, []);
   
   const { windowWidth } = useWindowDimensions();

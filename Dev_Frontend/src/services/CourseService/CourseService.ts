@@ -30,7 +30,6 @@ export default class CourseService extends HttpService {
         .then(res => {
           const data = res.data as GetCourseDto[];
           data.forEach(x => x.dataInicioProximaTurma = getNullDateFromAPI(x.dataInicioProximaTurma));
-          console.log(data);
           resolve(data);
         })
         .catch((err: AxiosResponse<any>) => reject(err))

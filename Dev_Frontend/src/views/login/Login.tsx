@@ -32,7 +32,6 @@ const Login: FunctionComponent<Props> = (props) => {
     setIsLoading(true);
     try {
       const authResponse = await authService.getAuthToken(userLogin);
-      console.log(authResponse);
       const activeUser = JSON.stringify(authResponse.user);
       // saveActiveUser(activeUser);
       dispatch({
