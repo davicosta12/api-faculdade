@@ -26,19 +26,10 @@ const itemsSecretario: MenuProps['items'] = [
   getItem('Segurança', 'sub1', <SettingOutlined />, [
     getItem('Sistema', 'configuracoes-sistema'),
     getItem('Minha conta', 'usuario-conta'),
-    getItem('Alunos', 'usuarios-alunos'),
-    getItem('Professores', 'usuarios-professores-disciplinas-dos-professores'),
-    getItem('Secretários', 'usuarios-secretarios'),
     getItem('Sair', 'sair-do-usuario'),
   ]),
   getItem('Planejamento', 'sub2', <CalendarOutlined />, [
-    getItem('Disciplinas', 'disciplinas'),
     getItem('Cursos', 'cursos-disciplinas-dos-cursos'),
-    getItem('Inscrições', 'inscricoes-dos-alunos'),
-  ]),
-  getItem('Matrículas e Notas', 'sub3', <FormOutlined />, [
-    getItem('Turmas do atual', 'turmas-semestre-atual'),
-    getItem('Semestre atual', 'historico-turmas-atual-dos-usuarios'),
   ]),
   
 ];
@@ -49,13 +40,7 @@ const itemsProfessor: MenuProps['items'] = [
     getItem('Sair', 'sair-do-usuario'),
   ]),
   getItem('Planejamento', 'sub2', <CalendarOutlined />, [
-    getItem('Disciplinas', 'disciplinas'),
     getItem('Cursos', 'cursos-disciplinas-dos-cursos'),
-  ]),
-  getItem('Matrículas e Notas', 'sub3', <FormOutlined />, [
-    getItem('Turmas do atual', 'turmas-semestre-atual'),
-    getItem('Semestre atual', 'historico-turmas-atual-relacionado-ao-professor'),
-    getItem('Histórico completo', 'historico-turmas-total-relacionado-ao-professor'),
   ]),
   
 ];
@@ -66,14 +51,7 @@ const itemsAluno: MenuProps['items'] = [
     getItem('Sair', 'sair-do-usuario'),
   ]),
   getItem('Planejamento', 'sub2', <CalendarOutlined />, [
-    getItem('Disciplinas', 'disciplinas'),
     getItem('Cursos', 'cursos-disciplinas-dos-cursos'),
-    getItem('Inscrição', 'inscricoes-dos-alunos'),
-  ]),
-  getItem('Matrículas e Notas', 'sub3', <FormOutlined />, [
-    getItem('Turmas do atual', 'turmas-semestre-atual'),
-    getItem('Semestre atual', 'historico-turmas-atual-do-usuario'),
-    getItem('Histórico completo', 'historico-turmas-total-do-usuario'),
   ]),
   
 ];
