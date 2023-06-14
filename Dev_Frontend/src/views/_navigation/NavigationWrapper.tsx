@@ -10,6 +10,7 @@ import useWindowDimensions from '../../hooks/useWindowDimensions';
 import { Constantes } from '../../model/constantes';
 import NavigationState from '../../integrations/navigation-state';
 import { AppContext } from '../../contexts/context';
+import HttpService from '../../services/HttpService';
 
 function NavigationWrapper(props: { children: React.ReactNode }) {
   const [menuEstaAberto, setMenuEstaAberto] = useState(false);
@@ -17,10 +18,15 @@ function NavigationWrapper(props: { children: React.ReactNode }) {
   const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
 
+  const httpService = new HttpService();
+  let user = localStorage.getItem(process.env.REACT_APP_TOKEN_KEY as string);
+
   useEffect(() => {
-    if (state.params.activeUser.Cod == 0) {
+    if (state.params.activeUser.cod == 0) {
       navigate('/login');
     }
+    console.log('active user');
+    console.log(state.params.activeUser);
   }, []);
   
   const { windowWidth } = useWindowDimensions();
@@ -40,7 +46,7 @@ function NavigationWrapper(props: { children: React.ReactNode }) {
                 <UserOutlined/>
               </div>
               <div className='half-padding'>
-                <Typography.Text>{state.params.activeUser.Nome}</Typography.Text>
+                <Typography.Text>{state.params.activeUser.nome}</Typography.Text>
               </div>
               <div className='half-padding'>
                 <Button icon={menuEstaAberto ? <CloseOutlined /> : <MenuOutlined/>} onClick={ () => setMenuEstaAberto(!menuEstaAberto) } ></Button>
@@ -69,7 +75,7 @@ function NavigationWrapper(props: { children: React.ReactNode }) {
               <UserOutlined/>
             </div>
             <div className='half-padding'>
-              <Typography.Text>{state.params.activeUser.Nome}</Typography.Text>
+              <Typography.Text>{state.params.activeUser.nome}</Typography.Text>
             </div>
           </div>
           <div className='half-padding'>
